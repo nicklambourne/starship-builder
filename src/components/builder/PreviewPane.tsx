@@ -1,8 +1,12 @@
 "use client";
 
 /**
- * Preview pane: the simulated terminal plus the controls that decide what it is
- * simulating (scenario) and how it looks (colour scheme, font, width).
+ * Preview pane: the simulated terminal, the controls for how it looks, and the
+ * environment it is simulating.
+ *
+ * There is no scenario picker: the environment panel can express every
+ * scenario the app used to ship and any number besides, so a fixed menu beside
+ * it would only be a second, weaker way to say the same thing.
  *
  * The font selector is the reason the terminal is hand-rendered: switching
  * between patched Nerd Fonts and an unpatched system stack is the fastest way
@@ -14,7 +18,6 @@ import { EnvironmentPanel } from "./EnvironmentPanel";
 import { Terminal } from "@/components/terminal/Terminal";
 import { PRESETS } from "@/lib/config/presets";
 import { TERMINAL_FONTS } from "@/lib/fonts";
-import { SCENARIOS } from "@/lib/scenarios";
 import { TERMINAL_THEMES, type TerminalTheme } from "@/lib/terminalThemes";
 import type { Segment } from "@/lib/engine/types";
 import type { Scenario } from "@/lib/scenarios/types";
@@ -25,8 +28,6 @@ interface PreviewPaneProps {
   leadingNewline: boolean;
   warnings: string[];
 
-  scenarioId: string;
-  onScenarioChange(id: string): void;
   themeId: string;
   onThemeChange(id: string): void;
   fontId: string;
@@ -47,8 +48,6 @@ export function PreviewPane({
   right,
   leadingNewline,
   warnings,
-  scenarioId,
-  onScenarioChange,
   themeId,
   onThemeChange,
   fontId,
@@ -59,7 +58,6 @@ export function PreviewPane({
   scenario,
   onScenarioEdit,
 }: PreviewPaneProps) {
-  const preset = SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[0];
   const font = TERMINAL_FONTS.find((f) => f.id === fontId) ?? TERMINAL_FONTS[0];
 
   return (
@@ -72,9 +70,7 @@ export function PreviewPane({
         fontStack={fontStack}
       />
 
-      <p className="text-xs text-neutral-500">{preset.description}</p>
-
-      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
         <div className="flex flex-col gap-1">
           <label htmlFor="preset-select" className="text-xs text-neutral-400">
             Preset
@@ -94,24 +90,6 @@ export function PreviewPane({
             {PRESETS.map((preset) => (
               <option key={preset.id} value={preset.id}>
                 {preset.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label htmlFor="scenario-select" className="text-xs text-neutral-400">
-            Scenario
-          </label>
-          <select
-            id="scenario-select"
-            value={scenarioId}
-            onChange={(e) => onScenarioChange(e.target.value)}
-            className={SELECT_CLASS}
-          >
-            {SCENARIOS.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
               </option>
             ))}
           </select>

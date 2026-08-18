@@ -321,6 +321,60 @@ test.describe("builder", () => {
     await expect(details).not.toHaveAttribute("open", "");
   });
 
+  test("resetting asks first and can be cancelled", async ({ page }) => {
+    await page.goto("./");
+
+    // Make a change worth protecting.
+    await openEnvSection(page, "Git repository");
+    await page.getByLabel("Git branch").fill("release/2.0");
+    const terminal = page.getByLabel("Simulated terminal prompt");
+    await expect(terminal).toContainText("release/2.0");
+
+    await page.getByRole("button", { name: "Reset to defaults" }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toContainText("Reset everything?");
+
+    // Cancelling leaves everything alone.
+    await dialog.getByRole("button", { name: "Cancel" }).click();
+    await expect(dialog).toBeHidden();
+    await expect(terminal).toContainText("release/2.0");
+  });
+
+  test("the reset dialog dismisses with Escape", async ({ page }) => {
+    await page.goto("./");
+    await page.getByRole("button", { name: "Reset to defaults" }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toBeHidden();
+  });
+
+  test("confirming the reset clears the config", async ({ page }) => {
+    await page.goto("./");
+    await openToml(page);
+
+    // Turn a module off so the config is non-empty.
+    await page.getByRole("button", { name: /^Git \(\d+\)/ }).click();
+    await page.getByRole("switch", { name: "Enable git_branch" }).click();
+    await expect(page.getByLabel("starship.toml")).toHaveValue(/\[git_branch\]/);
+
+    await page.getByRole("button", { name: "Reset to defaults" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Reset" }).click();
+
+    await expect(page.getByRole("dialog")).toBeHidden();
+    await expect(page.getByLabel("starship.toml")).not.toHaveValue(/\[git_branch\]/);
+  });
+
+  test("there is no scenario picker; the environment panel covers it", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    await expect(page.getByLabel("Scenario")).toHaveCount(0);
+    await expect(
+      page.locator("summary").filter({ hasText: "Simulated environment" }),
+    ).toBeVisible();
+  });
+
   test("the preset picker lives with the preview", async ({ page }) => {
     await page.goto("./");
     const preset = page.getByLabel("Preset");

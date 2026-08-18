@@ -15,6 +15,7 @@ import { FormatBuilder } from "./FormatBuilder";
 import { PreviewPane } from "./PreviewPane";
 import { SettingsForm, type OptionDescriptor } from "./SettingsForm";
 import { TomlPane } from "./TomlPane";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Toggle } from "@/components/ui/Toggle";
 import {
   CheckIcon,
@@ -79,7 +80,6 @@ const ICON_BUTTON =
 export function Builder() {
   const {
     config,
-    scenarioId,
     scenario,
     themeId,
     fontId,
@@ -90,7 +90,6 @@ export function Builder() {
     setModuleDisabled,
     setRootOption,
     selectModule,
-    setScenario,
     updateScenario,
     setTheme,
     setFont,
@@ -104,6 +103,7 @@ export function Builder() {
   } = useBuilderStore();
 
   const [shareCopied, setShareCopied] = useState(false);
+  const [confirmingReset, setConfirmingReset] = useState(false);
 
   const theme = getTheme(themeId);
   const font = TERMINAL_FONTS.find((f) => f.id === fontId) ?? TERMINAL_FONTS[0];
@@ -287,6 +287,23 @@ export function Builder() {
 
   return (
     <div style={ansiVars} className="min-h-screen">
+      <ConfirmDialog
+        open={confirmingReset}
+        title="Reset everything?"
+        body={
+          <>
+            Every module setting, style and grouping goes back to the starting
+            prompt. The simulated environment is left as it is, and undo will
+            bring your config back.
+          </>
+        }
+        confirmLabel="Reset"
+        onCancel={() => setConfirmingReset(false)}
+        onConfirm={() => {
+          setConfirmingReset(false);
+          reset();
+        }}
+      />
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-white/10 px-4 py-3">
         <h1 className="text-lg font-semibold tracking-tight">🚀 Starship Builder</h1>
 
@@ -313,7 +330,7 @@ export function Builder() {
           </button>
           <button
             type="button"
-            onClick={reset}
+            onClick={() => setConfirmingReset(true)}
             aria-label="Reset to defaults"
             title="Reset to defaults"
             className={`${ICON_BUTTON} hover:border-red-400 hover:text-red-300`}
@@ -439,8 +456,6 @@ export function Builder() {
               right={rendered.right}
               leadingNewline={rendered.leadingNewline}
               warnings={rendered.warnings}
-              scenarioId={scenarioId}
-              onScenarioChange={setScenario}
               themeId={themeId}
               onThemeChange={setTheme}
               fontId={fontId}
