@@ -11,10 +11,15 @@
  *
  * Glyphs are drawn in the terminal font the preview is using — in any other
  * font they are all tofu.
+ *
+ * It renders inside a popover rather than inline: embedded in a format row it
+ * stretched the row and was clipped by the scrolling panes, and a tall narrow
+ * column is the wrong shape for a grid of icons.
  */
 
 import { useEffect, useMemo, useState } from "react";
 
+import { Popover } from "./Popover";
 import { type Glyph, type GlyphCatalogue, loadGlyphs, searchGlyphs } from "@/lib/config/glyphs";
 
 interface SymbolPickerProps {
@@ -23,9 +28,17 @@ interface SymbolPickerProps {
   onPick(char: string): void;
   /** The terminal font stack, so the glyphs actually render. */
   fontStack: string;
+  /** The button the popover hangs off. */
+  anchor: HTMLElement | null;
 }
 
-export function SymbolPicker({ open, onClose, onPick, fontStack }: SymbolPickerProps) {
+export function SymbolPicker({
+  open,
+  onClose,
+  onPick,
+  fontStack,
+  anchor,
+}: SymbolPickerProps) {
   const [catalogue, setCatalogue] = useState<GlyphCatalogue | null>(null);
   const [error, setError] = useState(false);
   const [query, setQuery] = useState("");
@@ -50,10 +63,9 @@ export function SymbolPicker({ open, onClose, onPick, fontStack }: SymbolPickerP
     return searchGlyphs(catalogue, query, query.trim() ? null : category);
   }, [catalogue, query, category]);
 
-  if (!open) return null;
-
   return (
-    <div className="mt-2 flex flex-col gap-2 rounded border border-white/15 bg-neutral-900 p-2">
+    <Popover open={open} onClose={onClose} anchor={anchor} label="Nerd Font symbols">
+      <div className="flex flex-col gap-2 p-2">
       <div className="flex items-center gap-2">
         <label htmlFor="symbol-search" className="sr-only">
           Search symbols
@@ -105,7 +117,7 @@ export function SymbolPicker({ open, onClose, onPick, fontStack }: SymbolPickerP
         <p className="px-1 py-3 text-xs text-neutral-500">Loading symbols…</p>
       ) : (
         <>
-          <div className="grid max-h-56 grid-cols-[repeat(auto-fill,minmax(2.25rem,1fr))] gap-1 overflow-y-auto">
+          <div className="grid max-h-64 grid-cols-[repeat(auto-fill,minmax(2.5rem,1fr))] gap-1 overflow-y-auto">
             {results.map((glyph) => (
               <button
                 key={`${glyph.category}-${glyph.code}-${glyph.name}`}
@@ -128,6 +140,7 @@ export function SymbolPicker({ open, onClose, onPick, fontStack }: SymbolPickerP
           </p>
         </>
       )}
-    </div>
+      </div>
+    </Popover>
   );
 }

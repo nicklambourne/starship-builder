@@ -118,9 +118,12 @@ export function itemLabel(item: FormatItem): string {
     case "module":
       return item.name === "all" ? "$all (every other module)" : `$${item.name}`;
     case "text":
+      // Named as text so a lone separator glyph or a run of spaces is
+      // identifiable as literal content rather than a module that failed to
+      // render.
       return item.value.trim().length === 0
-        ? `space × ${item.value.length}`
-        : `"${item.value}"`;
+        ? `Text (space × ${item.value.length})`
+        : `Text "${item.value}"`;
     case "group": {
       const modules = item.items.filter((i) => i.kind === "module").length;
       return `Group of ${item.items.length} (${modules} module${modules === 1 ? "" : "s"})`;

@@ -18,7 +18,7 @@ import type { DragEvent, KeyboardEvent, ReactNode } from "react";
 import { StyleSwatch } from "@/components/ui/StyleSwatch";
 import { Toggle } from "@/components/ui/Toggle";
 import { SymbolInput } from "@/components/ui/SymbolInput";
-import { GroupIcon, WarningIcon } from "@/components/ui/icons";
+import { ChevronIcon, GroupIcon, TrashIcon, WarningIcon } from "@/components/ui/icons";
 import {
   type DropPosition,
   type FormatItem,
@@ -29,11 +29,15 @@ import { describeModule } from "@/lib/config/descriptions";
 import type { Palette } from "@/lib/engine/styleString";
 import type { TerminalTheme } from "@/lib/terminalThemes";
 
-const ICON_BUTTON =
-  "rounded px-1.5 py-1 text-xs text-neutral-500 transition hover:bg-white/10 hover:text-neutral-100 disabled:cursor-not-allowed disabled:opacity-30";
-/** Larger than the other row icons: grouping is a primary action. */
-const GROUP_BUTTON =
-  "grid size-7 shrink-0 place-items-center rounded border border-white/15 text-neutral-400 transition hover:border-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-400";
+/**
+ * Every control on a row is the same size. They sit in a line, so one of them
+ * being smaller than the rest read as an accident rather than a hierarchy.
+ */
+const ROW_BUTTON =
+  "grid size-7 shrink-0 place-items-center rounded border border-white/15 text-neutral-400 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-400";
+const GROUP_BUTTON = `${ROW_BUTTON} hover:border-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-200`;
+const NEUTRAL_BUTTON = `${ROW_BUTTON} hover:border-sky-400 hover:bg-white/5 hover:text-neutral-100`;
+const DANGER_BUTTON = `${ROW_BUTTON} hover:border-red-400 hover:bg-red-400/10 hover:text-red-300`;
 
 export interface FormatNodeCallbacks {
   onDragStart(path: Path): void;
@@ -267,7 +271,7 @@ export function FormatNode({
         {isGroup ? (
           <button
             type="button"
-            className={ICON_BUTTON}
+            className={NEUTRAL_BUTTON}
             aria-label={`Ungroup ${label}`}
             title="Dissolve this group, keeping its contents"
             onClick={() => cb.onUngroup(path)}
@@ -292,23 +296,40 @@ export function FormatNode({
             aria-label={`Change the style of ${label}`}
             aria-expanded={styling}
             onClick={() => cb.onStyleToggle(path)}
-            className="shrink-0 rounded p-0.5 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-400"
+            className={NEUTRAL_BUTTON}
           >
             <StyleSwatch style={item.style} theme={cb.theme} palette={cb.palette} />
           </button>
         ) : null}
 
-        {!isModule && !isGroup ? (
+        {canExpand ? (
           <button
             type="button"
-            aria-label={`Remove ${label}`}
-            title="Literal text has no on/off in starship, so it is removed instead"
-            onClick={() => cb.onRemove(path)}
-            className={`${ICON_BUTTON} hover:text-red-300`}
+            aria-label={`${expanded ? "Collapse" : "Expand"} ${label}`}
+            aria-expanded={expanded}
+            title={isModule ? "Show this module's settings" : "Show what is in this group"}
+            onClick={() => cb.onExpandToggle(path)}
+            className={NEUTRAL_BUTTON}
           >
-            ✕
+            <ChevronIcon
+              className={`transition-transform ${expanded ? "rotate-90" : ""}`}
+            />
           </button>
         ) : null}
+
+        <button
+          type="button"
+          aria-label={`Remove ${label} from the prompt`}
+          title={
+            isModule
+              ? "Remove from the prompt. To keep it but hide it, use the switch."
+              : "Remove from the prompt"
+          }
+          onClick={() => cb.onRemove(path)}
+          className={DANGER_BUTTON}
+        >
+          <TrashIcon />
+        </button>
       </div>
 
       {styling && item.kind !== "raw" ? (

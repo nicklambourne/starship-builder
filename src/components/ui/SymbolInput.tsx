@@ -33,6 +33,7 @@ export function SymbolInput({
 }: SymbolInputProps) {
   const [picking, setPicking] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const insert = (char: string) => {
     const el = ref.current;
@@ -47,8 +48,7 @@ export function SymbolInput({
   };
 
   return (
-    <div className="flex w-full flex-col">
-      <div className="flex items-center gap-1">
+    <div className="flex w-full items-center gap-1">
         <input
           id={id}
           ref={ref}
@@ -64,6 +64,7 @@ export function SymbolInput({
           }
         />
         <button
+          ref={triggerRef}
           type="button"
           onClick={() => setPicking((open) => !open)}
           aria-expanded={picking}
@@ -74,13 +75,13 @@ export function SymbolInput({
           <span style={{ fontFamily: fontStack }} aria-hidden="true">
             &#xf0e7;
           </span>
-        </button>
-      </div>
+      </button>
       <SymbolPicker
         open={picking}
         onClose={() => setPicking(false)}
         onPick={insert}
         fontStack={fontStack}
+        anchor={triggerRef.current}
       />
     </div>
   );
