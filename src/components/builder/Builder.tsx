@@ -30,6 +30,7 @@ import { PROMPT_ORDER } from "@/lib/engine/promptOrder";
 import { DEFAULT_FORMAT, renderPrompt } from "@/lib/engine/prompt";
 import { collectVariables, tryParseFormatString } from "@/lib/engine/formatString";
 import { resolvePalette } from "@/lib/engine/styleString";
+import { structuredFormatString } from "@/lib/config/defaultFormat";
 import { MODULE_META, optionKind } from "@/lib/config/meta";
 import { PRESETS } from "@/lib/config/presets";
 import { encodeShare } from "@/lib/config/share";
@@ -108,15 +109,35 @@ export function Builder() {
     [config.palettes, config.palette],
   );
 
+  /**
+   * The format the editor works on.
+   *
+   * Starship's default is the single token `$all`, which is nothing to look at
+   * and nothing to rearrange, so the editor opens on its expanded, grouped
+   * equivalent. This is the *effective* format — it is what the preview renders
+   * and what the TOML exports, so the two can never disagree with what the
+   * editor shows.
+   */
+  const structuredDefault = useMemo(
+    () =>
+      structuredFormatString(
+        DEFAULT_FORMAT,
+        PROMPT_ORDER,
+        (name) => MODULE_META[name]?.group,
+      ),
+    [],
+  );
+  const format =
+    typeof config.format === "string" ? config.format : structuredDefault;
   const rendered = useMemo(
     () =>
       renderPrompt({
-        config,
+        config: { ...config, format },
         scenario,
         modules: ALL_MODULES,
         defaultOrder: PROMPT_ORDER,
       }),
-    [config, scenario],
+    [config, format, scenario],
   );
 
   const activeModules = useMemo(() => {
@@ -157,7 +178,6 @@ export function Builder() {
     [config, activeModules],
   );
 
-  const format = typeof config.format === "string" ? config.format : DEFAULT_FORMAT;
   const rightFormat = typeof config.right_format === "string" ? config.right_format : "";
 
   /** Module names available to the root format. */
@@ -224,21 +244,6 @@ export function Builder() {
     ],
   );
 
-  /**
-   * Replaces `$all` with the modules it currently stands for, so individual
-   * modules become reorderable. Without this, a default config offers nothing
-   * to rearrange — `$all` is a single opaque token.
-   */
-  const expandAll = useCallback(() => {
-    const named = new Set(
-      [...format.matchAll(/\$\{?([a-zA-Z_][a-zA-Z0-9_.]*)\}?/g)].map((m) => m[1]),
-    );
-    const expansion = PROMPT_ORDER.filter((m) => !named.has(m))
-      .map((m) => `$${m}`)
-      .join("");
-    setConfig({ ...config, format: format.replace(/\$\{?all\}?/, expansion) });
-  }, [config, format, setConfig]);
-
   const share = useCallback(async () => {
     const fragment = encodeShare(config);
     const url = `${window.location.origin}${window.location.pathname}#${fragment}`;
@@ -272,8 +277,6 @@ export function Builder() {
     for (const definition of ALL_MODULES) out[definition.name] = definition.defaults;
     return out;
   }, []);
-
-  const hasAll = /\$\{?all\}?/.test(format);
 
   return (
     <div style={ansiVars} className="min-h-screen">
@@ -359,20 +362,9 @@ export function Builder() {
         {/* Left column: everything that changes the prompt. */}
         <div className="flex min-w-0 flex-col gap-4">
           <section className={CARD} aria-labelledby="format-heading">
-            <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-              <h2 id="format-heading" className="text-sm font-semibold text-neutral-100">
-                Prompt format
-              </h2>
-              {hasAll ? (
-                <button
-                  type="button"
-                  onClick={expandAll}
-                  className="rounded border border-white/15 px-2 py-1 text-xs text-neutral-300 transition hover:border-sky-400 hover:text-sky-200"
-                >
-                  Expand $all to reorder modules
-                </button>
-              ) : null}
-            </div>
+            <h2 id="format-heading" className="mb-1 text-sm font-semibold text-neutral-100">
+              Prompt format
+            </h2>
             <p className="mb-3 text-xs text-neutral-500">
               What the prompt contains, and in what order. Reorder, remove, recolour,
               or add pieces here. Drag the handles to reorder; group a run of
@@ -385,6 +377,7 @@ export function Builder() {
               palette={palette}
               paletteNames={paletteNames}
               allowCategoryGrouping
+              scope="root-format"
             />
 
             <h3 className="mb-2 mt-5 text-sm font-semibold text-neutral-100">
@@ -399,6 +392,7 @@ export function Builder() {
               vocabulary={moduleVocabulary}
               palette={palette}
               paletteNames={paletteNames}
+              scope="right-format"
             />
 
             <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/5 pt-3">
@@ -475,7 +469,7 @@ export function Builder() {
           <section className={CARD} aria-label="TOML">
             <h2 className="mb-2 text-sm font-semibold text-neutral-100">starship.toml</h2>
             <TomlPane
-              config={config}
+              config={{ ...config, format }}
               onConfigChange={setConfig}
               defaults={defaultsByModule}
             />

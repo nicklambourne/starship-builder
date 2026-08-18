@@ -47,9 +47,6 @@ test.describe("builder", () => {
   test("the format builder reorders the prompt", async ({ page }) => {
     await page.goto("./");
 
-    // $all is a single opaque token; expanding it exposes individual modules.
-    await page.getByRole("button", { name: "Expand $all to reorder modules" }).click();
-
     const toml = page.getByLabel("starship.toml");
     await expect(toml).toHaveValue(/format = /);
 
@@ -68,37 +65,72 @@ test.describe("builder", () => {
     expect([after![1], after![2]]).toEqual([before![2], before![1]]);
   });
 
-  test("format pieces can be reordered by dragging the handle", async ({ page }) => {
+  test("dragging onto a row's edge reorders it", async ({ page }) => {
     await page.goto("./");
-    await page.getByRole("button", { name: "Expand $all to reorder modules" }).click();
-
     const toml = page.getByLabel("starship.toml");
     const firstTwo = /format = "\$(\w+)\$(\w+)/;
     const before = (await toml.inputValue()).match(firstTwo);
     expect(before).not.toBeNull();
 
-    // A real HTML5 drag, not just the keyboard fallback.
     const handles = page.getByRole("button", { name: /^Reorder \$\w+\./ });
-    await handles.nth(0).dragTo(handles.nth(2));
+    // The top quarter of a row means "insert before", not "group with".
+    await handles
+      .nth(0)
+      .dragTo(page.locator("[data-format-scope='root-format'] [data-format-row='2']"), {
+        targetPosition: { x: 40, y: 2 },
+      });
 
     const after = (await toml.inputValue()).match(firstTwo);
     expect(after).not.toBeNull();
-    // The dragged module left the front; the one behind it moved up.
     expect(after![1]).toBe(before![2]);
-    expect(after![1]).not.toBe(before![1]);
   });
 
-  test("related modules can be grouped so they share a style", async ({ page }) => {
+  test("dragging onto the middle of a row groups the two together", async ({
+    page,
+  }) => {
     await page.goto("./");
-    await page.getByRole("button", { name: "Expand $all to reorder modules" }).click();
-
-    await page.getByRole("button", { name: "Group languages" }).click();
-
     const toml = page.getByLabel("starship.toml");
-    // Build tools sit between the languages in starship's order, so gathering
-    // must pull the languages together rather than leaving fragments.
-    await expect(toml).toHaveValue(/\[\$bun\$c\$cobol\$cpp/);
-    await expect(page.getByRole("button", { name: /^Ungroup Group of/ }).first()).toBeVisible();
+    expect(await toml.inputValue()).toMatch(/format = "\$username\$hostname/);
+
+    const handles = page.getByRole("button", { name: /^Reorder \$\w+\./ });
+    await handles
+      .nth(0)
+      .dragTo(page.locator("[data-format-scope='root-format'] [data-format-row='1']"), {
+        targetPosition: { x: 60, y: 20 },
+      });
+
+    // The two loose modules become one group, in target-then-dragged order.
+    await expect(toml).toHaveValue(/format = "\[\$hostname\$username\]\(\)/);
+  });
+
+  test("opens already expanded and grouped, with named groups", async ({ page }) => {
+    await page.goto("./");
+
+    // No "expand" step: individual modules and named groups are there on load.
+    await expect(page.getByRole("button", { name: /^Reorder \$directory\./ })).toBeVisible();
+    // Cloud & Tools is deliberately NOT grouped by default: it spans from
+    // kubernetes to azure, so gathering it would hoist AWS above the directory.
+    for (const name of ["Git", "Languages", "Build Tools"]) {
+      await expect(
+        page.getByRole("button", { name: new RegExp(`^Reorder ${name} \\(\\d+\\)`) }),
+      ).toBeVisible();
+    }
+
+    // The exported format must match what is shown, or the preview lies.
+    await expect(page.getByLabel("starship.toml")).toHaveValue(/\[\$bun\$c\$cobol/);
+    await expect(
+      page.getByRole("button", { name: /^Reorder Cloud & Tools/ }),
+    ).toHaveCount(0);
+  });
+
+  test("the group button groups only the item it is on", async ({ page }) => {
+    await page.goto("./");
+    const toml = page.getByLabel("starship.toml");
+
+    await page.getByRole("button", { name: "Put $directory in a group" }).click();
+    await expect(toml).toHaveValue(/\[\$directory\]\(\)/);
+    // The neighbouring module must not have been swept in.
+    await expect(toml).not.toHaveValue(/\[\$directory\$/);
   });
 
   test("prompt elements are explained", async ({ page }) => {

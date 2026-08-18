@@ -17,17 +17,20 @@ import { useMemo, useState } from "react";
 import { FormatRow } from "./FormatRow";
 import { StyleStringBuilder } from "./StyleStringBuilder";
 import {
+  type DropPosition,
   type FormatItem,
+  applyDrop,
   fromItems,
   gatherCategory,
-  groupRange,
+  groupItem,
+  groupName,
   groupableCategories,
   itemLabel,
   moveItem,
-  reorderItem,
   toItems,
   ungroup,
 } from "@/lib/config/formatItems";
+import { GroupIcon } from "@/components/ui/icons";
 import { describeModule } from "@/lib/config/descriptions";
 import { MODULE_META } from "@/lib/config/meta";
 import { tryParseFormatString } from "@/lib/engine/formatString";
@@ -42,10 +45,18 @@ interface FormatBuilderProps {
   noun?: string;
   /** Category grouping only makes sense for the root format's modules. */
   allowCategoryGrouping?: boolean;
+  /**
+   * Names this editor, so its rows can be told apart from those of the other
+   * format editors on the page (right prompt, each module's own format).
+   */
+  scope?: string;
 }
 
 const ICON_BUTTON =
   "rounded px-1.5 py-1 text-xs text-neutral-500 transition hover:bg-white/10 hover:text-neutral-100 disabled:cursor-not-allowed disabled:opacity-30";
+/** Deliberately larger than the other row icons: it is a primary action. */
+const GROUP_BUTTON =
+  "grid size-7 shrink-0 place-items-center rounded border border-white/15 text-neutral-400 transition hover:border-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-400";
 const SMALL_BUTTON =
   "rounded border border-white/15 px-2 py-1 text-xs text-neutral-200 transition hover:border-sky-400 hover:text-sky-200";
 
@@ -61,6 +72,7 @@ export function FormatBuilder({
   paletteNames,
   noun = "module",
   allowCategoryGrouping = false,
+  scope,
 }: FormatBuilderProps) {
   const [showRaw, setShowRaw] = useState(false);
   const [styling, setStyling] = useState<number | null>(null);
@@ -68,7 +80,9 @@ export function FormatBuilder({
   const [adding, setAdding] = useState(false);
   const [search, setSearch] = useState("");
   const [dragging, setDragging] = useState<number | null>(null);
-  const [dropTarget, setDropTarget] = useState<number | null>(null);
+  const [dropTarget, setDropTarget] = useState<
+    { index: number; position: DropPosition } | null
+  >(null);
 
   const items = useMemo(() => toItems(value), [value]);
   const parse = useMemo(() => tryParseFormatString(value), [value]);
@@ -106,9 +120,9 @@ export function FormatBuilder({
     );
   }
 
-  const finishDrag = (dropIndex: number) => {
+  const finishDrag = (dropIndex: number, position: DropPosition) => {
     if (dragging !== null && dragging !== dropIndex) {
-      commit(reorderItem(items, dragging, dropIndex));
+      commit(applyDrop(items, dragging, dropIndex, position));
     }
     setDragging(null);
     setDropTarget(null);
@@ -120,7 +134,7 @@ export function FormatBuilder({
     : [];
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2" data-format-scope={scope}>
       <ul className="flex flex-col gap-1">
         {items.map((item, index) => {
           const isStyling = styling === index;
@@ -132,17 +146,25 @@ export function FormatBuilder({
             <FormatRow
               key={index}
               index={index}
-              label={itemLabel(item)}
+              label={
+                item.kind === "group"
+                  ? `${groupName(item, categoryOf)} (${item.items.length})`
+                  : itemLabel(item)
+              }
               description={description}
               tone={toneOf(item)}
               isDragging={dragging === index}
-              isDropTarget={dropTarget === index && dragging !== index}
+              dropPosition={
+                dropTarget?.index === index && dragging !== index
+                  ? dropTarget.position
+                  : null
+              }
               onDragStart={setDragging}
               onDragEnd={() => {
                 setDragging(null);
                 setDropTarget(null);
               }}
-              onDragOverIndex={setDropTarget}
+              onDragOverRow={(i, position) => setDropTarget({ index: i, position })}
               onDrop={finishDrag}
               onMove={(i, direction) => commit(moveItem(items, i, direction))}
               actions={
@@ -183,15 +205,15 @@ export function FormatBuilder({
                     </>
                   ) : null}
 
-                  {index < items.length - 1 ? (
+                  {item.kind !== "group" ? (
                     <button
                       type="button"
-                      className={ICON_BUTTON}
-                      aria-label={`Group ${itemLabel(item)} with the next piece`}
-                      title="Group with the next piece so they share a style"
-                      onClick={() => commit(groupRange(items, index, index + 1))}
+                      className={GROUP_BUTTON}
+                      aria-label={`Put ${itemLabel(item)} in a group`}
+                      title="Put this in a group of its own, then drag others onto it"
+                      onClick={() => commit(groupItem(items, index))}
                     >
-                      ⌗
+                      <GroupIcon />
                     </button>
                   ) : null}
 

@@ -131,6 +131,17 @@ export function itemLabel(item: FormatItem): string {
 }
 
 /**
+ * Wraps a single item in a group of its own, ready to have things dragged in.
+ */
+export function groupItem(items: FormatItem[], index: number): FormatItem[] {
+  const target = items[index];
+  if (!target || target.kind === "group") return items;
+  return items.map((item, i) =>
+    i === index ? { kind: "group", items: [target] } : item,
+  );
+}
+
+/**
  * Wraps a contiguous run of items in a group.
  *
  * Only contiguous runs are groupable: a format string is a sequence, so
@@ -229,4 +240,72 @@ export function groupableCategories(
   return [...counts.entries()]
     .filter(([, count]) => count >= 2)
     .map(([category]) => category);
+}
+
+
+/**
+ * A display name for a group, inferred from what is inside it.
+ *
+ * Format strings cannot carry a label, so a name is never stored — it is
+ * derived from the categories of the modules in the group, which keeps it
+ * truthful as members are dragged in and out.
+ */
+export function groupName(
+  item: Extract<FormatItem, { kind: "group" }>,
+  categoryOf: (moduleName: string) => string | undefined,
+): string {
+  const categories = new Set<string>();
+  let modules = 0;
+  for (const child of item.items) {
+    if (child.kind !== "module") continue;
+    modules += 1;
+    const category = categoryOf(child.name);
+    if (category) categories.add(category);
+  }
+  if (modules === 0) return "Group";
+  if (categories.size === 1) return [...categories][0];
+  if (categories.size === 0) return "Group";
+  return "Mixed group";
+}
+
+/** Where a dragged item lands relative to the row it was dropped on. */
+export type DropPosition = "before" | "after" | "into";
+
+/**
+ * Applies a drag. `into` appends to an existing group, or pairs two loose
+ * items into a new one — dropping something onto something else is the most
+ * direct way to say "these belong together".
+ */
+export function applyDrop(
+  items: FormatItem[],
+  from: number,
+  to: number,
+  position: DropPosition,
+): FormatItem[] {
+  if (from === to || from < 0 || from >= items.length || to < 0 || to >= items.length) {
+    return items;
+  }
+
+  const dragged = items[from];
+  const target = items[to];
+
+  if (position === "into") {
+    const merged: FormatItem =
+      target.kind === "group"
+        ? { ...target, items: [...target.items, dragged] }
+        : { kind: "group", items: [target, dragged] };
+    return items
+      .map((item, index) => (index === to ? merged : item))
+      .filter((_, index) => index !== from);
+  }
+
+  const withoutDragged = items.filter((_, index) => index !== from);
+  // Removing the dragged item shifts every later index down by one.
+  const adjusted = from < to ? to - 1 : to;
+  const insertAt = position === "before" ? adjusted : adjusted + 1;
+  return [
+    ...withoutDragged.slice(0, insertAt),
+    dragged,
+    ...withoutDragged.slice(insertAt),
+  ];
 }
