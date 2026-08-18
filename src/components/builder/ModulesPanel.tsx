@@ -16,6 +16,7 @@
 import { useMemo, useState } from "react";
 
 import { Toggle } from "@/components/ui/Toggle";
+import { describeModule } from "@/lib/config/descriptions";
 import { MODULE_GROUPS } from "@/lib/config/meta";
 
 export interface ModuleListEntry {
@@ -62,7 +63,12 @@ export function ModulesPanel({
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return entries.filter((entry) => {
-      if (needle && !entry.name.toLowerCase().includes(needle)) return false;
+      if (needle) {
+        const description = describeModule(entry.name)?.toLowerCase() ?? "";
+        const matches =
+          entry.name.toLowerCase().includes(needle) || description.includes(needle);
+        if (!matches) return false;
+      }
       if (groups.size > 0 && !groups.has(entry.group)) return false;
       if (status === "enabled" && !entry.enabled) return false;
       if (status === "active" && !entry.active) return false;
@@ -188,12 +194,17 @@ export function ModulesPanel({
                         aria-expanded={isOpen}
                         className="flex min-w-0 flex-1 items-center gap-2 text-left"
                       >
-                        <span
-                          className={`truncate font-mono text-sm ${
-                            entry.enabled ? "text-neutral-200" : "text-neutral-500"
-                          }`}
-                        >
-                          {entry.name}
+                        <span className="flex min-w-0 flex-col">
+                          <span
+                            className={`truncate font-mono text-sm ${
+                              entry.enabled ? "text-neutral-200" : "text-neutral-500"
+                            }`}
+                          >
+                            {entry.name}
+                          </span>
+                          <span className="truncate text-xs text-neutral-500">
+                            {describeModule(entry.name)}
+                          </span>
                         </span>
                         {entry.customised ? (
                           <span

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { ALL_MODULES, MODULES_BY_NAME } from "./index";
 import { PROMPT_ORDER } from "../promptOrder";
+import { describeModule } from "@/lib/config/descriptions";
 
 /**
  * Coverage guard.
@@ -14,6 +15,21 @@ describe("module registry", () => {
   it("implements every module in starship's prompt order", () => {
     const missing = PROMPT_ORDER.filter((name) => !MODULES_BY_NAME.has(name));
     expect(missing).toEqual([]);
+  });
+
+  it("lists each module exactly once in the prompt order", () => {
+    // A duplicate here makes `$all` render that module twice. The generator
+    // previously picked up the string inside `#[cfg(feature = "battery")]`,
+    // which is a feature gate rather than a module name.
+    const duplicates = PROMPT_ORDER.filter(
+      (name, index) => PROMPT_ORDER.indexOf(name) !== index,
+    );
+    expect(duplicates).toEqual([]);
+  });
+
+  it("describes every module in the prompt order", () => {
+    const undescribed = PROMPT_ORDER.filter((name) => !describeModule(name));
+    expect(undescribed).toEqual([]);
   });
 
   it("registers no duplicate module names", () => {

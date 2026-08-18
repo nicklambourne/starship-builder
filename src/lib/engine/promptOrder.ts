@@ -1,8 +1,11 @@
 /**
  * Starship's canonical module order, used to expand `$all`.
  *
- * Generated verbatim from starship's `PROMPT_ORDER` (src/configs/starship_root.rs);
- * regenerate rather than hand-editing when syncing a new starship release.
+ * Generated verbatim from starship's `PROMPT_ORDER`
+ * (src/configs/starship_root.rs); regenerate rather than hand-editing when
+ * syncing a new starship release. Note that entries there may be preceded by
+ * `#[cfg(feature = "...")]` attributes whose own quoted strings are feature
+ * gates, not module names — strip attributes before extracting.
  */
 
 export const PROMPT_ORDER: string[] = [
@@ -99,7 +102,6 @@ export const PROMPT_ORDER: string[] = [
   "cmd_duration",
   "line_break",
   "jobs",
-  "battery",
   "battery",
   "time",
   "status",

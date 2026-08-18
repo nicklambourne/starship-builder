@@ -53,9 +53,70 @@ test.describe("builder", () => {
     const toml = page.getByLabel("starship.toml");
     await expect(toml).toHaveValue(/format = /);
 
-    const before = await toml.inputValue();
-    await page.getByRole("button", { name: /^Move \$\w+ later$/ }).first().click();
-    await expect(toml).not.toHaveValue(before);
+    // Reordering is a drag handle, but it is also keyboard-operable — which is
+    // the behaviour worth pinning, since drag alone would exclude keyboard use.
+    const firstFormat = /format = "\$(\w+)\$(\w+)/;
+    const before = (await toml.inputValue()).match(firstFormat);
+    expect(before).not.toBeNull();
+
+    await page.getByRole("button", { name: /^Reorder \$\w+\./ }).first().focus();
+    await page.keyboard.press("ArrowDown");
+
+    const after = (await toml.inputValue()).match(firstFormat);
+    expect(after).not.toBeNull();
+    // The first two modules must have swapped, not merely changed somehow.
+    expect([after![1], after![2]]).toEqual([before![2], before![1]]);
+  });
+
+  test("format pieces can be reordered by dragging the handle", async ({ page }) => {
+    await page.goto("./");
+    await page.getByRole("button", { name: "Expand $all to reorder modules" }).click();
+
+    const toml = page.getByLabel("starship.toml");
+    const firstTwo = /format = "\$(\w+)\$(\w+)/;
+    const before = (await toml.inputValue()).match(firstTwo);
+    expect(before).not.toBeNull();
+
+    // A real HTML5 drag, not just the keyboard fallback.
+    const handles = page.getByRole("button", { name: /^Reorder \$\w+\./ });
+    await handles.nth(0).dragTo(handles.nth(2));
+
+    const after = (await toml.inputValue()).match(firstTwo);
+    expect(after).not.toBeNull();
+    // The dragged module left the front; the one behind it moved up.
+    expect(after![1]).toBe(before![2]);
+    expect(after![1]).not.toBe(before![1]);
+  });
+
+  test("related modules can be grouped so they share a style", async ({ page }) => {
+    await page.goto("./");
+    await page.getByRole("button", { name: "Expand $all to reorder modules" }).click();
+
+    await page.getByRole("button", { name: "Group languages" }).click();
+
+    const toml = page.getByLabel("starship.toml");
+    // Build tools sit between the languages in starship's order, so gathering
+    // must pull the languages together rather than leaving fragments.
+    await expect(toml).toHaveValue(/\[\$bun\$c\$cobol\$cpp/);
+    await expect(page.getByRole("button", { name: /^Ungroup Group of/ }).first()).toBeVisible();
+  });
+
+  test("prompt elements are explained", async ({ page }) => {
+    await page.goto("./");
+    // The description appears next to the module, not only in linked docs.
+    await expect(
+      page.getByText("Shows the active branch of the repo in your current directory"),
+    ).toBeVisible();
+  });
+
+  test("header actions are icon buttons with accessible names", async ({ page }) => {
+    await page.goto("./");
+    for (const name of ["Undo", "Redo", "Reset to defaults", "Copy a share link"]) {
+      await expect(page.getByRole("button", { name })).toBeVisible();
+    }
+    await expect(
+      page.getByRole("link", { name: "View this project on GitHub" }),
+    ).toBeVisible();
   });
 
   test("modules can be filtered as well as searched", async ({ page }) => {
