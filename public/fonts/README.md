@@ -19,24 +19,41 @@ not bundled; nothing in the preview renders italic text.
 
 | Font | CSS family | Upstream project | Licence | Licence file | Regular | Bold |
 | --- | --- | --- | --- | --- | ---: | ---: |
-| JetBrainsMono Nerd Font (default) | `JetBrainsMono Nerd Font Mono` | [JetBrains/JetBrainsMono](https://github.com/JetBrains/JetBrainsMono) | SIL OFL 1.1 | [`licences/JetBrainsMono-OFL.txt`](licences/JetBrainsMono-OFL.txt) | 1.01 MiB | 1.02 MiB |
+| Hack Nerd Font (default) | `Hack Nerd Font Mono` | [source-foundry/Hack](https://github.com/source-foundry/Hack) | MIT (+ Bitstream Vera) | [`licences/Hack-LICENSE.md`](licences/Hack-LICENSE.md) | 1.17 MiB | 1.17 MiB |
+| JetBrainsMono Nerd Font | `JetBrainsMono Nerd Font Mono` | [JetBrains/JetBrainsMono](https://github.com/JetBrains/JetBrainsMono) | SIL OFL 1.1 | [`licences/JetBrainsMono-OFL.txt`](licences/JetBrainsMono-OFL.txt) | 1.01 MiB | 1.02 MiB |
 | FiraCode Nerd Font | `FiraCode Nerd Font Mono` | [tonsky/FiraCode](https://github.com/tonsky/FiraCode) | SIL OFL 1.1 | [`licences/FiraCode-OFL.txt`](licences/FiraCode-OFL.txt) | 1.16 MiB | 1.16 MiB |
-| Hack Nerd Font | `Hack Nerd Font Mono` | [source-foundry/Hack](https://github.com/source-foundry/Hack) | MIT (+ Bitstream Vera) | [`licences/Hack-LICENSE.md`](licences/Hack-LICENSE.md) | 1.17 MiB | 1.17 MiB |
 | CaskaydiaCove Nerd Font | `CaskaydiaCove Nerd Font Mono` | [microsoft/cascadia-code](https://github.com/microsoft/cascadia-code) | SIL OFL 1.1 | [`licences/CascadiaCode-OFL.txt`](licences/CascadiaCode-OFL.txt) | 1.18 MiB | 1.18 MiB |
 | SauceCodePro Nerd Font | `SauceCodePro Nerd Font Mono` | [adobe-fonts/source-code-pro](https://github.com/adobe-fonts/source-code-pro) | SIL OFL 1.1 | [`licences/SourceCodePro-OFL.txt`](licences/SourceCodePro-OFL.txt) | 1.00 MiB | 1.00 MiB |
+| IosevkaTerm Nerd Font | `IosevkaTerm Nerd Font Mono` | [be5invis/Iosevka](https://github.com/be5invis/Iosevka) | SIL OFL 1.1 | [`licences/Iosevka-OFL.md`](licences/Iosevka-OFL.md) | 2.46 MiB | 2.48 MiB |
+| BlexMono Nerd Font | `BlexMono Nerd Font Mono` | [IBM/plex](https://github.com/IBM/plex) | SIL OFL 1.1 | [`licences/IBMPlexMono-OFL.txt`](licences/IBMPlexMono-OFL.txt) | 0.97 MiB | 0.97 MiB |
+| RobotoMono Nerd Font | `RobotoMono Nerd Font Mono` | [googlefonts/RobotoMono](https://github.com/googlefonts/RobotoMono) | Apache 2.0 | [`licences/RobotoMono-LICENSE.txt`](licences/RobotoMono-LICENSE.txt) | 1.11 MiB | 1.11 MiB |
+| DejaVuSansM Nerd Font | `DejaVuSansM Nerd Font Mono` | [dejavu-fonts](https://github.com/dejavu-fonts/dejavu-fonts) | Bitstream Vera (+ Arev) | [`licences/DejaVu-LICENSE.txt`](licences/DejaVu-LICENSE.txt) | 1.21 MiB | 1.20 MiB |
+| Inconsolata Nerd Font | `Inconsolata Nerd Font Mono` | [googlefonts/Inconsolata](https://github.com/googlefonts/Inconsolata) | SIL OFL 1.1 | [`licences/Inconsolata-OFL.txt`](licences/Inconsolata-OFL.txt) | 0.95 MiB | 0.95 MiB |
+| SpaceMono Nerd Font | `SpaceMono Nerd Font Mono` | [googlefonts/spacemono](https://github.com/googlefonts/spacemono) | SIL OFL 1.1 | [`licences/SpaceMono-OFL.txt`](licences/SpaceMono-OFL.txt) | 0.97 MiB | 0.97 MiB |
+| NotoSansM Nerd Font | `NotoSansM Nerd Font Mono` | [notofonts/latin-greek-cyrillic](https://github.com/notofonts/latin-greek-cyrillic) | SIL OFL 1.1 | [`licences/NotoSansMono-OFL.txt`](licences/NotoSansMono-OFL.txt) | 1.07 MiB | 1.07 MiB |
 
-**Total: 11.04 MiB (11,586,668 bytes) across 10 woff2 files.**
+**Total: 28.55 MiB (29,935,264 bytes) across 24 woff2 files.**
 
 The picker also offers a *System monospace (no Nerd Font)* option. It bundles
 nothing and falls back to the OS monospace stack, so users can see how their
 prompt degrades on an unpatched font.
 
-Two names differ from their upstream project on purpose. Cascadia Code and
-Source Code Pro are released under the OFL with Reserved Font Names
-(`Cascadia Code` and `Source` respectively); OFL §3 forbids a modified build
-from carrying a reserved name, so Nerd Fonts ships the patched versions as
-**CaskaydiaCove** and **SauceCodePro**. Those are the correct, licence-compliant
-names and are kept verbatim here.
+Hack is the default, and the *first* entry of `TERMINAL_FONTS` in
+`src/lib/fonts.ts` is what makes it so — reorder that list to change the
+default rather than hard-coding an id anywhere else.
+
+### Names that differ from their upstream project
+
+Three families are renamed by Nerd Fonts for licence compliance. Cascadia Code,
+Source Code Pro and IBM Plex Mono are released under the OFL with Reserved Font
+Names (`Cascadia Code`, `Source` and `Plex` respectively); OFL §3 forbids a
+modified build from carrying a reserved name, so the patched versions ship as
+**CaskaydiaCove**, **SauceCodePro** and **BlexMono**. Those are the correct,
+licence-compliant names and are kept verbatim here.
+
+Two more are abbreviations rather than renames: OpenType family names are
+length-limited, so Nerd Fonts shortens *Mono* to `M` — DejaVu Sans Mono becomes
+**DejaVuSansM** and Noto Sans Mono becomes **NotoSansM**.
 
 ## Licensing
 
@@ -49,12 +66,20 @@ A patched Nerd Font is a derivative work carrying two licence layers:
    sources (Copyright © 2014 Ryan L McIntyre). See
    [`licences/NerdFonts-LICENSE.txt`](licences/NerdFonts-LICENSE.txt).
 
-All five bundled fonts permit redistribution and embedding, including as
+All twelve bundled fonts permit redistribution and embedding, including as
 webfonts. The OFL requires that the licence travel with the font and that the
-fonts not be sold on their own; both hold here. Hack adds the Bitstream Vera
-licence for the outlines it inherits via DejaVu, which likewise permits
-redistribution and embedding and only reserves the names "Bitstream" and
-"Vera" — neither of which appears in "Hack Nerd Font".
+fonts not be sold on their own; both hold here. Hack and DejaVu Sans Mono carry
+the Bitstream Vera licence for the outlines they inherit, which likewise permits
+redistribution and embedding and only reserves the names "Bitstream" and "Vera"
+— neither of which appears in "Hack Nerd Font" or "DejaVuSansM Nerd Font".
+
+**Roboto Mono note.** Google relicensed the Roboto family to SIL OFL 1.1 in
+2024, but the Nerd Fonts v3.5.0 build predates that: the patched binary's own
+name table says *"Licensed under the Apache License, Version 2.0"* and the
+release archive ships the Apache text. The Apache grant is what governs the
+file bundled here, so that is what is recorded and shipped; the current
+upstream OFL is an additional, not a replacement, permission. Either way
+redistribution and web embedding are permitted.
 
 ## Deliberately excluded
 
@@ -62,8 +87,13 @@ redistribution and embedding and only reserves the names "Bitstream" and
 | --- | --- | --- |
 | **UbuntuMono Nerd Font** | Ubuntu Font Licence 1.0 | Two unresolved problems. The UFL states that fonts and derivatives "cannot be released under any other licence", which conflicts with Nerd Fonts publishing its patched output under the OFL; and a *Substantially Changed* derivative "must be renamed to avoid use of the name of the Original Version or similar names entirely", yet the patched build ships as "UbuntuMono Nerd Font". "Ubuntu" is also a Canonical trademark. Excluded as unverifiable. |
 | **Meslo Nerd Font** | Apache 2.0 (claimed) | Meslo is Apache-2.0 by André Berg, but it is a customisation of **Apple's Menlo**, and the font's own copyright string credits Apple Inc. (2009) alongside Bitstream. Apple has not licensed Menlo for redistribution, so the Apache grant is made by someone who may not hold the necessary rights. The chain cannot be verified; excluded. |
-| **IosevkaTerm Nerd Font** | SIL OFL 1.1 | Licence is fine — excluded purely on size. At 4.94 MiB for two weights it costs 2.5× any other candidate and alone would have broken the payload budget. |
-| **DejaVuSansM Nerd Font** | Bitstream Vera + Arev | Licence is fine — excluded on size/redundancy. It was the marginal font over budget, and its Bitstream Vera lineage is already represented by Hack. |
+
+Both exclusions are on licence grounds and are not up for revisiting on size or
+popularity arguments.
+
+IosevkaTerm and DejaVuSansM were previously excluded on size alone; the payload
+budget was raised deliberately when the family count grew, so both are now
+bundled.
 
 ## Size policy
 
@@ -73,27 +103,42 @@ codepoint in a `format` string. Subsetting to a fixed glyph list would silently
 break those configs, so **glyph coverage is never reduced**. The only levers
 used are:
 
-- woff2 compression (roughly 2.7 MB TTF → 1.1 MB woff2, ~57% saved);
+- woff2 compression (roughly 2.4 MB TTF → 1.0 MB woff2, ~58% saved);
 - Regular + Bold only, Mono variant only;
 - limiting the *number* of bundled families.
 
-All seven licence-clean candidates would have totalled 18.4 MiB, over the
-~12 MiB budget, so the two largest/most redundant were dropped rather than
-subsetting any font. The result is 11.04 MiB.
+Twelve families cost 28.55 MiB. Eleven of them sit between 1.90 and 2.41 MiB;
+IosevkaTerm is the outlier at 4.94 MiB, because Iosevka ships far broader
+Unicode coverage than the rest. If the payload ever needs to come down, drop
+whole families — starting with IosevkaTerm — rather than subsetting any of them.
 
 This is a repository and deploy cost, not a page-load cost: `@font-face` faces
 are fetched lazily, so a visitor downloads only the weights of the font they
-actually select — about 1 MiB for the default, and nothing at all for the
-system-monospace option.
+actually select — about 1.2 MiB for the default before any bold text is drawn,
+2.34 MiB for both weights, and nothing at all for the system-monospace option.
 
 ## Reproducing these files
 
 ```sh
-curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
-unzip -j JetBrainsMono.zip 'JetBrainsMonoNerdFontMono-Regular.ttf' \
-                           'JetBrainsMonoNerdFontMono-Bold.ttf' -d ttf/
-nix-shell -p woff2 --run 'woff2_compress ttf/JetBrainsMonoNerdFontMono-Regular.ttf'
+curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip
+unzip -j Hack.zip 'HackNerdFontMono-Regular.ttf' \
+                  'HackNerdFontMono-Bold.ttf' -d ttf/
+nix-shell -p woff2 --run 'woff2_compress ttf/HackNerdFontMono-Regular.ttf'
 ```
+
+The release zip's licence file (`LICENSE.md`, `LICENSE.txt` or `OFL.txt`,
+depending on the family) goes into [`licences/`](licences) alongside it.
 
 The woff2 files are a lossless repackaging of the release TTFs — the conversion
 changes the container only, never the outlines, metrics, or name table.
+
+## Where the font files live
+
+The `.woff2` files are in `src/assets/fonts/`, not here. Anything under
+`public/` is copied verbatim into the export *and* emitted again as a
+content-hashed asset by the bundler, so keeping 29 MB of fonts in `public/`
+shipped every byte twice — 83 MB of artefact for 42 MB of content, with
+browsers only ever fetching the hashed copies.
+
+The licence texts stay in `public/fonts/licences/` on purpose: those are meant
+to be served at a stable, linkable URL.

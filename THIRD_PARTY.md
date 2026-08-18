@@ -6,7 +6,7 @@ named.
 
 ## Bundled fonts
 
-The terminal preview self-hosts five [Nerd Fonts](https://www.nerdfonts.com)
+The terminal preview self-hosts twelve [Nerd Fonts](https://www.nerdfonts.com)
 patched monospace families as woff2, so prompt glyphs render for visitors who
 have no patched font installed. All were taken from the **Nerd Fonts v3.5.0**
 release (published 2026-08-02) at
@@ -18,17 +18,29 @@ are in [`public/fonts/licences/`](public/fonts/licences).
 
 | Font | Upstream project | Copyright | Licence | Size |
 | --- | --- | --- | --- | ---: |
+| Hack Nerd Font *(default)* | [source-foundry/Hack](https://github.com/source-foundry/Hack) | © 2018 Source Foundry Authors; © 2003 Bitstream, Inc. | [MIT + Bitstream Vera](public/fonts/licences/Hack-LICENSE.md) | 2.34 MiB |
 | JetBrainsMono Nerd Font | [JetBrains/JetBrainsMono](https://github.com/JetBrains/JetBrainsMono) | © 2020 The JetBrains Mono Project Authors | [SIL OFL 1.1](public/fonts/licences/JetBrainsMono-OFL.txt) | 2.03 MiB |
 | FiraCode Nerd Font | [tonsky/FiraCode](https://github.com/tonsky/FiraCode) | © 2014 The Fira Code Project Authors | [SIL OFL 1.1](public/fonts/licences/FiraCode-OFL.txt) | 2.33 MiB |
-| Hack Nerd Font | [source-foundry/Hack](https://github.com/source-foundry/Hack) | © 2018 Source Foundry Authors; © 2003 Bitstream, Inc. | [MIT + Bitstream Vera](public/fonts/licences/Hack-LICENSE.md) | 2.34 MiB |
 | CaskaydiaCove Nerd Font | [microsoft/cascadia-code](https://github.com/microsoft/cascadia-code) | © 2019–present Microsoft Corporation | [SIL OFL 1.1](public/fonts/licences/CascadiaCode-OFL.txt) | 2.36 MiB |
 | SauceCodePro Nerd Font | [adobe-fonts/source-code-pro](https://github.com/adobe-fonts/source-code-pro) | © 2010–2020 Adobe | [SIL OFL 1.1](public/fonts/licences/SourceCodePro-OFL.txt) | 2.00 MiB |
+| IosevkaTerm Nerd Font | [be5invis/Iosevka](https://github.com/be5invis/Iosevka) | © 2015–2026 Renzhi Li (Belleve Invis) | [SIL OFL 1.1](public/fonts/licences/Iosevka-OFL.md) | 4.94 MiB |
+| BlexMono Nerd Font | [IBM/plex](https://github.com/IBM/plex) | © 2017 IBM Corp. | [SIL OFL 1.1](public/fonts/licences/IBMPlexMono-OFL.txt) | 1.95 MiB |
+| RobotoMono Nerd Font | [googlefonts/RobotoMono](https://github.com/googlefonts/RobotoMono) | © 2015 The Roboto Mono Project Authors | [Apache 2.0](public/fonts/licences/RobotoMono-LICENSE.txt) | 2.22 MiB |
+| DejaVuSansM Nerd Font | [dejavu-fonts](https://github.com/dejavu-fonts/dejavu-fonts) | © 2003 Bitstream, Inc.; DejaVu changes public domain; Arev © Tavmjong Bah | [Bitstream Vera + Arev](public/fonts/licences/DejaVu-LICENSE.txt) | 2.41 MiB |
+| Inconsolata Nerd Font | [googlefonts/Inconsolata](https://github.com/googlefonts/Inconsolata) | © 2006 The Inconsolata Project Authors | [SIL OFL 1.1](public/fonts/licences/Inconsolata-OFL.txt) | 1.90 MiB |
+| SpaceMono Nerd Font | [googlefonts/spacemono](https://github.com/googlefonts/spacemono) | © 2016 The Space Mono Project Authors | [SIL OFL 1.1](public/fonts/licences/SpaceMono-OFL.txt) | 1.94 MiB |
+| NotoSansM Nerd Font | [notofonts/latin-greek-cyrillic](https://github.com/notofonts/latin-greek-cyrillic) | © 2022 The Noto Project Authors | [SIL OFL 1.1](public/fonts/licences/NotoSansMono-OFL.txt) | 2.13 MiB |
 
-**Total bundled font payload: 11.04 MiB (11,586,668 bytes).**
+**Total bundled font payload: 28.55 MiB (29,935,264 bytes) across 24 files.**
 
 Each of these licences permits redistribution and embedding, including as a
 webfont. The OFL additionally requires that the licence accompany the font and
 that the fonts not be sold on their own — both are satisfied here.
+
+Roboto Mono's upstream repository has carried SIL OFL 1.1 since Google's 2024
+relicensing of the Roboto family, but the Nerd Fonts v3.5.0 build predates it:
+the patched binary declares Apache 2.0 in its own name table, and that is the
+grant recorded and shipped here. Both licences permit web embedding.
 
 ### Nerd Fonts patch layer
 
@@ -37,23 +49,27 @@ A patched build is a derivative work, so it carries the upstream font's licence
 and SIL OFL 1.1 for the patched font output and glyph sources, © 2014 Ryan L
 McIntyre. See [`public/fonts/licences/NerdFonts-LICENSE.txt`](public/fonts/licences/NerdFonts-LICENSE.txt).
 
-Two families are renamed upstream for licence compliance: Cascadia Code and
-Source Code Pro carry OFL Reserved Font Names, so their patched builds ship as
-**CaskaydiaCove** and **SauceCodePro**.
+Three families are renamed for licence compliance: Cascadia Code, Source Code
+Pro and IBM Plex Mono carry OFL Reserved Font Names (`Cascadia Code`, `Source`
+and `Plex`), so their patched builds ship as **CaskaydiaCove**,
+**SauceCodePro** and **BlexMono**. Two more are abbreviated to fit OpenType's
+family-name length limit rather than renamed: **DejaVuSansM** (DejaVu Sans
+Mono) and **NotoSansM** (Noto Sans Mono).
 
 ### Fonts considered and excluded
+
+Both exclusions are on licence grounds, and neither is revisited on size or
+popularity arguments.
 
 - **UbuntuMono Nerd Font** (Ubuntu Font Licence 1.0) — the UFL requires that
   derivatives stay under the UFL and that *Substantially Changed* versions be
   renamed to drop the original name entirely; the patched build is published
-  under the OFL and still called "UbuntuMono". Excluded as unverifiable.
+  under the OFL and still called "UbuntuMono". "Ubuntu" is also a Canonical
+  trademark. Excluded as unverifiable.
 - **Meslo Nerd Font** (Apache 2.0, claimed) — Meslo is a customisation of
   Apple's Menlo and its copyright string credits Apple Inc.; Apple has not
   licensed Menlo for redistribution, so the upstream Apache grant may exceed
   the grantor's rights. Excluded as unverifiable.
-- **IosevkaTerm Nerd Font** (SIL OFL 1.1) and **DejaVuSansM Nerd Font**
-  (Bitstream Vera) — both licence-clean, excluded only to keep the payload
-  within budget. See [`public/fonts/README.md`](public/fonts/README.md).
 
 ## Vendored Starship data
 
@@ -61,3 +77,14 @@ Starship's configuration JSON Schema (and, later, its official preset TOMLs)
 are vendored under [`data/`](data). Starship is © the Starship contributors and
 [ISC licensed](https://github.com/starship/starship/blob/master/LICENSE). See
 [`data/README.md`](data/README.md) for retrieval details.
+
+## Where the font files live
+
+The `.woff2` files are in `src/assets/fonts/`, not here. Anything under
+`public/` is copied verbatim into the export *and* emitted again as a
+content-hashed asset by the bundler, so keeping 29 MB of fonts in `public/`
+shipped every byte twice — 83 MB of artefact for 42 MB of content, with
+browsers only ever fetching the hashed copies.
+
+The licence texts stay in `public/fonts/licences/` on purpose: those are meant
+to be served at a stable, linkable URL.
