@@ -1,21 +1,22 @@
 "use client";
 
 /**
- * The builder itself.
+ * The builder.
  *
- * Layout is deliberately different per breakpoint rather than a single grid
- * that squashes: on desktop the three panes sit side by side so a settings
- * change and its effect on the prompt are visible at once, while on narrow
- * screens they become tabs, because a 390px-wide three-column layout helps
- * nobody.
+ * One page, no tabs: the prompt preview stays pinned while everything that can
+ * change it — the format, the modules, the TOML — scrolls beneath it. Splitting
+ * these across tabs meant a change and its effect were never on screen
+ * together, which is the whole point of a live configurator.
  */
 
 import { useCallback, useMemo, useState } from "react";
 
-import { ModuleList, type ModuleListEntry } from "./ModuleList";
+import { FormatBuilder } from "./FormatBuilder";
+import { ModulesPanel, type ModuleListEntry } from "./ModulesPanel";
 import { PreviewPane } from "./PreviewPane";
 import { SettingsForm, type OptionDescriptor } from "./SettingsForm";
 import { TomlPane } from "./TomlPane";
+import { Toggle } from "@/components/ui/Toggle";
 import { ALL_MODULES, MODULES_BY_NAME } from "@/lib/engine/modules";
 import { PROMPT_ORDER } from "@/lib/engine/promptOrder";
 import { DEFAULT_FORMAT, renderPrompt } from "@/lib/engine/prompt";
@@ -24,33 +25,15 @@ import { resolvePalette } from "@/lib/engine/styleString";
 import { MODULE_META, optionKind } from "@/lib/config/meta";
 import { PRESETS } from "@/lib/config/presets";
 import { encodeShare } from "@/lib/config/share";
+import { parseConfig } from "@/lib/config/toml";
 import { TERMINAL_FONTS } from "@/lib/fonts";
 import { getScenario } from "@/lib/scenarios";
 import { NAMED_COLORS } from "@/lib/engine/types";
 import { getTheme } from "@/lib/terminalThemes";
 import { useBuilderStore } from "@/state/builderStore";
-import { parseConfig } from "@/lib/config/toml";
 
+/** Root options that are not the format itself; format gets its own section. */
 const ROOT_OPTIONS: OptionDescriptor[] = [
-  {
-    key: "format",
-    kind: "format",
-    defaultValue: DEFAULT_FORMAT,
-    description:
-      "The whole prompt. $all expands to every module not named explicitly here.",
-  },
-  {
-    key: "right_format",
-    kind: "format",
-    defaultValue: "",
-    description: "Rendered flush against the right edge. Not supported by every shell.",
-  },
-  {
-    key: "add_newline",
-    kind: "boolean",
-    defaultValue: true,
-    description: "Insert a blank line before each prompt.",
-  },
   {
     key: "palette",
     kind: "string",
@@ -77,7 +60,9 @@ const ROOT_OPTIONS: OptionDescriptor[] = [
   },
 ];
 
-type MobileTab = "modules" | "settings" | "preview" | "toml";
+const CARD = "rounded-xl border border-white/10 bg-neutral-900/40 p-4";
+const BUTTON =
+  "rounded border border-white/10 px-2.5 py-1.5 text-sm text-neutral-300 transition enabled:hover:border-sky-400 disabled:opacity-40";
 
 export function Builder() {
   const {
@@ -90,6 +75,7 @@ export function Builder() {
     updateModuleOption,
     resetModuleOption,
     setModuleDisabled,
+    setRootOption,
     selectModule,
     setScenario,
     setTheme,
@@ -101,7 +87,6 @@ export function Builder() {
     future,
   } = useBuilderStore();
 
-  const [tab, setTab] = useState<MobileTab>("preview");
   const [shareCopied, setShareCopied] = useState(false);
 
   const scenario = getScenario(scenarioId);
@@ -124,7 +109,6 @@ export function Builder() {
     [config, scenario],
   );
 
-  /** Which modules actually contribute output, for the "no output" hint. */
   const activeModules = useMemo(() => {
     const active = new Set<string>();
     for (const definition of ALL_MODULES) {
@@ -137,7 +121,7 @@ export function Builder() {
           active.add(definition.name);
         }
       } catch {
-        // A module that throws simply is not active; renderPrompt surfaces it.
+        // A module that throws is simply not active; renderPrompt warns.
       }
     }
     return active;
@@ -151,90 +135,99 @@ export function Builder() {
           typeof options.disabled === "boolean"
             ? options.disabled
             : definition.defaults.disabled;
+        const customised = Object.keys(options).some((k) => k !== "disabled");
         return {
           name: definition.name,
           group: MODULE_META[definition.name]?.group ?? "Other",
           enabled: !disabled,
           active: activeModules.has(definition.name),
+          customised,
         };
       }),
     [config, activeModules],
   );
 
-  const selectedDefinition = selectedModule
-    ? MODULES_BY_NAME.get(selectedModule)
-    : undefined;
+  const format = typeof config.format === "string" ? config.format : DEFAULT_FORMAT;
+  const rightFormat = typeof config.right_format === "string" ? config.right_format : "";
 
-  const moduleOptions: OptionDescriptor[] = useMemo(() => {
-    if (!selectedDefinition) return ROOT_OPTIONS;
-    const meta = MODULE_META[selectedDefinition.name];
-    return Object.entries(selectedDefinition.defaults)
+  /** Module names available to the root format. */
+  const moduleVocabulary = useMemo(
+    () => ["all", ...ALL_MODULES.map((m) => m.name)],
+    [],
+  );
+
+  const optionsFor = useCallback((name: string): OptionDescriptor[] => {
+    const definition = MODULES_BY_NAME.get(name);
+    if (!definition) return [];
+    const meta = MODULE_META[name];
+    return Object.entries(definition.defaults)
       .filter(([key]) => key !== "disabled")
       .map(([key, defaultValue]) => ({
         key,
-        kind: optionKind(selectedDefinition.name, key, defaultValue, meta),
+        kind: optionKind(name, key, defaultValue, meta),
         defaultValue,
       }));
-  }, [selectedDefinition]);
+  }, []);
 
-  /** Variables the selected module's format string may reference. */
-  const formatVariables = useMemo(() => {
-    if (!selectedDefinition) return ALL_MODULES.map((m) => m.name).concat("all");
-    const result = selectedDefinition.evaluate(selectedDefinition.defaults, {
-      scenario,
-      rootConfig: config,
-    });
-    const fromEvaluate = result ? Object.keys(result.variables) : [];
-    const parsed = tryParseFormatString(selectedDefinition.defaults.format);
-    const fromFormat = parsed.ok ? collectVariables(parsed.elements) : [];
-    return [...new Set([...fromEvaluate, ...fromFormat])].sort();
-  }, [selectedDefinition, scenario, config]);
-
-  const values = selectedModule
-    ? ((config[selectedModule] as Record<string, unknown>) ?? {})
-    : (config as Record<string, unknown>);
-
-  const handleChange = useCallback(
-    (key: string, value: unknown) => {
-      if (selectedModule) updateModuleOption(selectedModule, key, value);
-      else useBuilderStore.getState().setRootOption(key, value);
+  /** Variables a module's own format strings may reference. */
+  const variablesFor = useCallback(
+    (name: string) => {
+      const definition = MODULES_BY_NAME.get(name);
+      if (!definition) return [];
+      let fromEvaluate: string[] = [];
+      try {
+        const result = definition.evaluate(definition.defaults, {
+          scenario,
+          rootConfig: config,
+        });
+        fromEvaluate = result ? Object.keys(result.variables) : [];
+      } catch {
+        fromEvaluate = [];
+      }
+      const parsed = tryParseFormatString(definition.defaults.format);
+      const fromFormat = parsed.ok ? collectVariables(parsed.elements) : [];
+      return [...new Set([...fromEvaluate, ...fromFormat])].sort();
     },
-    [selectedModule, updateModuleOption],
+    [scenario, config],
   );
 
-  const handleReset = useCallback(
-    (key: string) => {
-      if (selectedModule) resetModuleOption(selectedModule, key);
-      else useBuilderStore.getState().setRootOption(key, undefined);
-    },
-    [selectedModule, resetModuleOption],
+  const renderSettings = useCallback(
+    (name: string) => (
+      <SettingsForm
+        options={optionsFor(name)}
+        values={(config[name] as Record<string, unknown>) ?? {}}
+        onChange={(key, value) => updateModuleOption(name, key, value)}
+        onReset={(key) => resetModuleOption(name, key)}
+        formatVariables={variablesFor(name)}
+        palette={palette}
+        paletteNames={paletteNames}
+      />
+    ),
+    [
+      config,
+      optionsFor,
+      variablesFor,
+      updateModuleOption,
+      resetModuleOption,
+      palette,
+      paletteNames,
+    ],
   );
 
   /**
-   * Reordering writes an explicit root `format`, since order is only
-   * expressible there. The current effective order is materialised first so a
-   * single move does not silently drop `$all`'s remaining modules.
+   * Replaces `$all` with the modules it currently stands for, so individual
+   * modules become reorderable. Without this, a default config offers nothing
+   * to rearrange — `$all` is a single opaque token.
    */
-  const handleMove = useCallback(
-    (name: string, direction: -1 | 1) => {
-      const current =
-        typeof config.format === "string" && config.format.includes("$")
-          ? config.format
-          : PROMPT_ORDER.map((m) => `$${m}`).join("");
-      const tokens = [...current.matchAll(/\$\{?([a-zA-Z_][a-zA-Z0-9_.]*)\}?/g)].map(
-        (m) => m[1],
-      );
-      const order = tokens.includes(name) ? tokens : PROMPT_ORDER;
-      const index = order.indexOf(name);
-      if (index === -1) return;
-      const target = index + direction;
-      if (target < 0 || target >= order.length) return;
-      const next = [...order];
-      [next[index], next[target]] = [next[target], next[index]];
-      setConfig({ ...config, format: next.map((m) => `$${m}`).join("") });
-    },
-    [config, setConfig],
-  );
+  const expandAll = useCallback(() => {
+    const named = new Set(
+      [...format.matchAll(/\$\{?([a-zA-Z_][a-zA-Z0-9_.]*)\}?/g)].map((m) => m[1]),
+    );
+    const expansion = PROMPT_ORDER.filter((m) => !named.has(m))
+      .map((m) => `$${m}`)
+      .join("");
+    setConfig({ ...config, format: format.replace(/\$\{?all\}?/, expansion) });
+  }, [config, format, setConfig]);
 
   const share = useCallback(async () => {
     const fragment = encodeShare(config);
@@ -255,7 +248,7 @@ export function Builder() {
     [setConfig],
   );
 
-  // ANSI swatches in the style builder follow the active terminal theme.
+  // The style pickers' swatches follow the active terminal colour scheme.
   const ansiVars = useMemo(() => {
     const vars: Record<string, string> = {};
     NAMED_COLORS.forEach((name, index) => {
@@ -270,71 +263,10 @@ export function Builder() {
     return out;
   }, []);
 
-  const settingsPane = (
-    <div className="flex h-full flex-col gap-3">
-      <div>
-        <h2 className="font-mono text-base text-neutral-100">
-          {selectedModule ?? "Prompt-wide settings"}
-        </h2>
-        {selectedModule && MODULE_META[selectedModule]?.docs ? (
-          <a
-            href={MODULE_META[selectedModule].docs}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="text-xs text-sky-400 underline underline-offset-2"
-          >
-            starship documentation ↗
-          </a>
-        ) : null}
-      </div>
-      <div className="flex-1 overflow-y-auto pr-1">
-        <SettingsForm
-          options={moduleOptions}
-          values={values}
-          onChange={handleChange}
-          onReset={handleReset}
-          formatVariables={formatVariables}
-          palette={palette}
-          paletteNames={paletteNames}
-        />
-      </div>
-    </div>
-  );
-
-  const tomlPane = (
-    <TomlPane config={config} onConfigChange={setConfig} defaults={defaultsByModule} />
-  );
-
-  const previewPane = (
-    <PreviewPane
-      lines={rendered.lines}
-      right={rendered.right}
-      leadingNewline={rendered.leadingNewline}
-      warnings={rendered.warnings}
-      scenarioId={scenarioId}
-      onScenarioChange={setScenario}
-      themeId={themeId}
-      onThemeChange={setTheme}
-      fontId={fontId}
-      onFontChange={setFont}
-      theme={theme}
-      fontStack={font.stack}
-    />
-  );
-
-  const modulesPane = (
-    <ModuleList
-      entries={entries}
-      selected={selectedModule}
-      onSelect={selectModule}
-      onToggle={(name, enabled) => setModuleDisabled(name, !enabled)}
-      onMove={handleMove}
-      canReorder
-    />
-  );
+  const hasAll = /\$\{?all\}?/.test(format);
 
   return (
-    <div style={ansiVars} className="flex min-h-screen flex-col">
+    <div style={ansiVars} className="min-h-screen">
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-white/10 px-4 py-3">
         <h1 className="text-lg font-semibold tracking-tight">🚀 Starship Builder</h1>
 
@@ -361,33 +293,19 @@ export function Builder() {
             ))}
           </select>
 
-          <button
-            type="button"
-            onClick={undo}
-            disabled={past.length === 0}
-            className="rounded border border-white/10 px-2.5 py-1.5 text-sm text-neutral-300 transition enabled:hover:border-sky-400 disabled:opacity-40"
-          >
+          <button type="button" onClick={undo} disabled={past.length === 0} className={BUTTON}>
             Undo
           </button>
-          <button
-            type="button"
-            onClick={redo}
-            disabled={future.length === 0}
-            className="rounded border border-white/10 px-2.5 py-1.5 text-sm text-neutral-300 transition enabled:hover:border-sky-400 disabled:opacity-40"
-          >
+          <button type="button" onClick={redo} disabled={future.length === 0} className={BUTTON}>
             Redo
           </button>
-          <button
-            type="button"
-            onClick={share}
-            className="rounded border border-white/10 px-2.5 py-1.5 text-sm text-neutral-300 transition hover:border-sky-400"
-          >
+          <button type="button" onClick={share} className={BUTTON}>
             {shareCopied ? "Link copied" : "Share"}
           </button>
           <button
             type="button"
             onClick={reset}
-            className="rounded border border-white/10 px-2.5 py-1.5 text-sm text-neutral-400 transition hover:border-red-400 hover:text-red-300"
+            className={`${BUTTON} hover:border-red-400 hover:text-red-300`}
           >
             Reset
           </button>
@@ -401,66 +319,131 @@ export function Builder() {
         </a>
       </header>
 
-      {/* Mobile: one pane at a time. */}
-      <nav className="flex border-b border-white/10 lg:hidden" aria-label="Builder panes">
-        {(["preview", "modules", "settings", "toml"] as MobileTab[]).map((id) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setTab(id)}
-            aria-current={tab === id}
-            className={`flex-1 px-2 py-2.5 text-sm capitalize transition ${
-              tab === id
-                ? "border-b-2 border-sky-400 text-sky-200"
-                : "text-neutral-400 hover:text-neutral-200"
-            }`}
-          >
-            {id === "toml" ? "TOML" : id}
-          </button>
-        ))}
-      </nav>
+      <div className="mx-auto grid max-w-[1600px] gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(380px,0.9fr)] lg:items-start">
+        {/* Left column: everything that changes the prompt. */}
+        <div className="flex min-w-0 flex-col gap-4">
+          <section className={CARD} aria-labelledby="format-heading">
+            <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+              <h2 id="format-heading" className="text-sm font-semibold text-neutral-100">
+                Prompt format
+              </h2>
+              {hasAll ? (
+                <button
+                  type="button"
+                  onClick={expandAll}
+                  className="rounded border border-white/15 px-2 py-1 text-xs text-neutral-300 transition hover:border-sky-400 hover:text-sky-200"
+                >
+                  Expand $all to reorder modules
+                </button>
+              ) : null}
+            </div>
+            <p className="mb-3 text-xs text-neutral-500">
+              What the prompt contains, and in what order. Reorder, remove, recolour,
+              or add pieces here.
+            </p>
+            <FormatBuilder
+              value={format}
+              onChange={(next) => setRootOption("format", next)}
+              vocabulary={moduleVocabulary}
+              palette={palette}
+              paletteNames={paletteNames}
+            />
 
-      {/*
-        One DOM for both layouts. Rendering a separate mobile tree and desktop
-        tree would duplicate every label, heading and form control, which reads
-        as two of everything to a screen reader and makes ids ambiguous — so
-        each pane is rendered exactly once and CSS decides the arrangement.
-        On desktop all panes show as three columns; on mobile all but the
-        active tab are hidden.
-      */}
-      <main className="flex-1 gap-4 p-4 lg:grid lg:grid-cols-[minmax(220px,1fr)_minmax(320px,1.4fr)_minmax(360px,1.6fr)]">
-        <section
-          aria-label="Modules"
-          className={`min-h-0 ${tab === "modules" ? "" : "hidden"} lg:block`}
-        >
-          {modulesPane}
-        </section>
-        <section
-          aria-label="Settings"
-          className={`min-h-0 ${tab === "settings" ? "" : "hidden"} lg:block`}
-        >
-          {settingsPane}
-        </section>
-        {/*
-          `lg:flex` groups preview and TOML into one column on desktop, while
-          `contents` on mobile lets each be shown or hidden independently as
-          its own tab.
-        */}
-        <div className="contents lg:flex lg:min-h-0 lg:flex-col lg:gap-4">
-          <section
-            aria-label="Preview"
-            className={`${tab === "preview" ? "" : "hidden"} lg:block`}
-          >
-            {previewPane}
+            <h3 className="mb-2 mt-5 text-sm font-semibold text-neutral-100">
+              Right prompt
+            </h3>
+            <p className="mb-2 text-xs text-neutral-500">
+              Rendered flush against the right edge. Not supported by every shell.
+            </p>
+            <FormatBuilder
+              value={rightFormat}
+              onChange={(next) => setRootOption("right_format", next)}
+              vocabulary={moduleVocabulary}
+              palette={palette}
+              paletteNames={paletteNames}
+            />
+
+            <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/5 pt-3">
+              <span className="text-sm text-neutral-300">
+                Blank line before each prompt
+                <span className="block text-xs text-neutral-500">add_newline</span>
+              </span>
+              <Toggle
+                label="Blank line before each prompt"
+                checked={config.add_newline !== false}
+                onChange={(next) => setRootOption("add_newline", next)}
+              />
+            </div>
+
+            <details className="mt-3">
+              <summary className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-300">
+                Other prompt-wide options
+              </summary>
+              <div className="mt-1">
+                <SettingsForm
+                  options={ROOT_OPTIONS}
+                  values={config as Record<string, unknown>}
+                  onChange={(key, value) => setRootOption(key, value)}
+                  onReset={(key) => setRootOption(key, undefined)}
+                  formatVariables={moduleVocabulary}
+                  palette={palette}
+                  paletteNames={paletteNames}
+                />
+              </div>
+            </details>
           </section>
-          <section
-            aria-label="TOML"
-            className={`min-h-0 ${tab === "toml" ? "" : "hidden"} lg:block lg:flex-1`}
-          >
-            {tomlPane}
+
+          <section className={CARD} aria-labelledby="modules-heading">
+            <h2 id="modules-heading" className="mb-1 text-sm font-semibold text-neutral-100">
+              Modules
+            </h2>
+            <p className="mb-3 text-xs text-neutral-500">
+              Switch a module on or off, then expand it to change its settings.
+            </p>
+            <ModulesPanel
+              entries={entries}
+              expanded={selectedModule}
+              onExpand={selectModule}
+              onToggle={(name, enabled) => setModuleDisabled(name, !enabled)}
+              renderSettings={renderSettings}
+              docsFor={(name) => MODULE_META[name]?.docs}
+            />
           </section>
         </div>
-      </main>
+
+        {/*
+          The result. Sticky beside the controls on desktop; ordered FIRST when
+          the grid collapses to one column, because a preview sitting below a
+          102-module list is a preview nobody sees while editing.
+        */}
+        <div className="order-first flex min-w-0 flex-col gap-4 lg:order-none lg:sticky lg:top-4">
+          <section className={CARD} aria-label="Preview">
+            <PreviewPane
+              lines={rendered.lines}
+              right={rendered.right}
+              leadingNewline={rendered.leadingNewline}
+              warnings={rendered.warnings}
+              scenarioId={scenarioId}
+              onScenarioChange={setScenario}
+              themeId={themeId}
+              onThemeChange={setTheme}
+              fontId={fontId}
+              onFontChange={setFont}
+              theme={theme}
+              fontStack={font.stack}
+            />
+          </section>
+
+          <section className={CARD} aria-label="TOML">
+            <h2 className="mb-2 text-sm font-semibold text-neutral-100">starship.toml</h2>
+            <TomlPane
+              config={config}
+              onConfigChange={setConfig}
+              defaults={defaultsByModule}
+            />
+          </section>
+        </div>
+      </div>
     </div>
   );
 }

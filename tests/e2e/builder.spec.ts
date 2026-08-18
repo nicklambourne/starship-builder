@@ -1,9 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * End-to-end coverage of the flows that span the whole stack: a setting change
- * reaching the preview, TOML export reflecting it, and the layout actually
- * working at both breakpoints.
+ * End-to-end coverage of flows that span the whole stack: a setting change
+ * reaching the preview and the TOML, the format builder restructuring the
+ * prompt, and the layout working at both breakpoints.
+ *
+ * There are no tabs — every pane is on one page — so these run identically on
+ * desktop and mobile.
  */
 
 test.describe("builder", () => {
@@ -11,66 +14,83 @@ test.describe("builder", () => {
     await page.goto("./");
     const terminal = page.getByLabel("Simulated terminal prompt");
     await expect(terminal).toBeVisible();
-    // The default scenario is a dirty git repo, so a branch must appear.
     await expect(terminal).toContainText("feat/live-preview");
   });
 
-  test("changing a module option updates preview and TOML together", async ({
-    page,
-  }, testInfo) => {
+  test("a module's settings open inside its own row", async ({ page }) => {
     await page.goto("./");
 
-    if (testInfo.project.name === "mobile") {
-      await page.getByRole("button", { name: "modules", exact: true }).click();
-    }
+    const row = page.getByRole("button", { name: /^git_branch/ });
+    await expect(row).toHaveAttribute("aria-expanded", "false");
+    await row.click();
+    await expect(row).toHaveAttribute("aria-expanded", "true");
 
-    await page.getByRole("button", { name: "git_branch", exact: true }).click();
-
-    if (testInfo.project.name === "mobile") {
-      await page.getByRole("button", { name: "settings", exact: true }).click();
-    }
-
-    // git_branch's `symbol` is a format option, so it edits in a textarea.
-    // Target it by its current value rather than a generated id.
-    const symbolEditor = page.locator("textarea").filter({ hasText: "" }).nth(1);
-    await expect(symbolEditor).toBeVisible();
-    await symbolEditor.fill("BRANCH:");
-
-    if (testInfo.project.name === "mobile") {
-      await page.getByRole("button", { name: "preview", exact: true }).click();
-    }
-    await expect(page.getByLabel("Simulated terminal prompt")).toContainText(
-      "BRANCH:",
-    );
-
-    if (testInfo.project.name === "mobile") {
-      await page.getByRole("button", { name: "TOML", exact: true }).click();
-    }
-    await expect(page.getByLabel("starship.toml")).toHaveValue(/BRANCH:/);
+    // The settings for that module are now in the same list item.
+    const item = page.locator("li").filter({ has: row });
+    await expect(item.getByText("truncation_length")).toBeVisible();
+    await expect(item.getByRole("link", { name: /starship documentation/ })).toBeVisible();
   });
 
-  test("pasted TOML drives the preview", async ({ page }, testInfo) => {
+  test("toggling a module off removes it from the preview and writes TOML", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    const terminal = page.getByLabel("Simulated terminal prompt");
+    await expect(terminal).toContainText("feat/live-preview");
+
+    await page.getByRole("switch", { name: "Enable git_branch" }).click();
+
+    await expect(terminal).not.toContainText("feat/live-preview");
+    await expect(page.getByLabel("starship.toml")).toHaveValue(/\[git_branch\][\s\S]*disabled = true/);
+  });
+
+  test("the format builder reorders the prompt", async ({ page }) => {
     await page.goto("./");
 
-    if (testInfo.project.name === "mobile") {
-      await page.getByRole("button", { name: "TOML", exact: true }).click();
-    }
+    // $all is a single opaque token; expanding it exposes individual modules.
+    await page.getByRole("button", { name: "Expand $all to reorder modules" }).click();
 
+    const toml = page.getByLabel("starship.toml");
+    await expect(toml).toHaveValue(/format = /);
+
+    const before = await toml.inputValue();
+    await page.getByRole("button", { name: /^Move \$\w+ later$/ }).first().click();
+    await expect(toml).not.toHaveValue(before);
+  });
+
+  test("modules can be filtered as well as searched", async ({ page }) => {
+    await page.goto("./");
+
+    const counter = page.getByText(/\d+ of \d+ modules/);
+    await expect(counter).toHaveText("102 of 102 modules");
+
+    await page.getByRole("button", { name: "Git", exact: true }).click();
+    await expect(counter).not.toHaveText("102 of 102 modules");
+    await expect(page.getByRole("switch", { name: "Enable git_branch" })).toBeVisible();
+
+    await page.getByLabel("Search modules").fill("status");
+    await expect(page.getByRole("switch", { name: "Enable git_status" })).toBeVisible();
+  });
+
+  test("pasted TOML drives the preview", async ({ page }) => {
+    await page.goto("./");
     await page
       .getByLabel("starship.toml")
       .fill('format = "[hello-from-toml](bold red)"\n');
-
-    if (testInfo.project.name === "mobile") {
-      await page.getByRole("button", { name: "preview", exact: true }).click();
-    }
     await expect(page.getByLabel("Simulated terminal prompt")).toContainText(
       "hello-from-toml",
     );
   });
 
+  test("the terminal colour scheme selector is labelled for terminals", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    await expect(page.getByLabel("Terminal color scheme")).toBeVisible();
+  });
+
   test("the page never scrolls horizontally", async ({ page }) => {
     await page.goto("./");
-    // A wide terminal must scroll inside its own container, never the document.
     const overflows = await page.evaluate(
       () => document.documentElement.scrollWidth > window.innerWidth + 1,
     );

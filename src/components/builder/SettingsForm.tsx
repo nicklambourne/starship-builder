@@ -12,8 +12,9 @@
 
 import { useId } from "react";
 
-import { FormatEditor } from "./FormatEditor";
+import { FormatBuilder } from "./FormatBuilder";
 import { StyleStringBuilder } from "./StyleStringBuilder";
+import { Toggle } from "@/components/ui/Toggle";
 import type { Palette } from "@/lib/engine/styleString";
 
 export interface OptionDescriptor {
@@ -71,35 +72,6 @@ function Row({
   );
 }
 
-function BooleanControl({
-  value,
-  onChange,
-  label,
-}: {
-  value: boolean;
-  onChange(next: boolean): void;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={value}
-      aria-label={label}
-      onClick={() => onChange(!value)}
-      className={`relative h-6 w-11 shrink-0 rounded-full transition ${
-        value ? "bg-sky-500" : "bg-neutral-700"
-      }`}
-    >
-      <span
-        className={`absolute top-0.5 size-5 rounded-full bg-white transition-all ${
-          value ? "left-[22px]" : "left-0.5"
-        }`}
-      />
-    </button>
-  );
-}
-
 export function SettingsForm({
   options,
   values,
@@ -127,16 +99,19 @@ export function SettingsForm({
             onReset={() => onReset(option.key)}
           >
             {option.kind === "boolean" ? (
-              <BooleanControl
+              <Toggle
                 label={option.key}
-                value={Boolean(value)}
+                checked={Boolean(value)}
                 onChange={(next) => onChange(option.key, next)}
               />
             ) : option.kind === "format" ? (
-              <FormatEditor
+              <FormatBuilder
                 value={typeof value === "string" ? value : ""}
                 onChange={(next) => onChange(option.key, next)}
-                variables={formatVariables}
+                vocabulary={formatVariables ?? []}
+                palette={palette}
+                paletteNames={paletteNames}
+                noun="variable"
               />
             ) : option.kind === "style" ? (
               <StyleStringBuilder

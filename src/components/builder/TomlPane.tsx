@@ -11,6 +11,7 @@
 
 import { useEffect, useState } from "react";
 
+import { Toggle } from "@/components/ui/Toggle";
 import { parseConfig, serialiseConfig } from "@/lib/config/toml";
 import type { StarshipConfig } from "@/lib/engine/prompt";
 
@@ -66,15 +67,15 @@ export function TomlPane({ config, onConfigChange, defaults }: TomlPaneProps) {
   return (
     <div className="flex h-full flex-col gap-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <label className="flex items-center gap-2 text-xs text-neutral-400">
-          <input
-            type="checkbox"
+        <span className="flex items-center gap-2 text-xs text-neutral-400">
+          <Toggle
+            size="sm"
+            label="Include default values"
             checked={full}
-            onChange={(e) => setFull(e.target.checked)}
-            className="accent-sky-500"
+            onChange={setFull}
           />
           Include default values
-        </label>
+        </span>
         <div className="flex gap-2">
           <button
             type="button"

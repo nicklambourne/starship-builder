@@ -317,3 +317,41 @@ export function collectStyleVariables(elements: FormatElement[]): string[] {
   walk(elements);
   return found;
 }
+
+/** Escapes text so it survives a round trip through the parser. */
+export function escapeFormatText(value: string): string {
+  return value.replace(/[[\]()\\$]/g, (ch) => `\\${ch}`);
+}
+
+/**
+ * Prints a format tree back to a format string.
+ *
+ * The inverse of `parseFormatString`, used by the visual format builder to
+ * serialise edits. It is not guaranteed to reproduce the original source
+ * byte-for-byte — redundant escapes are normalised — but re-parsing its output
+ * always yields an equivalent tree.
+ */
+export function printFormat(elements: FormatElement[]): string {
+  return elements
+    .map((el) => {
+      switch (el.type) {
+        case "text":
+          return escapeFormatText(el.value);
+        case "variable":
+          // Braces are required whenever the name carries characters that would
+          // otherwise terminate a bare `$name`, e.g. `${env_var.HOME}`.
+          return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(el.name)
+            ? `$${el.name}`
+            : `\${${el.name}}`;
+        case "textGroup": {
+          const style = el.style
+            .map((s) => (s.type === "text" ? s.value : `$${s.name}`))
+            .join("");
+          return `[${printFormat(el.format)}](${style})`;
+        }
+        case "conditional":
+          return `(${printFormat(el.format)})`;
+      }
+    })
+    .join("");
+}

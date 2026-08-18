@@ -85,7 +85,7 @@ export function PreviewPane({
 
         <div className="flex flex-col gap-1">
           <label htmlFor="theme-select" className="text-xs text-neutral-400">
-            Colour scheme
+            Terminal color scheme
           </label>
           <select
             id="theme-select"
