@@ -11,6 +11,7 @@
  */
 
 import { Terminal } from "@/components/terminal/Terminal";
+import { PRESETS } from "@/lib/config/presets";
 import { TERMINAL_FONTS } from "@/lib/fonts";
 import { SCENARIOS } from "@/lib/scenarios";
 import { TERMINAL_THEMES, type TerminalTheme } from "@/lib/terminalThemes";
@@ -30,6 +31,8 @@ interface PreviewPaneProps {
   onFontChange(id: string): void;
   theme: TerminalTheme;
   fontStack: string;
+  presetId: string;
+  onPresetChange(id: string): void;
 }
 
 const SELECT_CLASS =
@@ -48,6 +51,7 @@ export function PreviewPane({
   onFontChange,
   theme,
   fontStack,
+  onPresetChange,
 }: PreviewPaneProps) {
   const scenario = SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[0];
   const font = TERMINAL_FONTS.find((f) => f.id === fontId) ?? TERMINAL_FONTS[0];
@@ -64,7 +68,31 @@ export function PreviewPane({
 
       <p className="text-xs text-neutral-500">{scenario.description}</p>
 
-      <div className="grid gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+        <div className="flex flex-col gap-1">
+          <label htmlFor="preset-select" className="text-xs text-neutral-400">
+            Preset
+          </label>
+          <select
+            id="preset-select"
+            defaultValue=""
+            onChange={(e) => {
+              onPresetChange(e.target.value);
+              e.target.value = "";
+            }}
+            className={SELECT_CLASS}
+          >
+            <option value="" disabled>
+              Load a preset…
+            </option>
+            {PRESETS.map((preset) => (
+              <option key={preset.id} value={preset.id}>
+                {preset.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="flex flex-col gap-1">
           <label htmlFor="scenario-select" className="text-xs text-neutral-400">
             Scenario

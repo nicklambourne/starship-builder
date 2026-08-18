@@ -12,7 +12,6 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { FormatBuilder } from "./FormatBuilder";
-import { ModulesPanel, type ModuleListEntry } from "./ModulesPanel";
 import { PreviewPane } from "./PreviewPane";
 import { SettingsForm, type OptionDescriptor } from "./SettingsForm";
 import { TomlPane } from "./TomlPane";
@@ -140,43 +139,7 @@ export function Builder() {
     [config, format, scenario],
   );
 
-  const activeModules = useMemo(() => {
-    const active = new Set<string>();
-    for (const definition of ALL_MODULES) {
-      const options = {
-        ...definition.defaults,
-        ...((config[definition.name] as Record<string, unknown>) ?? {}),
-      };
-      try {
-        if (definition.evaluate(options, { scenario, rootConfig: config })) {
-          active.add(definition.name);
-        }
-      } catch {
-        // A module that throws is simply not active; renderPrompt warns.
-      }
-    }
-    return active;
-  }, [config, scenario]);
 
-  const entries: ModuleListEntry[] = useMemo(
-    () =>
-      ALL_MODULES.map((definition) => {
-        const options = (config[definition.name] as Record<string, unknown>) ?? {};
-        const disabled =
-          typeof options.disabled === "boolean"
-            ? options.disabled
-            : definition.defaults.disabled;
-        const customised = Object.keys(options).some((k) => k !== "disabled");
-        return {
-          name: definition.name,
-          group: MODULE_META[definition.name]?.group ?? "Other",
-          enabled: !disabled,
-          active: activeModules.has(definition.name),
-          customised,
-        };
-      }),
-    [config, activeModules],
-  );
 
   const rightFormat = typeof config.right_format === "string" ? config.right_format : "";
 
@@ -221,6 +184,29 @@ export function Builder() {
     [scenario, config],
   );
 
+  const moduleControls = useMemo(
+    () => ({
+      isEnabled(name: string) {
+        const options = (config[name] as Record<string, unknown>) ?? {};
+        const disabled =
+          typeof options.disabled === "boolean"
+            ? options.disabled
+            : (MODULES_BY_NAME.get(name)?.defaults.disabled ?? false);
+        return !disabled;
+      },
+      setEnabled(name: string, enabled: boolean) {
+        setModuleDisabled(name, !enabled);
+      },
+      renderSettings(name: string) {
+        return renderSettings(name);
+      },
+    }),
+    // renderSettings is redefined whenever the config changes, which is also
+    // exactly when enablement can change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [config, setModuleDisabled],
+  );
+
   const renderSettings = useCallback(
     (name: string) => (
       <SettingsForm
@@ -231,6 +217,7 @@ export function Builder() {
         formatVariables={variablesFor(name)}
         palette={palette}
         paletteNames={paletteNames}
+        theme={theme}
       />
     ),
     [
@@ -241,6 +228,7 @@ export function Builder() {
       resetModuleOption,
       palette,
       paletteNames,
+      theme,
     ],
   );
 
@@ -284,28 +272,6 @@ export function Builder() {
         <h1 className="text-lg font-semibold tracking-tight">🚀 Starship Builder</h1>
 
         <div className="flex flex-wrap items-center gap-2">
-          <label htmlFor="preset-select" className="sr-only">
-            Load a preset
-          </label>
-          <select
-            id="preset-select"
-            defaultValue=""
-            onChange={(e) => {
-              loadPreset(e.target.value);
-              e.target.value = "";
-            }}
-            className="rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-200 focus:border-sky-400 focus:outline-none"
-          >
-            <option value="" disabled>
-              Load a preset…
-            </option>
-            {PRESETS.map((preset) => (
-              <option key={preset.id} value={preset.id}>
-                {preset.label}
-              </option>
-            ))}
-          </select>
-
           <button
             type="button"
             onClick={undo}
@@ -378,6 +344,9 @@ export function Builder() {
               paletteNames={paletteNames}
               allowCategoryGrouping
               scope="root-format"
+              theme={theme}
+              modules={moduleControls}
+              searchable
             />
 
             <h3 className="mb-2 mt-5 text-sm font-semibold text-neutral-100">
@@ -393,6 +362,8 @@ export function Builder() {
               palette={palette}
               paletteNames={paletteNames}
               scope="right-format"
+              theme={theme}
+              modules={moduleControls}
             />
 
             <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/5 pt-3">
@@ -420,27 +391,12 @@ export function Builder() {
                   formatVariables={moduleVocabulary}
                   palette={palette}
                   paletteNames={paletteNames}
+                  theme={theme}
                 />
               </div>
             </details>
           </section>
 
-          <section className={CARD} aria-labelledby="modules-heading">
-            <h2 id="modules-heading" className="mb-1 text-sm font-semibold text-neutral-100">
-              Modules
-            </h2>
-            <p className="mb-3 text-xs text-neutral-500">
-              Switch a module on or off, then expand it to change its settings.
-            </p>
-            <ModulesPanel
-              entries={entries}
-              expanded={selectedModule}
-              onExpand={selectModule}
-              onToggle={(name, enabled) => setModuleDisabled(name, !enabled)}
-              renderSettings={renderSettings}
-              docsFor={(name) => MODULE_META[name]?.docs}
-            />
-          </section>
         </div>
 
         {/*
@@ -461,20 +417,37 @@ export function Builder() {
               onThemeChange={setTheme}
               fontId={fontId}
               onFontChange={setFont}
+              presetId=""
+              onPresetChange={loadPreset}
               theme={theme}
               fontStack={font.stack}
             />
           </section>
 
-          <section className={CARD} aria-label="TOML">
-            <h2 className="mb-2 text-sm font-semibold text-neutral-100">starship.toml</h2>
+        </div>
+      </div>
+
+      {/*
+        The TOML is the output, not an input, so it sits last and closed. It
+        stays a full editor once opened — pasting a config in is still the
+        fastest way to start from someone else's prompt.
+      */}
+      <div className="mx-auto max-w-[1600px] px-4 pb-8">
+        <details className={CARD}>
+          <summary className="cursor-pointer text-sm font-semibold text-neutral-100">
+            starship.toml
+            <span className="ml-2 font-normal text-xs text-neutral-500">
+              view, copy, or paste a config to load it
+            </span>
+          </summary>
+          <div className="mt-3">
             <TomlPane
               config={{ ...config, format }}
               onConfigChange={setConfig}
               defaults={defaultsByModule}
             />
-          </section>
-        </div>
+          </div>
+        </details>
       </div>
     </div>
   );

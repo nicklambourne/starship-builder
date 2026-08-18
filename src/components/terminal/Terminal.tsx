@@ -146,16 +146,22 @@ export function Terminal({
         </span>
       </div>
 
-      <div className="overflow-x-auto">
+      <div>
         <pre
           aria-label="Simulated terminal prompt"
-          className="m-0 whitespace-pre p-5"
+          /*
+           * Wrapping rather than scrolling sideways: a real terminal wraps a
+           * long prompt at the column boundary, mid-token, so `break-all` is
+           * the faithful behaviour as well as the one that fits a phone.
+           */
+          className="m-0 whitespace-pre-wrap break-all p-3 sm:p-5"
           style={{
             fontFamily: fontStack,
-            fontSize,
+            // Scales with the viewport so a long prompt stays legible on a
+            // phone without the user pinching or scrolling.
+            fontSize: `clamp(11px, 3.1vw, ${fontSize}px)`,
             lineHeight: 1.6,
             color: theme.foreground,
-            minWidth: "min-content",
           }}
         >
           <span className="sr-only">{plainText}</span>
@@ -171,7 +177,7 @@ export function Terminal({
                     // The right prompt is pushed to the far edge; a real shell
                     // uses padding computed from the terminal width, which the
                     // fill logic has already applied where `fill` was used.
-                    <span className="float-right">
+                    <span className="block text-right sm:float-right sm:block">
                       <SegmentSpans segments={right ?? []} theme={theme} />
                     </span>
                   ) : null}

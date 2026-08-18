@@ -3,38 +3,45 @@
 /**
  * Visual editor for a format string.
  *
- * A format string decides what appears in a prompt and in what order, so it is
- * edited directly: rows are dragged to reorder, grouped so a run of related
- * modules can share one style, recoloured, removed, or inserted next to.
+ * The format is the prompt, so this is the only place modules are managed:
+ * each row switches its module on or off, holds that module's settings, and
+ * can be dragged, grouped and recoloured. Groups nest, and their children get
+ * exactly the same affordances as the top level.
  *
  * Pieces the flat model cannot represent (conditionals in particular) are kept
  * verbatim as read-only rows — movable and removable, but edited in the raw
- * field — so no config is silently rewritten. The raw field is always there.
+ * field — so no config is silently rewritten.
  */
 
 import { useMemo, useState } from "react";
 
-import { FormatRow } from "./FormatRow";
+import { FormatNode, type FormatNodeCallbacks } from "./FormatNode";
 import { StyleStringBuilder } from "./StyleStringBuilder";
 import {
-  type DropPosition,
   type FormatItem,
-  applyDrop,
+  type DropPosition,
   fromItems,
   gatherCategory,
-  groupItem,
   groupName,
   groupableCategories,
-  itemLabel,
-  moveItem,
   toItems,
   ungroup,
 } from "@/lib/config/formatItems";
-import { GroupIcon } from "@/components/ui/icons";
+import {
+  type Path,
+  collectModuleNames,
+  getAt,
+  moveTo,
+  nudge,
+  pathKey,
+  removeAt,
+  updateAt,
+} from "@/lib/config/formatTree";
 import { describeModule } from "@/lib/config/descriptions";
 import { MODULE_META } from "@/lib/config/meta";
 import { tryParseFormatString } from "@/lib/engine/formatString";
 import type { Palette } from "@/lib/engine/styleString";
+import type { TerminalTheme } from "@/lib/terminalThemes";
 
 interface FormatBuilderProps {
   value: string;
@@ -43,26 +50,21 @@ interface FormatBuilderProps {
   palette?: Palette;
   paletteNames?: string[];
   noun?: string;
-  /** Category grouping only makes sense for the root format's modules. */
   allowCategoryGrouping?: boolean;
-  /**
-   * Names this editor, so its rows can be told apart from those of the other
-   * format editors on the page (right prompt, each module's own format).
-   */
   scope?: string;
+  theme: TerminalTheme;
+  /** Present only for the root format, where rows manage real modules. */
+  modules?: {
+    isEnabled(name: string): boolean;
+    setEnabled(name: string, enabled: boolean): void;
+    renderSettings(name: string): React.ReactNode;
+  };
+  /** Shows a search box; worth it once the tree is long. */
+  searchable?: boolean;
 }
 
-const ICON_BUTTON =
-  "rounded px-1.5 py-1 text-xs text-neutral-500 transition hover:bg-white/10 hover:text-neutral-100 disabled:cursor-not-allowed disabled:opacity-30";
-/** Deliberately larger than the other row icons: it is a primary action. */
-const GROUP_BUTTON =
-  "grid size-7 shrink-0 place-items-center rounded border border-white/15 text-neutral-400 transition hover:border-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-400";
 const SMALL_BUTTON =
   "rounded border border-white/15 px-2 py-1 text-xs text-neutral-200 transition hover:border-sky-400 hover:text-sky-200";
-
-function toneOf(item: FormatItem): "module" | "text" | "group" | "raw" {
-  return item.kind;
-}
 
 export function FormatBuilder({
   value,
@@ -73,15 +75,19 @@ export function FormatBuilder({
   noun = "module",
   allowCategoryGrouping = false,
   scope,
+  theme,
+  modules,
+  searchable = false,
 }: FormatBuilderProps) {
   const [showRaw, setShowRaw] = useState(false);
-  const [styling, setStyling] = useState<number | null>(null);
-  const [openGroup, setOpenGroup] = useState<number | null>(null);
+  const [styling, setStyling] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [adding, setAdding] = useState(false);
-  const [search, setSearch] = useState("");
-  const [dragging, setDragging] = useState<number | null>(null);
+  const [addSearch, setAddSearch] = useState("");
+  const [filter, setFilter] = useState("");
+  const [dragging, setDragging] = useState<Path | null>(null);
   const [dropTarget, setDropTarget] = useState<
-    { index: number; position: DropPosition } | null
+    { path: Path; position: DropPosition } | null
   >(null);
 
   const items = useMemo(() => toItems(value), [value]);
@@ -92,16 +98,22 @@ export function FormatBuilder({
     onChange(fromItems(next));
   };
 
+  const categoryOf = (name: string) => MODULE_META[name]?.group;
+
   const candidates = useMemo(() => {
-    const needle = search.trim().toLowerCase();
+    const needle = addSearch.trim().toLowerCase();
     return vocabulary
       .filter((name) => !needle || name.toLowerCase().includes(needle))
       .slice(0, 80);
-  }, [vocabulary, search]);
+  }, [vocabulary, addSearch]);
+
+  const categories = allowCategoryGrouping && items
+    ? groupableCategories(items, categoryOf)
+    : [];
 
   if (!items) {
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2" data-format-scope={scope}>
         <textarea
           value={value}
           rows={3}
@@ -120,175 +132,172 @@ export function FormatBuilder({
     );
   }
 
-  const finishDrag = (dropIndex: number, position: DropPosition) => {
-    if (dragging !== null && dragging !== dropIndex) {
-      commit(applyDrop(items, dragging, dropIndex, position));
+  const needle = filter.trim().toLowerCase();
+
+  /** Whether a subtree contains anything matching the search. */
+  const matches = (item: FormatItem): boolean => {
+    if (!needle) return true;
+    if (item.kind === "module") {
+      return (
+        item.name.toLowerCase().includes(needle) ||
+        (describeModule(item.name)?.toLowerCase().includes(needle) ?? false)
+      );
     }
-    setDragging(null);
-    setDropTarget(null);
+    if (item.kind === "group") return item.items.some(matches);
+    return false;
   };
 
-  const categoryOf = (name: string) => MODULE_META[name]?.group;
-  const categories = allowCategoryGrouping
-    ? groupableCategories(items, categoryOf)
-    : [];
+  const toggleSet = (set: Set<string>, key: string) => {
+    const next = new Set(set);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    return next;
+  };
+
+  const callbacks: FormatNodeCallbacks = {
+    theme,
+    palette,
+    onDragStart: setDragging,
+    onDragEnd: () => {
+      setDragging(null);
+      setDropTarget(null);
+    },
+    onDragOverNode: (path, position) => setDropTarget({ path, position }),
+    onDropNode: (path, position) => {
+      if (dragging) commit(moveTo(items, dragging, path, position));
+      setDragging(null);
+      setDropTarget(null);
+    },
+    onNudge: (path, direction) => commit(nudge(items, path, direction)),
+    onGroup: (path) =>
+      commit(
+        updateAt(items, path, (item) =>
+          item.kind === "group" ? item : { kind: "group", items: [item] },
+        ),
+      ),
+    onUngroup: (path) => {
+      // ungroup() works on a list, so operate on the parent's children.
+      const parentPath = path.slice(0, -1);
+      const index = path[path.length - 1];
+      if (parentPath.length === 0) {
+        commit(ungroup(items, index));
+        return;
+      }
+      commit(
+        updateAt(items, parentPath, (parent) =>
+          parent.kind === "group"
+            ? { ...parent, items: ungroup(parent.items, index) }
+            : parent,
+        ),
+      );
+    },
+    onRemove: (path) => commit(removeAt(items, path)),
+    onStyleToggle: (path) =>
+      setStyling(styling === pathKey(path) ? null : pathKey(path)),
+    onExpandToggle: (path) => setExpanded(toggleSet(expanded, pathKey(path))),
+    onTextChange: (path, next) =>
+      onChange(
+        fromItems(
+          updateAt(items, path, (item) =>
+            item.kind === "text" ? { ...item, value: next } : item,
+          ),
+        ),
+      ),
+    isModuleEnabled: (name) => modules?.isEnabled(name) ?? true,
+    onToggleModule: (name, enabled) => modules?.setEnabled(name, enabled),
+    isGroupEnabled: (group) =>
+      collectModuleNames(group.items).some((name) => modules?.isEnabled(name) ?? true),
+    onToggleGroup: (group, enabled) => {
+      for (const name of collectModuleNames(group.items)) {
+        modules?.setEnabled(name, enabled);
+      }
+    },
+    groupLabel: (group) =>
+      `${groupName(group, categoryOf)} (${group.items.length})`,
+    renderModuleSettings: (name) => modules?.renderSettings(name) ?? null,
+    renderStyleEditor: (path, item) => (
+      <>
+        {item.kind === "module" ? (
+          <p className="mb-2 text-xs text-neutral-500">
+            Applies only to parts of{" "}
+            <code className="text-neutral-400">${item.name}</code> that do not
+            set their own style. To change the rest, edit that module&rsquo;s{" "}
+            <code className="text-neutral-400">style</code> option below.
+          </p>
+        ) : null}
+        <StyleStringBuilder
+          value={item.kind === "raw" ? "" : (item.style ?? "")}
+          onChange={(style) =>
+            onChange(
+              fromItems(
+                updateAt(items, path, (target) =>
+                  target.kind === "raw"
+                    ? target
+                    : { ...target, style: style || undefined },
+                ),
+              ),
+            )
+          }
+          palette={palette}
+          paletteNames={paletteNames}
+        />
+      </>
+    ),
+    isExpanded: (path) => {
+      // A search auto-opens the groups holding its matches.
+      if (needle) {
+        const item = getAt(items, path);
+        if (item?.kind === "group") return true;
+      }
+      return expanded.has(pathKey(path));
+    },
+    isStyling: (path) => styling === pathKey(path),
+    dropPositionFor: (path) =>
+      dropTarget && pathKey(dropTarget.path) === pathKey(path)
+        ? dropTarget.position
+        : null,
+    isDragging: (path) => dragging !== null && pathKey(dragging) === pathKey(path),
+    isFiltered: (item) => !matches(item),
+  };
+
+  const visibleCount = needle
+    ? collectModuleNames(items).filter((name) =>
+        matches({ kind: "module", name }),
+      ).length
+    : collectModuleNames(items).length;
 
   return (
     <div className="flex flex-col gap-2" data-format-scope={scope}>
+      {searchable ? (
+        <div className="flex flex-col gap-1">
+          <label htmlFor={`filter-${scope}`} className="sr-only">
+            Search prompt items
+          </label>
+          <input
+            id={`filter-${scope}`}
+            type="search"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            placeholder="Search modules…"
+            className="w-full rounded border border-white/10 bg-neutral-950 px-2.5 py-1.5 text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
+          />
+          {needle ? (
+            <p className="text-xs text-neutral-500" aria-live="polite">
+              {visibleCount} matching {visibleCount === 1 ? "module" : "modules"}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       <ul className="flex flex-col gap-1">
-        {items.map((item, index) => {
-          const isStyling = styling === index;
-          const isGroupOpen = openGroup === index;
-          const description =
-            item.kind === "module" ? describeModule(item.name) : undefined;
-
-          return (
-            <FormatRow
-              key={index}
-              index={index}
-              label={
-                item.kind === "group"
-                  ? `${groupName(item, categoryOf)} (${item.items.length})`
-                  : itemLabel(item)
-              }
-              description={description}
-              tone={toneOf(item)}
-              isDragging={dragging === index}
-              dropPosition={
-                dropTarget?.index === index && dragging !== index
-                  ? dropTarget.position
-                  : null
-              }
-              onDragStart={setDragging}
-              onDragEnd={() => {
-                setDragging(null);
-                setDropTarget(null);
-              }}
-              onDragOverRow={(i, position) => setDropTarget({ index: i, position })}
-              onDrop={finishDrag}
-              onMove={(i, direction) => commit(moveItem(items, i, direction))}
-              actions={
-                <>
-                  {item.kind === "text" ? (
-                    <input
-                      value={item.value}
-                      aria-label={`Text content of piece ${index + 1}`}
-                      onChange={(e) => {
-                        const next = [...items];
-                        next[index] = { ...item, value: e.target.value };
-                        onChange(fromItems(next));
-                      }}
-                      spellCheck={false}
-                      className="w-24 shrink-0 rounded border border-white/10 bg-neutral-950 px-1.5 py-0.5 font-mono text-xs text-neutral-100 focus:border-sky-400 focus:outline-none"
-                    />
-                  ) : null}
-
-                  {item.kind === "group" ? (
-                    <>
-                      <button
-                        type="button"
-                        className={ICON_BUTTON}
-                        aria-expanded={isGroupOpen}
-                        aria-label={`${isGroupOpen ? "Collapse" : "Expand"} ${itemLabel(item)}`}
-                        onClick={() => setOpenGroup(isGroupOpen ? null : index)}
-                      >
-                        {isGroupOpen ? "▾" : "▸"}
-                      </button>
-                      <button
-                        type="button"
-                        className={ICON_BUTTON}
-                        aria-label={`Ungroup ${itemLabel(item)}`}
-                        onClick={() => commit(ungroup(items, index))}
-                      >
-                        ⧉
-                      </button>
-                    </>
-                  ) : null}
-
-                  {item.kind !== "group" ? (
-                    <button
-                      type="button"
-                      className={GROUP_BUTTON}
-                      aria-label={`Put ${itemLabel(item)} in a group`}
-                      title="Put this in a group of its own, then drag others onto it"
-                      onClick={() => commit(groupItem(items, index))}
-                    >
-                      <GroupIcon />
-                    </button>
-                  ) : null}
-
-                  {item.kind !== "raw" ? (
-                    <button
-                      type="button"
-                      aria-label={`Recolour ${itemLabel(item)}`}
-                      aria-expanded={isStyling}
-                      onClick={() => setStyling(isStyling ? null : index)}
-                      className={`${ICON_BUTTON} ${item.style ? "text-sky-300" : ""}`}
-                    >
-                      {item.style ? "◆" : "◇"}
-                    </button>
-                  ) : null}
-
-                  <button
-                    type="button"
-                    aria-label={`Remove ${itemLabel(item)}`}
-                    onClick={() => commit(items.filter((_, i) => i !== index))}
-                    className={`${ICON_BUTTON} hover:text-red-300`}
-                  >
-                    ✕
-                  </button>
-                </>
-              }
-              body={
-                <>
-                  {isGroupOpen && item.kind === "group" ? (
-                    <ul className="ml-6 flex flex-col gap-1 border-l border-white/10 px-2 pb-2">
-                      {item.items.map((child, childIndex) => (
-                        <li
-                          key={childIndex}
-                          className="flex items-baseline gap-2 py-0.5"
-                        >
-                          <span className="font-mono text-xs text-sky-200">
-                            {itemLabel(child)}
-                          </span>
-                          {child.kind === "module" ? (
-                            <span className="truncate text-xs text-neutral-500">
-                              {describeModule(child.name)}
-                            </span>
-                          ) : null}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-
-                  {isStyling && item.kind !== "raw" ? (
-                    <div className="border-t border-white/10 p-2">
-                      {item.kind === "module" ? (
-                        <p className="mb-2 text-xs text-neutral-500">
-                          Applies only to parts of{" "}
-                          <code className="text-neutral-400">${item.name}</code>{" "}
-                          that do not set their own style. To change the rest,
-                          edit that module&rsquo;s{" "}
-                          <code className="text-neutral-400">style</code> option.
-                        </p>
-                      ) : null}
-                      <StyleStringBuilder
-                        value={item.style ?? ""}
-                        onChange={(style) => {
-                          const next = [...items];
-                          next[index] = { ...item, style: style || undefined };
-                          onChange(fromItems(next));
-                        }}
-                        palette={palette}
-                        paletteNames={paletteNames}
-                      />
-                    </div>
-                  ) : null}
-                </>
-              }
-            />
-          );
-        })}
+        {items.map((item, index) => (
+          <FormatNode
+            key={index}
+            item={item}
+            path={[index]}
+            callbacks={callbacks}
+          />
+        ))}
         {items.length === 0 ? (
           <li className="rounded border border-dashed border-white/15 px-2 py-3 text-center text-xs text-neutral-500">
             Empty — nothing will be rendered.
@@ -297,7 +306,12 @@ export function FormatBuilder({
       </ul>
 
       <div className="flex flex-wrap items-center gap-2">
-        <button type="button" onClick={() => setAdding((v) => !v)} aria-expanded={adding} className={SMALL_BUTTON}>
+        <button
+          type="button"
+          onClick={() => setAdding((v) => !v)}
+          aria-expanded={adding}
+          className={SMALL_BUTTON}
+        >
           + Add {noun}
         </button>
         <button
@@ -312,7 +326,7 @@ export function FormatBuilder({
             key={category}
             type="button"
             onClick={() => commit(gatherCategory(items, categoryOf, category))}
-            title={`Collect every ${category} module into one group so they can share a style. This moves them together in the prompt.`}
+            title={`Collect every ${category} module into one group. This moves them together in the prompt.`}
             className={SMALL_BUTTON}
           >
             Group {category.toLowerCase()}
@@ -329,14 +343,14 @@ export function FormatBuilder({
 
       {adding ? (
         <div className="flex flex-col gap-2 rounded border border-white/10 bg-neutral-900/60 p-2">
-          <label className="sr-only" htmlFor={`add-${noun}`}>
+          <label className="sr-only" htmlFor={`add-${scope ?? noun}`}>
             Search {noun}s to add
           </label>
           <input
-            id={`add-${noun}`}
+            id={`add-${scope ?? noun}`}
             type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={addSearch}
+            onChange={(e) => setAddSearch(e.target.value)}
             placeholder={`Search ${noun}s…`}
             className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
           />
@@ -348,7 +362,7 @@ export function FormatBuilder({
                   onClick={() => {
                     commit([...items, { kind: "module", name }]);
                     setAdding(false);
-                    setSearch("");
+                    setAddSearch("");
                   }}
                   className="flex w-full flex-col rounded px-1.5 py-1 text-left transition hover:bg-white/5"
                 >
@@ -370,11 +384,11 @@ export function FormatBuilder({
 
       {showRaw ? (
         <div className="flex flex-col gap-1">
-          <label htmlFor="format-raw" className="sr-only">
+          <label htmlFor={`raw-${scope ?? noun}`} className="sr-only">
             Raw format string
           </label>
           <textarea
-            id="format-raw"
+            id={`raw-${scope ?? noun}`}
             value={value}
             rows={3}
             spellCheck={false}
@@ -388,12 +402,7 @@ export function FormatBuilder({
             <p role="alert" className="text-xs text-red-400">
               {parse.error} (at character {parse.index + 1})
             </p>
-          ) : (
-            <p className="text-xs text-neutral-500">
-              <code>[text](style)</code> styles a group, <code>(text)</code> shows
-              only when a variable inside it is non-empty, <code>\$</code> escapes.
-            </p>
-          )}
+          ) : null}
         </div>
       ) : null}
     </div>
