@@ -50,3 +50,10 @@ Not quite ready for contributions until the M1 engine lands (see
 [MIT](LICENSE). Starship Builder is an unaffiliated community tool. Starship
 itself is ISC-licensed — vendored artefacts (config schema, presets) retain
 attribution in [data/README.md](data/README.md).
+
+Third-party material redistributed by this site — the bundled Nerd Fonts and
+the vendored Starship data — is catalogued with its licences in
+[THIRD_PARTY.md](THIRD_PARTY.md). Every bundled font is redistributable and
+web-embeddable (SIL OFL 1.1, MIT, or Bitstream Vera); per-font provenance and
+the fonts deliberately excluded are documented in
+[public/fonts/README.md](public/fonts/README.md).

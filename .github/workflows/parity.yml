@@ -1,0 +1,62 @@
+name: Parity
+
+# Compares the TypeScript engine against the real starship binary. Runs on
+# every PR touching the engine, on main, and weekly against whatever starship
+# has released since — upstream drift is the failure mode this exists to catch,
+# and it does not announce itself.
+on:
+  pull_request:
+    paths:
+      - "src/lib/engine/**"
+      - "src/lib/config/**"
+      - "tests/parity/**"
+      - ".github/workflows/parity.yml"
+  push:
+    branches: [main]
+  schedule:
+    # 04:20 UTC Mondays (~14:20 AEST), well clear of the weekday deploy window.
+    - cron: "20 4 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: parity-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  parity:
+    # See ci.yml for why fork PRs are pinned to GitHub-hosted runners.
+    runs-on: ${{ (github.event.pull_request.head.repo.fork && 'ubuntu-latest') || vars.SELF_HOSTED_RUNNER || 'ubuntu-latest' }}
+    container:
+      image: node:22-bookworm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install starship
+        run: |
+          set -euo pipefail
+          # Scheduled runs deliberately track the newest release so upstream
+          # changes surface here rather than in someone's shell.
+          curl -fsSL https://starship.rs/install.sh \
+            | sh -s -- --yes --bin-dir /usr/local/bin
+          starship --version
+
+      - name: Configure git for fixtures
+        run: |
+          git config --global user.email tester@example.com
+          git config --global user.name Tester
+          git config --global init.defaultBranch main
+          git config --global --add safe.directory '*'
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Run parity suite
+        env:
+          CI: "true"
+        run: pnpm test:parity

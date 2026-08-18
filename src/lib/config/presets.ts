@@ -1,0 +1,37 @@
+/**
+ * The official starship presets, vendored from upstream.
+ *
+ * The TOMLs live in `data/presets/` exactly as starship publishes them;
+ * `scripts/build-presets.mjs` folds them into `data/presets.generated.json`
+ * with their labels and descriptions, because neither Next.js nor vitest can
+ * import a `.toml` as text without extra loader configuration in both.
+ */
+
+import generated from "../../../data/presets.generated.json";
+import { parseConfig } from "./toml";
+import type { StarshipConfig } from "@/lib/engine/prompt";
+
+export interface Preset {
+  /** Upstream filename stem, e.g. `tokyo-night`. */
+  id: string;
+  label: string;
+  description: string;
+  /** The preset's TOML, verbatim. */
+  toml: string;
+}
+
+export const PRESETS: readonly Preset[] = Object.freeze(
+  generated.presets as Preset[],
+);
+
+export function getPreset(id: string): Preset | undefined {
+  return PRESETS.find((preset) => preset.id === id);
+}
+
+/** Parses a preset's TOML. Returns null if the vendored file is malformed. */
+export function loadPreset(id: string): StarshipConfig | null {
+  const preset = getPreset(id);
+  if (!preset) return null;
+  const result = parseConfig(preset.toml);
+  return result.ok ? result.config : null;
+}

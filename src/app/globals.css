@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./fonts.css";
 
 /* HeroUI v3: import only the primitives this app currently renders. */
 @import "@heroui/styles/base" layer(base);

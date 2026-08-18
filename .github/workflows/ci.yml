@@ -5,16 +5,42 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Job containers' default shell is sh (dash) on the self-hosted cluster, which
+# cannot `set -o pipefail`.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Runner selection, in priority order:
+    #   1. Pull requests from FORKS always use GitHub-hosted runners. This
+    #      repository is public and the ubox cluster sits on a LAN, so
+    #      attacker-authored code must never execute there.
+    #   2. Otherwise the ubox self-hosted scale set, named by the
+    #      SELF_HOSTED_RUNNER repository variable.
+    #   3. Falling back to GitHub-hosted when that variable is unset, so CI
+    #      keeps working before the runner is provisioned.
+    runs-on: ${{ (github.event.pull_request.head.repo.fork && 'ubuntu-latest') || vars.SELF_HOSTED_RUNNER || 'ubuntu-latest' }}
+    # ARC runs in Kubernetes container mode without Docker-in-Docker, where the
+    # actions/setup-* actions do not work. Pinning the toolchain to a job
+    # container gives both runner types an identical Node, with no setup action.
+    container:
+      image: node:22-bookworm
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
+
+      - name: Enable pnpm
+        run: corepack enable
+
       - run: pnpm install --frozen-lockfile
+
       - run: pnpm typecheck
+
+      - run: pnpm test
+
       - run: pnpm build

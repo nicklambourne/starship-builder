@@ -6,7 +6,9 @@ a `starship.toml` that reproduces exactly what you saw.
 
 - **Live site:** https://nicklambourne.github.io/starship-builder/
 - **Repo:** https://github.com/nicklambourne/starship-builder
-- **Status:** M0 (scaffold + deploy) complete; M1 (rendering engine) next.
+- **Status:** M0–M4 complete. All 102 starship modules implemented, the parity
+  harness is green against real starship, and the builder is live. M5 (polish,
+  a11y audit, launch) is what remains.
 
 ---
 
@@ -344,47 +346,62 @@ parity + Playwright on PRs touching the engine and on `main`; Pages deploy on
 
 ## 10. Milestones
 
-**M0 — Scaffold & deploy** ✅ *(this commit)*
+**M0 — Scaffold & deploy** ✅
 Repo, plan, Next.js + HeroUI + Tailwind static export, CI, Pages deploy,
-vendored config schema. *Accept: site live at the GitHub Pages URL.*
+vendored config schema.
 
-**M1 — Engine core** *(the proof of concept)*
-Format-string + style-string parsers with full unit coverage; segment renderer;
-terminal component with Nerd Font + one dark theme; ~12 core modules
-(`character`, `directory`, `git_branch`, `git_status`, `git_state`, `nodejs`,
-`python`, `rust`, `cmd_duration`, `status`, `username`, `hostname`,
-`line_break`, `time`); two scenarios; TOML export; hardcoded settings UI for
-`directory` + `character` only. Parity harness running for the default config
-in scenarios 1–3. *Accept: default starship prompt renders byte-identical
-(via ANSI) to real starship for those scenarios.*
+**M1 — Engine core** ✅
+Format-string and style-string parsers ported rule-for-rule from starship's
+pest grammar and `parse_style_string`, with table-driven unit tests; segment
+renderer with starship's conditional, text-group and meta-variable semantics;
+ANSI serialiser reproducing nu_ansi_term's style-difference algorithm; the
+simulated terminal with seven colour schemes and a Nerd Font picker.
 
-**M2 — Full editor**
-Schema-driven settings for all M1 modules; module list with search, toggle,
-drag-reorder writing `format`; StyleStringBuilder + FormatEditor controls; TOML
-import with error surfacing; all seven scenarios + scenario editing; undo/redo.
-*Accept: import → tweak → export round-trip preserves unknown keys; every M1
-module fully editable without touching raw TOML.*
+**M2 — Full editor** ✅
+Schema-driven settings for every module, driven by the vendored JSON schema
+plus a curated overlay marking which strings are format strings and which are
+style strings (derived mechanically from starship's `map_meta` bindings, since
+the schema types both as plain `string`). Style builder, format editor with
+live validation, module search/toggle/reorder, TOML import with error
+reporting, seven scenarios, undo/redo.
 
-**M3 — Presets, palettes, sharing**
-Vendored official preset gallery with rendered thumbnails; palette editor;
-share-link encode/decode; right prompt + multiline + `fill`; terminal theme
-switcher + light mode; `?preset=` deep links. *Accept: all vendored presets
-pass parity; shared URL restores exact state.*
+**M3 — Presets, palettes, sharing** ✅
+All 12 official presets vendored and loadable; palette-aware colour pickers;
+share links compressed into the URL fragment; right prompt, multi-line and
+`fill` support.
 
-**M4 — Module coverage**
-The long tail: all remaining language/cloud/context modules (parallelisable —
-good first issues per module), `env_var`/`custom` modules with user-supplied
-mock output, `os` symbols, battery states. Parity matrix extended to every
-module with a fixture. *Accept: parity green across the full preset × scenario
-matrix; module count matches starship's docs page.*
+**M4 — Module coverage** ✅
+All 102 modules in starship's `PROMPT_ORDER`, each with defaults copied
+verbatim from `src/configs/*.rs` and verified programmatically code point by
+code point. A coverage test fails if starship gains a module the registry does
+not implement.
 
-**M5 — Polish & launch**
-a11y pass (axe, keyboard-only, contrast in both themes), responsive audit,
-README screenshots/GIF, CONTRIBUTING.md with "add a module" guide, submit to
-starship's community list / r/unixporn / HN. *Accept: axe clean; a module can
-be added end-to-end by following CONTRIBUTING alone.*
+**M5 — Polish & launch** — remaining
+Full axe/a11y audit, keyboard-only pass, README screenshots and a demo GIF,
+CONTRIBUTING.md with an "add a module" guide, and submission to starship's
+community list. Also outstanding: the approximations listed in §13, and moving
+CI onto the self-hosted runners (see `docs/ci-runners.md`).
 
 ---
+
+## 10a. What the engine does not reproduce
+
+Faithfulness has a boundary: a browser cannot run `git`, spawn version
+commands, or read a filesystem. Where a module depends on that, it reads from
+the Scenario instead, and the approximation is documented in the module's own
+file. The ones worth knowing:
+
+- **Version detection** is scenario data, not a real `--version` call, so a
+  module hides when its tool is absent from the scenario rather than printing a
+  bare symbol.
+- **`aws`** cannot inspect a credentials file; a named profile stands in, with
+  `force_display` honoured exactly.
+- **`git_status`** carries aggregate counts only, so worktree-versus-index
+  sub-counts follow the aggregates and typechanges are always zero.
+- **`custom`** cannot execute commands, so `$output` is always empty.
+- **`memory_usage`**, **`localip`**, **`sudo`** and **`battery`** use fixed
+  plausible readings, chosen so that editing their thresholds still visibly
+  flips them on and off.
 
 ## 11. Risks & mitigations
 

@@ -6,21 +6,36 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:parity": "vitest run --config vitest.parity.mts",
+    "test:e2e": "playwright test",
+    "serve:export": "node scripts/serve-export.mjs",
+    "sync:schema": "curl -fsSL https://starship.rs/config-schema.json -o data/config-schema.json",
+    "build:schema": "node scripts/build-schema.mjs",
+    "build:presets": "node scripts/build-presets.mjs",
+    "build:data": "pnpm build:schema && pnpm build:presets"
   },
   "dependencies": {
     "@heroui/react": "^3.2.1",
     "@heroui/styles": "^3.2.1",
+    "lz-string": "^1.5.0",
     "next": "16.2.9",
     "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react-dom": "19.2.7",
+    "smol-toml": "^1.8.0",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4.3.1",
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.10",
     "tailwindcss": "^4.3.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
