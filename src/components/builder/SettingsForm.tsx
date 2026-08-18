@@ -14,6 +14,7 @@ import { useId } from "react";
 
 import { FormatBuilder } from "./FormatBuilder";
 import { StyleStringBuilder } from "./StyleStringBuilder";
+import { SymbolInput } from "@/components/ui/SymbolInput";
 import { Toggle } from "@/components/ui/Toggle";
 import type { Palette } from "@/lib/engine/styleString";
 import type { TerminalTheme } from "@/lib/terminalThemes";
@@ -38,6 +39,8 @@ interface SettingsFormProps {
   paletteNames?: string[];
   /** Nested format editors show style swatches, which are theme-coloured. */
   theme: TerminalTheme;
+  /** Terminal font stack: module symbols are Nerd Font glyphs. */
+  fontStack: string;
 }
 
 function Row({
@@ -84,6 +87,7 @@ export function SettingsForm({
   palette,
   paletteNames,
   theme,
+  fontStack,
 }: SettingsFormProps) {
   const formId = useId();
 
@@ -117,6 +121,7 @@ export function SettingsForm({
                 paletteNames={paletteNames}
                 noun="variable"
                 theme={theme}
+                fontStack={fontStack}
               />
             ) : option.kind === "style" ? (
               <StyleStringBuilder
@@ -164,12 +169,14 @@ export function SettingsForm({
                 className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
               />
             ) : option.kind === "string" ? (
-              <input
+              // Plain strings include every module's `symbol`, so they get the
+              // terminal font and the glyph picker.
+              <SymbolInput
                 id={controlId}
                 value={typeof value === "string" ? value : ""}
-                onChange={(e) => onChange(option.key, e.target.value)}
-                spellCheck={false}
-                className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
+                onChange={(next) => onChange(option.key, next)}
+                fontStack={fontStack}
+                ariaLabel={option.key}
               />
             ) : (
               <textarea

@@ -142,3 +142,22 @@ export function GroupIcon(props: IconProps) {
     </Svg>
   );
 }
+
+/** Marks a module that is switched on but rendering nothing. */
+export function WarningIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+      <path d="M12 9v4M12 17h.01" />
+    </Svg>
+  );
+}
+
+/** Collapse indicator; rotated by CSS when its section is open. */
+export function ChevronIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M9 5l7 7-7 7" />
+    </Svg>
+  );
+}

@@ -53,6 +53,8 @@ interface FormatBuilderProps {
   allowCategoryGrouping?: boolean;
   scope?: string;
   theme: TerminalTheme;
+  /** Terminal font stack, so glyph-bearing values render rather than tofu. */
+  fontStack: string;
   /** Present only for the root format, where rows manage real modules. */
   modules?: {
     isEnabled(name: string): boolean;
@@ -77,6 +79,7 @@ export function FormatBuilder({
   allowCategoryGrouping = false,
   scope,
   theme,
+  fontStack,
   modules,
   searchable = false,
 }: FormatBuilderProps) {
@@ -157,6 +160,7 @@ export function FormatBuilder({
 
   const callbacks: FormatNodeCallbacks = {
     theme,
+    fontStack,
     palette,
     onDragStart: setDragging,
     onDragEnd: () => {

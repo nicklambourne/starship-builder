@@ -54,7 +54,6 @@ export function PreviewPane({
   scenario,
   onScenarioEdit,
 }: PreviewPaneProps) {
-  const font = TERMINAL_FONTS.find((f) => f.id === fontId) ?? TERMINAL_FONTS[0];
 
   return (
     <div className="flex flex-col gap-3">
@@ -103,32 +102,6 @@ export function PreviewPane({
           </select>
         </div>
       </div>
-
-      <p className="text-xs text-neutral-500">
-        <span style={{ fontFamily: font.stack }}>
-          Glyph check: ✔
-        </span>{" "}
-        {font.licenceUrl ? (
-          <>
-            {font.label} is licensed under{" "}
-            <a
-              href={font.licenceUrl}
-              className="underline underline-offset-2 hover:text-neutral-300"
-              rel="noreferrer noopener"
-              target="_blank"
-            >
-              {font.licence}
-            </a>
-            .
-          </>
-        ) : (
-          <>
-            Using your operating system&rsquo;s monospace font — Nerd Font glyphs
-            will show as replacement boxes, exactly as they would in a terminal
-            without a patched font.
-          </>
-        )}
-      </p>
 
       <EnvironmentPanel scenario={scenario} onChange={onScenarioEdit} />
 

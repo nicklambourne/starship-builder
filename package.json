@@ -15,7 +15,8 @@
     "sync:schema": "curl -fsSL https://starship.rs/config-schema.json -o data/config-schema.json",
     "build:schema": "node scripts/build-schema.mjs",
     "build:presets": "node scripts/build-presets.mjs",
-    "build:data": "pnpm build:schema && pnpm build:presets"
+    "build:glyphs": "node scripts/build-glyphs.mjs",
+    "build:data": "pnpm build:schema && pnpm build:presets && pnpm build:glyphs"
   },
   "dependencies": {
     "@heroui/react": "^3.2.1",
