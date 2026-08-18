@@ -10,12 +10,14 @@
  * without a patched font.
  */
 
+import { EnvironmentPanel } from "./EnvironmentPanel";
 import { Terminal } from "@/components/terminal/Terminal";
 import { PRESETS } from "@/lib/config/presets";
 import { TERMINAL_FONTS } from "@/lib/fonts";
 import { SCENARIOS } from "@/lib/scenarios";
 import { TERMINAL_THEMES, type TerminalTheme } from "@/lib/terminalThemes";
 import type { Segment } from "@/lib/engine/types";
+import type { Scenario } from "@/lib/scenarios/types";
 
 interface PreviewPaneProps {
   lines: Segment[][];
@@ -33,6 +35,8 @@ interface PreviewPaneProps {
   fontStack: string;
   presetId: string;
   onPresetChange(id: string): void;
+  scenario: Scenario;
+  onScenarioEdit(patch: Partial<Scenario>): void;
 }
 
 const SELECT_CLASS =
@@ -52,8 +56,10 @@ export function PreviewPane({
   theme,
   fontStack,
   onPresetChange,
+  scenario,
+  onScenarioEdit,
 }: PreviewPaneProps) {
-  const scenario = SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[0];
+  const preset = SCENARIOS.find((s) => s.id === scenarioId) ?? SCENARIOS[0];
   const font = TERMINAL_FONTS.find((f) => f.id === fontId) ?? TERMINAL_FONTS[0];
 
   return (
@@ -66,7 +72,7 @@ export function PreviewPane({
         fontStack={fontStack}
       />
 
-      <p className="text-xs text-neutral-500">{scenario.description}</p>
+      <p className="text-xs text-neutral-500">{preset.description}</p>
 
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         <div className="flex flex-col gap-1">
@@ -173,6 +179,8 @@ export function PreviewPane({
           </>
         )}
       </p>
+
+      <EnvironmentPanel scenario={scenario} onChange={onScenarioEdit} />
 
       {warnings.length > 0 ? (
         <ul

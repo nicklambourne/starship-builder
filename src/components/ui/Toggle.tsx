@@ -41,7 +41,7 @@ export function Toggle({
       } ${disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer"} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400`}
     >
       <span
-        className={`absolute top-0.5 rounded-full bg-white transition-all ${knob} ${
+        className={`toggle-knob absolute top-0.5 rounded-full transition-all ${knob} ${
           checked ? travel : "left-0.5"
         }`}
       />
