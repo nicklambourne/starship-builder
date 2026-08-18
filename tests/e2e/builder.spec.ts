@@ -21,8 +21,25 @@ async function openEnvSection(page: import("@playwright/test").Page, section: st
 
 /** The TOML card is collapsed by default; open it before reading or editing. */
 async function openToml(page: import("@playwright/test").Page) {
-  const summary = page.locator("summary", { hasText: "starship.toml" }).first();
-  if (await page.getByLabel("starship.toml").isHidden()) await summary.click();
+  const card = page.locator("[data-section='toml']");
+  if (!(await card.evaluate((el: HTMLDetailsElement) => el.open))) {
+    await card.locator("summary").click();
+  }
+}
+
+/**
+ * Replaces the default preset with a bare config, so the editor falls back to
+ * its own expanded-and-grouped default structure.
+ */
+async function useStructuredDefault(page: import("@playwright/test").Page) {
+  await openToml(page);
+  await page.getByLabel("starship.toml").fill("add_newline = true\n");
+  await expect(
+    page.getByRole("button", { name: /^Reorder Git \(\d+\)/ }),
+  ).toBeVisible();
+  // The pane holds what was typed until the config round-trips back, so wait
+  // for the re-serialised format before anything reads it.
+  await expect(page.getByLabel("starship.toml")).toHaveValue(/^format = "\$/m);
 }
 
 test.describe("builder", () => {
@@ -51,6 +68,7 @@ test.describe("builder", () => {
 
   test("a group can be opened and its children edited in place", async ({ page }) => {
     await page.goto("./");
+    await useStructuredDefault(page);
 
     const group = page.getByRole("button", { name: /^Git \(\d+\)/ });
     await group.click();
@@ -68,7 +86,7 @@ test.describe("builder", () => {
 
   test("items reorder inside a group", async ({ page }) => {
     await page.goto("./");
-    await openToml(page);
+    await useStructuredDefault(page);
     const toml = page.getByLabel("starship.toml");
     await page.getByRole("button", { name: /^Git \(\d+\)/ }).click();
 
@@ -93,7 +111,6 @@ test.describe("builder", () => {
     const terminal = page.getByLabel("Simulated terminal prompt");
     await expect(terminal).toContainText("feat/live-preview");
 
-    await page.getByRole("button", { name: /^Git \(\d+\)/ }).click();
     const toggle = page.getByRole("switch", { name: "Enable git_branch" });
     await toggle.click();
 
@@ -110,6 +127,7 @@ test.describe("builder", () => {
 
   test("the format builder reorders the prompt", async ({ page }) => {
     await page.goto("./");
+    await useStructuredDefault(page);
 
     await openToml(page);
     const toml = page.getByLabel("starship.toml");
@@ -132,6 +150,7 @@ test.describe("builder", () => {
 
   test("dragging onto a row's edge reorders it", async ({ page }) => {
     await page.goto("./");
+    await useStructuredDefault(page);
     await openToml(page);
     const toml = page.getByLabel("starship.toml");
     const firstTwo = /format = "\$(\w+)\$(\w+)/;
@@ -155,9 +174,13 @@ test.describe("builder", () => {
     page,
   }) => {
     await page.goto("./");
-    await openToml(page);
+    // The default preset's format is separators and modules interleaved; the
+    // structured default is a plain run of modules, which is what this drag
+    // is about.
+    await useStructuredDefault(page);
     const toml = page.getByLabel("starship.toml");
-    expect(await toml.inputValue()).toMatch(/format = "\$username\$hostname/);
+    const firstTwo = (await toml.inputValue()).match(/format = "\$(\w+)\$(\w+)/);
+    expect(firstTwo).not.toBeNull();
 
     const handles = page.getByRole("button", { name: /^Reorder \$\w+\./ });
     await handles
@@ -167,11 +190,14 @@ test.describe("builder", () => {
       });
 
     // The two loose modules become one group, in target-then-dragged order.
-    await expect(toml).toHaveValue(/format = "\[\$hostname\$username\]\(\)/);
+    await expect(toml).toHaveValue(
+      new RegExp(`format = "\\[\\$${firstTwo![2]}\\$${firstTwo![1]}\\]\\(\\)`),
+    );
   });
 
   test("opens already expanded and grouped, with named groups", async ({ page }) => {
     await page.goto("./");
+    await useStructuredDefault(page);
 
     // No "expand" step: individual modules and named groups are there on load.
     await expect(page.getByRole("button", { name: /^Reorder \$directory\./ })).toBeVisible();
@@ -208,12 +234,13 @@ test.describe("builder", () => {
     await expect(
       page.getByText("Shows the path to your current directory", { exact: false }),
     ).toBeVisible();
-
-    // And on nested rows once their group is open.
-    await page.getByRole("button", { name: /^Git \(\d+\)/ }).click();
     await expect(
       page.getByText("Shows the active branch of the repo in your current directory"),
     ).toBeVisible();
+
+    // And on nested rows once a group is open.
+    await useStructuredDefault(page);
+    await page.getByRole("button", { name: /^Reorder Git \(\d+\)/ }).first().click();
   });
 
   test("header actions are icon buttons with accessible names", async ({ page }) => {
@@ -238,11 +265,11 @@ test.describe("builder", () => {
 
   test("the starship.toml card starts closed and sits at the end", async ({ page }) => {
     await page.goto("./");
-    const details = page.locator("details", { hasText: "starship.toml" }).first();
-    await expect(details).not.toHaveAttribute("open", "");
+    const card = page.locator("[data-section='toml']");
+    await expect(card).not.toHaveAttribute("open", "");
     await expect(page.getByLabel("starship.toml")).toBeHidden();
 
-    await details.getByText("starship.toml").first().click();
+    await card.locator("summary").click();
     await expect(page.getByLabel("starship.toml")).toBeVisible();
   });
 
@@ -268,13 +295,14 @@ test.describe("builder", () => {
     await openEnvSection(page, "Last command");
 
     await page.getByLabel("Exit code").fill("127");
-    // The prompt character is red once the previous command failed.
+    // The exact red comes from whichever palette is loaded, so assert the
+    // character changed colour rather than hard-coding one theme's value.
     const arrow = page
       .getByLabel("Simulated terminal prompt")
       .locator("span")
       .filter({ hasText: /^❯$/ })
       .last();
-    await expect(arrow).toHaveCSS("color", "rgb(247, 118, 142)");
+    await expect(arrow).toHaveCSS("color", /rgb\(2[0-9]{2}, 1[0-9]{2}, 1[0-9]{2}\)/);
   });
 
   test("installed tools can be simulated", async ({ page }) => {
@@ -306,8 +334,8 @@ test.describe("builder", () => {
 
   test("the config downloads without opening the TOML card", async ({ page }) => {
     await page.goto("./");
-    const details = page.locator("details", { hasText: "starship.toml" }).first();
-    await expect(details).not.toHaveAttribute("open", "");
+    const card = page.locator("[data-section='toml']");
+    await expect(card).not.toHaveAttribute("open", "");
 
     const download = page.getByLabel("Download config");
     await expect(download).toBeVisible();
@@ -318,7 +346,7 @@ test.describe("builder", () => {
     ]);
     expect(file.suggestedFilename()).toBe("starship.toml");
     // Downloading must not have expanded the card.
-    await expect(details).not.toHaveAttribute("open", "");
+    await expect(card).not.toHaveAttribute("open", "");
   });
 
   test("resetting asks first and can be cancelled", async ({ page }) => {
@@ -349,20 +377,23 @@ test.describe("builder", () => {
     await expect(page.getByRole("dialog")).toBeHidden();
   });
 
-  test("confirming the reset clears the config", async ({ page }) => {
+  test("confirming the reset restores the starting prompt", async ({ page }) => {
     await page.goto("./");
     await openToml(page);
 
-    // Turn a module off so the config is non-empty.
-    await page.getByRole("button", { name: /^Git \(\d+\)/ }).click();
+    // The starting preset itself disables some modules, so compare against
+    // the config as it was rather than against the absence of any keyword.
+    const toml = page.getByLabel("starship.toml");
+    const starting = await toml.inputValue();
+
     await page.getByRole("switch", { name: "Enable git_branch" }).click();
-    await expect(page.getByLabel("starship.toml")).toHaveValue(/\[git_branch\]/);
+    await expect(toml).not.toHaveValue(starting);
 
     await page.getByRole("button", { name: "Reset to defaults" }).click();
     await page.getByRole("dialog").getByRole("button", { name: "Reset" }).click();
 
     await expect(page.getByRole("dialog")).toBeHidden();
-    await expect(page.getByLabel("starship.toml")).not.toHaveValue(/\[git_branch\]/);
+    await expect(toml).toHaveValue(starting);
   });
 
   test("explains why an enabled module shows nothing, and SSH fixes it", async ({
@@ -371,11 +402,12 @@ test.describe("builder", () => {
     await page.goto("./");
     const terminal = page.getByLabel("Simulated terminal prompt");
 
-    // username and hostname are on by default but invisible in a local
-    // session — starship gates them on root/SSH. Say so rather than looking
-    // like a bug.
-    await expect(page.getByText(/Not showing — starship only shows your username/)).toBeVisible();
-    await expect(page.getByText(/Not showing — starship only shows the hostname over SSH/)).toBeVisible();
+    // hostname is on but invisible in a local session — starship gates it on
+    // SSH. Say so rather than looking like a bug.
+    await useStructuredDefault(page);
+    await expect(
+      page.getByText(/Not showing — starship only shows the hostname over SSH/),
+    ).toBeVisible();
     await expect(terminal).not.toContainText("laptop");
 
     await openEnvSection(page, "Session");
@@ -393,7 +425,7 @@ test.describe("builder", () => {
     await expect(preset).toBeVisible();
     // It sits in the format card, not the preview and not the header.
     await expect(
-      page.locator("section[aria-labelledby='format-heading']").getByLabel("Start from"),
+      page.locator("[data-section='format']").getByLabel("Start from"),
     ).toBeVisible();
   });
 

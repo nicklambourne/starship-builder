@@ -24,6 +24,13 @@ export const PRESETS: readonly Preset[] = Object.freeze(
   generated.presets as Preset[],
 );
 
+/**
+ * The preset the builder opens on. Chosen because it exercises palettes,
+ * groups and Nerd Font glyphs, so the first thing a visitor sees demonstrates
+ * what the editor is for.
+ */
+export const DEFAULT_PRESET_ID = "catppuccin-powerline";
+
 export function getPreset(id: string): Preset | undefined {
   return PRESETS.find((preset) => preset.id === id);
 }

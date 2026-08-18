@@ -64,6 +64,43 @@ body {
 }
 
 /*
+ * Collapse indicators.
+ *
+ * Every collapsible section carries a chevron on its trailing edge that
+ * rotates when open, so "this folds away" is visible before anyone clicks and
+ * the current state is readable at a glance. The native marker is removed
+ * because Safari and Chrome disagree about where it sits.
+ */
+.section-summary {
+  list-style: none;
+  cursor: pointer;
+}
+.section-summary::-webkit-details-marker {
+  display: none;
+}
+.section-chevron {
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: transform 150ms ease;
+}
+details[open] > .section-summary .section-chevron {
+  transform: rotate(90deg);
+}
+
+/*
+ * Anywhere the editor shows a value that may contain Nerd Font glyphs — a
+ * module's `symbol`, a powerline separator sitting in the format as literal
+ * text — it has to be drawn in the terminal font. In the interface font those
+ * are private-use codepoints and render as tofu, which made preset symbols
+ * look broken everywhere except the preview.
+ *
+ * The stack is set on the builder root from the selected terminal font.
+ */
+.nerd-font {
+  font-family: var(--nerd-font-stack, ui-monospace, monospace);
+}
+
+/*
  * A switch's knob is the one place a literal white is wanted in both themes —
  * it sits on a saturated track, not on a surface.
  */

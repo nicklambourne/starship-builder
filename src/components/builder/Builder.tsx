@@ -11,13 +11,16 @@
 
 import { useCallback, useMemo, useState } from "react";
 
+import { Explainer } from "./Explainer";
 import { FormatBuilder } from "./FormatBuilder";
 import { PreviewPane } from "./PreviewPane";
+import { SiteFooter } from "./SiteFooter";
 import { SettingsForm, type OptionDescriptor } from "./SettingsForm";
 import { TomlPane } from "./TomlPane";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Toggle } from "@/components/ui/Toggle";
 import {
+  ChevronIcon,
   CheckIcon,
   DownloadIcon,
   GitHubIcon,
@@ -252,6 +255,7 @@ export function Builder() {
         palette={palette}
         paletteNames={paletteNames}
         theme={theme}
+        fontStack={font.stack}
       />
     ),
     [
@@ -263,6 +267,7 @@ export function Builder() {
       palette,
       paletteNames,
       theme,
+      font.stack,
     ],
   );
 
@@ -310,8 +315,9 @@ export function Builder() {
     NAMED_COLORS.forEach((name, index) => {
       vars[`--ansi-${name}`] = theme.ansi[index];
     });
+    vars["--nerd-font-stack"] = font.stack;
     return vars as React.CSSProperties;
-  }, [theme]);
+  }, [theme, font.stack]);
 
 
   return (
@@ -398,16 +404,23 @@ export function Builder() {
         </div>
       </header>
 
+      <div className="mx-auto max-w-[1600px] px-4 pt-4">
+        <Explainer />
+      </div>
+
       <div className="mx-auto grid max-w-[1600px] gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(380px,0.9fr)] lg:items-start">
         {/* Left column: everything that changes the prompt. */}
         <div className="flex min-w-0 flex-col gap-4">
-          <section className={CARD} aria-labelledby="format-heading">
-            <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-              <h2 id="format-heading" className="text-sm font-semibold text-neutral-100">
+          <details open data-section="format" className={CARD}>
+            <summary className="section-summary flex flex-wrap items-center gap-2">
+              <span id="format-heading" className="text-sm font-semibold text-neutral-100">
                 Prompt format
-              </h2>
+              </span>
+              <ChevronIcon className="section-chevron text-neutral-500" />
+            </summary>
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
               {/* A preset replaces the whole format, so it starts this section. */}
-              <div className="flex items-center gap-2">
+              <div className="ml-auto flex items-center gap-2">
                 <label htmlFor="preset-select" className="text-xs text-neutral-400">
                   Start from
                 </label>
@@ -445,6 +458,7 @@ export function Builder() {
               allowCategoryGrouping
               scope="root-format"
               theme={theme}
+              fontStack={font.stack}
               modules={moduleControls}
               searchable
             />
@@ -463,6 +477,7 @@ export function Builder() {
               paletteNames={paletteNames}
               scope="right-format"
               theme={theme}
+              fontStack={font.stack}
               modules={moduleControls}
             />
 
@@ -492,10 +507,11 @@ export function Builder() {
                   palette={palette}
                   paletteNames={paletteNames}
                   theme={theme}
+                  fontStack={font.stack}
                 />
               </div>
             </details>
-          </section>
+          </details>
 
         </div>
 
@@ -505,7 +521,12 @@ export function Builder() {
           102-module list is a preview nobody sees while editing.
         */}
         <div className="order-first flex min-w-0 flex-col gap-4 lg:order-none lg:sticky lg:top-4">
-          <section className={CARD} aria-label="Preview">
+          <details open data-section="preview" className={CARD}>
+            <summary className="section-summary flex items-center gap-3">
+              <span className="text-sm font-semibold text-neutral-100">Preview</span>
+              <ChevronIcon className="section-chevron text-neutral-500" />
+            </summary>
+            <div className="mt-3">
             <PreviewPane
               lines={rendered.lines}
               right={rendered.right}
@@ -520,19 +541,21 @@ export function Builder() {
               theme={theme}
               fontStack={font.stack}
             />
-          </section>
+            </div>
+          </details>
 
           {/*
             The TOML is the output, not an input, so it stays closed — but the
             download is the reason most people came, so it lives in the header
             bar and works without opening anything.
           */}
-          <details className={CARD}>
-            <summary className="flex cursor-pointer list-none items-center gap-3">
+          <details data-section="toml" className={CARD}>
+            <summary className="section-summary flex items-center gap-3">
               <span className="text-sm font-semibold text-neutral-100">
                 starship.toml
               </span>
               <span className="text-xs text-neutral-500">view or paste a config</span>
+              <ChevronIcon className="section-chevron text-neutral-500" />
               <span
                 role="button"
                 tabIndex={0}
@@ -547,7 +570,7 @@ export function Builder() {
                     downloadConfig();
                   }
                 }}
-                className="ml-auto inline-flex cursor-pointer items-center gap-1.5 rounded bg-emerald-600 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded bg-emerald-600 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
               >
                 <DownloadIcon />
                 Download config
@@ -563,6 +586,8 @@ export function Builder() {
           </details>
         </div>
       </div>
+
+      <SiteFooter />
     </div>
   );
 }

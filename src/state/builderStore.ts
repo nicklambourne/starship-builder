@@ -14,6 +14,8 @@ import { create } from "zustand";
 import type { StarshipConfig } from "@/lib/engine/prompt";
 import type { Scenario } from "@/lib/scenarios/types";
 import { DEFAULT_SCENARIO_ID, getScenario } from "@/lib/scenarios";
+import { DEFAULT_PRESET_ID, getPreset } from "@/lib/config/presets";
+import { parseConfig } from "@/lib/config/toml";
 import { TERMINAL_FONTS } from "@/lib/fonts";
 import { DEFAULT_THEME_ID } from "@/lib/terminalThemes";
 
@@ -55,7 +57,22 @@ export interface BuilderState {
   reset(): void;
 }
 
-const EMPTY_CONFIG: StarshipConfig = {};
+/**
+ * The config the builder opens on.
+ *
+ * A blank config renders starship's plain defaults, which shows off neither
+ * the tool nor this editor. Catppuccin Powerline exercises palettes, groups
+ * and Nerd Font glyphs, so what loads is worth looking at — and it is what
+ * Reset returns to, so "reset" and "what I first saw" agree.
+ */
+function initialConfig(): StarshipConfig {
+  const preset = getPreset(DEFAULT_PRESET_ID);
+  if (!preset) return {};
+  const parsed = parseConfig(preset.toml);
+  return parsed.ok ? parsed.config : {};
+}
+
+const EMPTY_CONFIG: StarshipConfig = initialConfig();
 
 function withModuleOption(
   config: StarshipConfig,

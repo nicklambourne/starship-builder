@@ -17,7 +17,8 @@ import type { DragEvent, KeyboardEvent, ReactNode } from "react";
 
 import { StyleSwatch } from "@/components/ui/StyleSwatch";
 import { Toggle } from "@/components/ui/Toggle";
-import { GroupIcon } from "@/components/ui/icons";
+import { SymbolInput } from "@/components/ui/SymbolInput";
+import { GroupIcon, WarningIcon } from "@/components/ui/icons";
 import {
   type DropPosition,
   type FormatItem,
@@ -65,6 +66,8 @@ export interface FormatNodeCallbacks {
   isFiltered(item: FormatItem, path: Path): boolean;
   theme: TerminalTheme;
   palette?: Palette;
+  /** Terminal font stack, so glyph-bearing values render rather than tofu. */
+  fontStack: string;
 }
 
 const TONE: Record<FormatItem["kind"], string> = {
@@ -226,30 +229,39 @@ export function FormatNode({
               </span>
             ) : null}
             {isModule && enabled && moduleNote ? (
+              // The note is usually longer than the row, so the full text
+              // lives in the tooltip.
               <span
                 title={moduleNote}
-                className="truncate text-xs text-amber-300/80"
+                className="flex min-w-0 items-center gap-1 text-xs text-amber-300/80"
               >
-                Not showing — {moduleNote}
+                <WarningIcon className="shrink-0" />
+                <span className="truncate">Not showing — {moduleNote}</span>
               </span>
             ) : null}
           </button>
         ) : (
           <span className="flex min-w-0 flex-1 flex-col">
-            <span className={`truncate font-mono text-sm ${TONE[item.kind]}`}>
+            <span
+              className={`truncate font-mono text-sm ${TONE[item.kind]} ${
+                item.kind === "text" ? "nerd-font" : ""
+              }`}
+            >
               {label}
             </span>
           </span>
         )}
 
         {item.kind === "text" ? (
-          <input
-            value={item.value}
-            aria-label={`Text content of ${label}`}
-            onChange={(event) => cb.onTextChange(path, event.target.value)}
-            spellCheck={false}
-            className="w-20 shrink-0 rounded border border-white/10 bg-neutral-950 px-1.5 py-0.5 font-mono text-xs text-neutral-100 focus:border-sky-400 focus:outline-none"
-          />
+          <div className="w-36 shrink-0">
+            <SymbolInput
+              value={item.value}
+              onChange={(next) => cb.onTextChange(path, next)}
+              fontStack={cb.fontStack}
+              ariaLabel={`Text content of ${label}`}
+              className="w-full rounded border border-white/10 bg-neutral-950 px-1.5 py-0.5 text-xs text-neutral-100 focus:border-sky-400 focus:outline-none"
+            />
+          </div>
         ) : null}
 
         {isGroup ? (
