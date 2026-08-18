@@ -31,7 +31,8 @@
 import { getOptionSchema } from "./schema";
 import type { OptionType } from "./schema";
 
-export type ModuleGroup = "Core" | "Git" | "Languages" | "Cloud & Tools" | "System";
+export type ModuleGroup = "Core" | "Git" | "Languages" | "Build Tools"
+  | "Cloud & Tools" | "System";
 
 export interface ModuleMeta {
   group: ModuleGroup;
@@ -48,6 +49,7 @@ export const MODULE_GROUPS: readonly ModuleGroup[] = [
   "Core",
   "Git",
   "Languages",
+  "Build Tools",
   "Cloud & Tools",
   "System",
 ];
@@ -75,7 +77,7 @@ export const MODULE_META: Record<string, ModuleMeta> = {
     styleOptions: [],
   },
   buf: {
-    group: "Cloud & Tools",
+    group: "Build Tools",
     docs: "https://starship.rs/config/#buf",
     formatOptions: ["format", "symbol"],
     styleOptions: ["style"],
@@ -120,7 +122,7 @@ export const MODULE_META: Record<string, ModuleMeta> = {
     styleOptions: ["style"],
   },
   cmake: {
-    group: "Cloud & Tools",
+    group: "Build Tools",
     docs: "https://starship.rs/config/#cmake",
     formatOptions: ["format", "symbol"],
     styleOptions: ["style"],
@@ -321,7 +323,7 @@ export const MODULE_META: Record<string, ModuleMeta> = {
     styleOptions: ["style", "not_capable_style"],
   },
   gradle: {
-    group: "Cloud & Tools",
+    group: "Build Tools",
     docs: "https://starship.rs/config/#gradle",
     formatOptions: ["format", "symbol"],
     styleOptions: ["style"],
@@ -420,7 +422,7 @@ export const MODULE_META: Record<string, ModuleMeta> = {
     styleOptions: ["style"],
   },
   maven: {
-    group: "Cloud & Tools",
+    group: "Build Tools",
     docs: "https://starship.rs/config/#maven",
     formatOptions: ["format", "symbol"],
     styleOptions: ["style"],
@@ -432,7 +434,7 @@ export const MODULE_META: Record<string, ModuleMeta> = {
     styleOptions: ["style"],
   },
   meson: {
-    group: "Cloud & Tools",
+    group: "Build Tools",
     docs: "https://starship.rs/config/#meson",
     formatOptions: ["format", "symbol"],
     styleOptions: ["style"],
@@ -631,7 +633,7 @@ export const MODULE_META: Record<string, ModuleMeta> = {
     styleOptions: ["style"],
   },
   spack: {
-    group: "Cloud & Tools",
+    group: "Build Tools",
     docs: "https://starship.rs/config/#spack",
     formatOptions: ["format", "symbol"],
     styleOptions: ["style"],
@@ -683,7 +685,7 @@ export const MODULE_META: Record<string, ModuleMeta> = {
     styleOptions: ["style_root", "style_user"],
   },
   vagrant: {
-    group: "Cloud & Tools",
+    group: "Build Tools",
     docs: "https://starship.rs/config/#vagrant",
     formatOptions: ["format", "symbol"],
     styleOptions: ["style"],
@@ -707,7 +709,7 @@ export const MODULE_META: Record<string, ModuleMeta> = {
     styleOptions: ["style"],
   },
   xmake: {
-    group: "Cloud & Tools",
+    group: "Build Tools",
     docs: "https://starship.rs/config/#xmake",
     formatOptions: ["format", "symbol"],
     styleOptions: ["style"],

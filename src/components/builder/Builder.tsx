@@ -17,6 +17,14 @@ import { PreviewPane } from "./PreviewPane";
 import { SettingsForm, type OptionDescriptor } from "./SettingsForm";
 import { TomlPane } from "./TomlPane";
 import { Toggle } from "@/components/ui/Toggle";
+import {
+  CheckIcon,
+  GitHubIcon,
+  RedoIcon,
+  ResetIcon,
+  ShareIcon,
+  UndoIcon,
+} from "@/components/ui/icons";
 import { ALL_MODULES, MODULES_BY_NAME } from "@/lib/engine/modules";
 import { PROMPT_ORDER } from "@/lib/engine/promptOrder";
 import { DEFAULT_FORMAT, renderPrompt } from "@/lib/engine/prompt";
@@ -63,6 +71,8 @@ const ROOT_OPTIONS: OptionDescriptor[] = [
 const CARD = "rounded-xl border border-white/10 bg-neutral-900/40 p-4";
 const BUTTON =
   "rounded border border-white/10 px-2.5 py-1.5 text-sm text-neutral-300 transition enabled:hover:border-sky-400 disabled:opacity-40";
+const ICON_BUTTON =
+  "grid size-9 place-items-center rounded border border-white/10 text-neutral-300 transition enabled:hover:border-sky-400 enabled:hover:text-sky-200 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400";
 
 export function Builder() {
   const {
@@ -293,30 +303,56 @@ export function Builder() {
             ))}
           </select>
 
-          <button type="button" onClick={undo} disabled={past.length === 0} className={BUTTON}>
-            Undo
+          <button
+            type="button"
+            onClick={undo}
+            disabled={past.length === 0}
+            aria-label="Undo"
+            title="Undo"
+            className={ICON_BUTTON}
+          >
+            <UndoIcon />
           </button>
-          <button type="button" onClick={redo} disabled={future.length === 0} className={BUTTON}>
-            Redo
-          </button>
-          <button type="button" onClick={share} className={BUTTON}>
-            {shareCopied ? "Link copied" : "Share"}
+          <button
+            type="button"
+            onClick={redo}
+            disabled={future.length === 0}
+            aria-label="Redo"
+            title="Redo"
+            className={ICON_BUTTON}
+          >
+            <RedoIcon />
           </button>
           <button
             type="button"
             onClick={reset}
-            className={`${BUTTON} hover:border-red-400 hover:text-red-300`}
+            aria-label="Reset to defaults"
+            title="Reset to defaults"
+            className={`${ICON_BUTTON} hover:border-red-400 hover:text-red-300`}
           >
-            Reset
+            <ResetIcon />
           </button>
         </div>
 
-        <a
-          href="https://github.com/nicklambourne/starship-builder"
-          className="ml-auto text-sm text-neutral-400 underline underline-offset-4 hover:text-neutral-100"
-        >
-          GitHub
-        </a>
+        <div className="ml-auto flex items-center gap-2">
+          <a
+            href="https://github.com/nicklambourne/starship-builder"
+            aria-label="View this project on GitHub"
+            title="View this project on GitHub"
+            className={ICON_BUTTON}
+          >
+            <GitHubIcon />
+          </a>
+          <button
+            type="button"
+            onClick={share}
+            aria-label={shareCopied ? "Share link copied" : "Copy a share link"}
+            title={shareCopied ? "Link copied" : "Copy a share link"}
+            className={`${ICON_BUTTON} ${shareCopied ? "border-emerald-400 text-emerald-300" : ""}`}
+          >
+            {shareCopied ? <CheckIcon /> : <ShareIcon />}
+          </button>
+        </div>
       </header>
 
       <div className="mx-auto grid max-w-[1600px] gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(380px,0.9fr)] lg:items-start">
@@ -339,7 +375,8 @@ export function Builder() {
             </div>
             <p className="mb-3 text-xs text-neutral-500">
               What the prompt contains, and in what order. Reorder, remove, recolour,
-              or add pieces here.
+              or add pieces here. Drag the handles to reorder; group a run of
+              related modules so they share one style.
             </p>
             <FormatBuilder
               value={format}
@@ -347,6 +384,7 @@ export function Builder() {
               vocabulary={moduleVocabulary}
               palette={palette}
               paletteNames={paletteNames}
+              allowCategoryGrouping
             />
 
             <h3 className="mb-2 mt-5 text-sm font-semibold text-neutral-100">
