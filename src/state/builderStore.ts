@@ -20,13 +20,13 @@ const HISTORY_LIMIT = 100;
 
 export interface BuilderState {
   config: StarshipConfig;
-  scenarioId: string;
   /**
    * The environment the preview renders against.
    *
-   * Seeded from the chosen scenario, then edited freely — the bundled
-   * scenarios are starting points, not a fixed menu, because which modules
-   * appear depends entirely on this.
+   * Seeded from the default scenario and then edited freely through the
+   * environment panel. The bundled scenarios remain the parity harness's
+   * fixtures; they are no longer a menu in the UI, because the panel can
+   * express all of them and more.
    */
   scenario: Scenario;
   themeId: string;
@@ -45,7 +45,6 @@ export interface BuilderState {
   setModuleDisabled(module: string, disabled: boolean): void;
   setRootOption(key: string, value: unknown): void;
   selectModule(name: string | null): void;
-  setScenario(id: string): void;
   updateScenario(patch: Partial<Scenario>): void;
   setTheme(id: string): void;
   setFont(id: string): void;
@@ -86,7 +85,6 @@ function withoutModuleOption(
 
 export const useBuilderStore = create<BuilderState>((set, get) => ({
   config: EMPTY_CONFIG,
-  scenarioId: DEFAULT_SCENARIO_ID,
   scenario: getScenario(DEFAULT_SCENARIO_ID),
   themeId: DEFAULT_THEME_ID,
   fontId: "jetbrains-mono",
@@ -129,12 +127,6 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
 
   selectModule(name) {
     set({ selectedModule: name });
-  },
-
-  setScenario(id) {
-    // Picking a scenario resets any edits: it is a starting point, and
-    // silently keeping overrides would make the named scenarios untrustworthy.
-    set({ scenarioId: id, scenario: getScenario(id) });
   },
 
   updateScenario(patch) {
