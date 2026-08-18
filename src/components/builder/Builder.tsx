@@ -18,7 +18,10 @@ import { TomlPane } from "./TomlPane";
 import { Toggle } from "@/components/ui/Toggle";
 import {
   CheckIcon,
+  DownloadIcon,
   GitHubIcon,
+  MoonIcon,
+  SunIcon,
   RedoIcon,
   ResetIcon,
   ShareIcon,
@@ -33,9 +36,8 @@ import { structuredFormatString } from "@/lib/config/defaultFormat";
 import { MODULE_META, optionKind } from "@/lib/config/meta";
 import { PRESETS } from "@/lib/config/presets";
 import { encodeShare } from "@/lib/config/share";
-import { parseConfig } from "@/lib/config/toml";
+import { parseConfig, serialiseConfig } from "@/lib/config/toml";
 import { TERMINAL_FONTS } from "@/lib/fonts";
-import { getScenario } from "@/lib/scenarios";
 import { NAMED_COLORS } from "@/lib/engine/types";
 import { getTheme } from "@/lib/terminalThemes";
 import { useBuilderStore } from "@/state/builderStore";
@@ -78,6 +80,7 @@ export function Builder() {
   const {
     config,
     scenarioId,
+    scenario,
     themeId,
     fontId,
     selectedModule,
@@ -88,8 +91,11 @@ export function Builder() {
     setRootOption,
     selectModule,
     setScenario,
+    updateScenario,
     setTheme,
     setFont,
+    appTheme,
+    setAppTheme,
     undo,
     redo,
     reset,
@@ -99,7 +105,6 @@ export function Builder() {
 
   const [shareCopied, setShareCopied] = useState(false);
 
-  const scenario = getScenario(scenarioId);
   const theme = getTheme(themeId);
   const font = TERMINAL_FONTS.find((f) => f.id === fontId) ?? TERMINAL_FONTS[0];
   const palette = resolvePalette(config.palettes, config.palette);
@@ -232,6 +237,25 @@ export function Builder() {
     ],
   );
 
+  const defaultsByModule = useMemo(() => {
+    const out: Record<string, Record<string, unknown>> = {};
+    for (const definition of ALL_MODULES) out[definition.name] = definition.defaults;
+    return out;
+  }, []);
+
+  const downloadConfig = useCallback(() => {
+    const text = serialiseConfig(
+      { ...config, format },
+      { defaults: defaultsByModule },
+    );
+    const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "starship.toml";
+    link.click();
+    URL.revokeObjectURL(url);
+  }, [config, format, defaultsByModule]);
+
   const share = useCallback(async () => {
     const fragment = encodeShare(config);
     const url = `${window.location.origin}${window.location.pathname}#${fragment}`;
@@ -260,11 +284,6 @@ export function Builder() {
     return vars as React.CSSProperties;
   }, [theme]);
 
-  const defaultsByModule = useMemo(() => {
-    const out: Record<string, Record<string, unknown>> = {};
-    for (const definition of ALL_MODULES) out[definition.name] = definition.defaults;
-    return out;
-  }, []);
 
   return (
     <div style={ansiVars} className="min-h-screen">
@@ -304,6 +323,15 @@ export function Builder() {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setAppTheme(appTheme === "dark" ? "light" : "dark")}
+            aria-label={`Switch to ${appTheme === "dark" ? "light" : "dark"} theme`}
+            title={`Switch to ${appTheme === "dark" ? "light" : "dark"} theme`}
+            className={ICON_BUTTON}
+          >
+            {appTheme === "dark" ? <SunIcon /> : <MoonIcon />}
+          </button>
           <a
             href="https://github.com/nicklambourne/starship-builder"
             aria-label="View this project on GitHub"
@@ -419,35 +447,53 @@ export function Builder() {
               onFontChange={setFont}
               presetId=""
               onPresetChange={loadPreset}
+              scenario={scenario}
+              onScenarioEdit={updateScenario}
               theme={theme}
               fontStack={font.stack}
             />
           </section>
 
+          {/*
+            The TOML is the output, not an input, so it stays closed — but the
+            download is the reason most people came, so it lives in the header
+            bar and works without opening anything.
+          */}
+          <details className={CARD}>
+            <summary className="flex cursor-pointer list-none items-center gap-3">
+              <span className="text-sm font-semibold text-neutral-100">
+                starship.toml
+              </span>
+              <span className="text-xs text-neutral-500">view or paste a config</span>
+              <span
+                role="button"
+                tabIndex={0}
+                aria-label="Download config"
+                onClick={(event) => {
+                  event.preventDefault();
+                  downloadConfig();
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    downloadConfig();
+                  }
+                }}
+                className="ml-auto inline-flex cursor-pointer items-center gap-1.5 rounded bg-emerald-600 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+              >
+                <DownloadIcon />
+                Download config
+              </span>
+            </summary>
+            <div className="mt-3">
+              <TomlPane
+                config={{ ...config, format }}
+                onConfigChange={setConfig}
+                defaults={defaultsByModule}
+              />
+            </div>
+          </details>
         </div>
-      </div>
-
-      {/*
-        The TOML is the output, not an input, so it sits last and closed. It
-        stays a full editor once opened — pasting a config in is still the
-        fastest way to start from someone else's prompt.
-      */}
-      <div className="mx-auto max-w-[1600px] px-4 pb-8">
-        <details className={CARD}>
-          <summary className="cursor-pointer text-sm font-semibold text-neutral-100">
-            starship.toml
-            <span className="ml-2 font-normal text-xs text-neutral-500">
-              view, copy, or paste a config to load it
-            </span>
-          </summary>
-          <div className="mt-3">
-            <TomlPane
-              config={{ ...config, format }}
-              onConfigChange={setConfig}
-              defaults={defaultsByModule}
-            />
-          </div>
-        </details>
       </div>
     </div>
   );

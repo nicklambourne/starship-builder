@@ -9,6 +9,16 @@ import { expect, test } from "@playwright/test";
  * desktop and mobile.
  */
 
+/** Opens the environment simulator and one of its sections. */
+async function openEnvSection(page: import("@playwright/test").Page, section: string) {
+  await page.locator("summary", { hasText: "Simulated environment" }).click();
+  await page
+    .locator("summary")
+    .filter({ hasText: new RegExp(`^${section}`) })
+    .first()
+    .click();
+}
+
 /** The TOML card is collapsed by default; open it before reading or editing. */
 async function openToml(page: import("@playwright/test").Page) {
   const summary = page.locator("summary", { hasText: "starship.toml" }).first();
@@ -234,6 +244,81 @@ test.describe("builder", () => {
 
     await details.getByText("starship.toml").first().click();
     await expect(page.getByLabel("starship.toml")).toBeVisible();
+  });
+
+  test("the simulated environment drives the preview", async ({ page }) => {
+    await page.goto("./");
+    const terminal = page.getByLabel("Simulated terminal prompt");
+    await expect(terminal).toContainText("feat/live-preview");
+
+    await openEnvSection(page, "Git repository");
+
+    // Renaming the branch in the simulator must reach the rendered prompt.
+    await page.getByLabel("Git branch").fill("release/2.0");
+    await expect(terminal).toContainText("release/2.0");
+
+    // starship shows `branch:upstream` while they differ, which is faithful —
+    // clearing the upstream collapses it to the one name.
+    await page.getByLabel("Upstream branch").fill("release/2.0");
+    await expect(terminal).not.toContainText("feat/live-preview");
+  });
+
+  test("a failing exit code flips the character module", async ({ page }) => {
+    await page.goto("./");
+    await openEnvSection(page, "Last command");
+
+    await page.getByLabel("Exit code").fill("127");
+    // The prompt character is red once the previous command failed.
+    const arrow = page
+      .getByLabel("Simulated terminal prompt")
+      .locator("span")
+      .filter({ hasText: /^❯$/ })
+      .last();
+    await expect(arrow).toHaveCSS("color", "rgb(247, 118, 142)");
+  });
+
+  test("installed tools can be simulated", async ({ page }) => {
+    await page.goto("./");
+    await openEnvSection(page, "Installed tools");
+
+    const rust = page.getByRole("button", { name: "Rust", exact: true });
+    await expect(rust).toHaveAttribute("aria-pressed", "false");
+    await rust.click();
+    await expect(rust).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("the app theme can be switched", async ({ page }) => {
+    await page.goto("./");
+    const html = page.locator("html");
+    await expect(html).not.toHaveAttribute("data-theme", "light");
+
+    await page.getByRole("button", { name: /^Switch to light theme/ }).click();
+    await expect(html).toHaveAttribute("data-theme", "light");
+    // The reversed neutral ramp must actually repaint the page.
+    await expect(page.locator("body")).toHaveCSS(
+      "background-color",
+      "rgb(255, 255, 255)",
+    );
+
+    await page.getByRole("button", { name: /^Switch to dark theme/ }).click();
+    await expect(html).toHaveAttribute("data-theme", "dark");
+  });
+
+  test("the config downloads without opening the TOML card", async ({ page }) => {
+    await page.goto("./");
+    const details = page.locator("details", { hasText: "starship.toml" }).first();
+    await expect(details).not.toHaveAttribute("open", "");
+
+    const download = page.getByLabel("Download config");
+    await expect(download).toBeVisible();
+
+    const [file] = await Promise.all([
+      page.waitForEvent("download"),
+      download.click(),
+    ]);
+    expect(file.suggestedFilename()).toBe("starship.toml");
+    // Downloading must not have expanded the card.
+    await expect(details).not.toHaveAttribute("open", "");
   });
 
   test("the preset picker lives with the preview", async ({ page }) => {

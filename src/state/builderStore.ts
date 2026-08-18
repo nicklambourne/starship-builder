@@ -12,7 +12,8 @@
 import { create } from "zustand";
 
 import type { StarshipConfig } from "@/lib/engine/prompt";
-import { DEFAULT_SCENARIO_ID } from "@/lib/scenarios";
+import type { Scenario } from "@/lib/scenarios/types";
+import { DEFAULT_SCENARIO_ID, getScenario } from "@/lib/scenarios";
 import { DEFAULT_THEME_ID } from "@/lib/terminalThemes";
 
 const HISTORY_LIMIT = 100;
@@ -20,8 +21,18 @@ const HISTORY_LIMIT = 100;
 export interface BuilderState {
   config: StarshipConfig;
   scenarioId: string;
+  /**
+   * The environment the preview renders against.
+   *
+   * Seeded from the chosen scenario, then edited freely — the bundled
+   * scenarios are starting points, not a fixed menu, because which modules
+   * appear depends entirely on this.
+   */
+  scenario: Scenario;
   themeId: string;
   fontId: string;
+  /** Light or dark chrome for the app itself, distinct from the terminal's. */
+  appTheme: "dark" | "light";
   /** Module currently open in the settings pane; null means the root options. */
   selectedModule: string | null;
 
@@ -35,8 +46,10 @@ export interface BuilderState {
   setRootOption(key: string, value: unknown): void;
   selectModule(name: string | null): void;
   setScenario(id: string): void;
+  updateScenario(patch: Partial<Scenario>): void;
   setTheme(id: string): void;
   setFont(id: string): void;
+  setAppTheme(theme: "dark" | "light"): void;
   undo(): void;
   redo(): void;
   reset(): void;
@@ -74,8 +87,10 @@ function withoutModuleOption(
 export const useBuilderStore = create<BuilderState>((set, get) => ({
   config: EMPTY_CONFIG,
   scenarioId: DEFAULT_SCENARIO_ID,
+  scenario: getScenario(DEFAULT_SCENARIO_ID),
   themeId: DEFAULT_THEME_ID,
   fontId: "jetbrains-mono",
+  appTheme: "dark",
   selectedModule: null,
   past: [],
   future: [],
@@ -117,7 +132,13 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
   },
 
   setScenario(id) {
-    set({ scenarioId: id });
+    // Picking a scenario resets any edits: it is a starting point, and
+    // silently keeping overrides would make the named scenarios untrustworthy.
+    set({ scenarioId: id, scenario: getScenario(id) });
+  },
+
+  updateScenario(patch) {
+    set({ scenario: { ...get().scenario, ...patch } });
   },
 
   setTheme(id) {
@@ -126,6 +147,15 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
 
   setFont(id) {
     set({ fontId: id });
+  },
+
+  setAppTheme(theme) {
+    set({ appTheme: theme });
+    // The reversed neutral ramp keys off the document element, so the whole
+    // interface flips from one attribute.
+    if (typeof document !== "undefined") {
+      document.documentElement.dataset.theme = theme;
+    }
   },
 
   undo() {
