@@ -16,6 +16,7 @@ import { FormatBuilder } from "./FormatBuilder";
 import { StyleStringBuilder } from "./StyleStringBuilder";
 import { Toggle } from "@/components/ui/Toggle";
 import type { Palette } from "@/lib/engine/styleString";
+import type { TerminalTheme } from "@/lib/terminalThemes";
 
 export interface OptionDescriptor {
   key: string;
@@ -35,6 +36,8 @@ interface SettingsFormProps {
   formatVariables?: string[];
   palette?: Palette;
   paletteNames?: string[];
+  /** Nested format editors show style swatches, which are theme-coloured. */
+  theme: TerminalTheme;
 }
 
 function Row({
@@ -80,6 +83,7 @@ export function SettingsForm({
   formatVariables,
   palette,
   paletteNames,
+  theme,
 }: SettingsFormProps) {
   const formId = useId();
 
@@ -112,6 +116,7 @@ export function SettingsForm({
                 palette={palette}
                 paletteNames={paletteNames}
                 noun="variable"
+                theme={theme}
               />
             ) : option.kind === "style" ? (
               <StyleStringBuilder
