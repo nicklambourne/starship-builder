@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   fromItems,
+  applyDrop,
   gatherCategory,
+  groupItem,
+  groupName,
   groupRange,
   groupableCategories,
   itemLabel,
@@ -190,5 +193,69 @@ describe("reorderItem", () => {
   it("is a no-op when dropped on itself", () => {
     const items = toItems("$a$b")!;
     expect(reorderItem(items, 1, 1)).toBe(items);
+  });
+});
+
+describe("groupItem", () => {
+  it("wraps only the item it was given, not its neighbour", () => {
+    const items = toItems("$a$b$c")!;
+    expect(fromItems(groupItem(items, 1))).toBe("$a[$b]()$c");
+  });
+
+  it("leaves an existing group alone", () => {
+    const items = toItems("[$a$b]()")!;
+    expect(groupItem(items, 0)).toBe(items);
+  });
+});
+
+describe("groupName", () => {
+  const categoryOf = (n: string) =>
+    ({ git_branch: "Git", git_status: "Git", nodejs: "Languages" })[n];
+
+  it("names a group after the one category inside it", () => {
+    const group = toItems("[$git_branch$git_status]()")![0];
+    if (group.kind !== "group") throw new Error("expected a group");
+    expect(groupName(group, categoryOf)).toBe("Git");
+  });
+
+  it("calls a group of several categories mixed", () => {
+    const group = toItems("[$git_branch$nodejs]()")![0];
+    if (group.kind !== "group") throw new Error("expected a group");
+    expect(groupName(group, categoryOf)).toBe("Mixed group");
+  });
+});
+
+describe("applyDrop", () => {
+  it("inserts before the target", () => {
+    const items = toItems("$a$b$c")!;
+    expect(fromItems(applyDrop(items, 2, 0, "before"))).toBe("$c$a$b");
+  });
+
+  it("inserts after the target", () => {
+    const items = toItems("$a$b$c")!;
+    expect(fromItems(applyDrop(items, 0, 2, "after"))).toBe("$b$c$a");
+  });
+
+  it("accounts for the gap left by the dragged item when moving forwards", () => {
+    // Dropping "after $b" must land between b and c, not past c.
+    const items = toItems("$a$b$c")!;
+    expect(fromItems(applyDrop(items, 0, 1, "after"))).toBe("$b$a$c");
+  });
+
+  it("pairs two loose items into a new group when dropped onto each other", () => {
+    const items = toItems("$a$b$c")!;
+    expect(fromItems(applyDrop(items, 2, 0, "into"))).toBe("[$a$c]()$b");
+  });
+
+  it("appends into an existing group rather than nesting a new one", () => {
+    const items = toItems("[$a$b]()$c")!;
+    const dropped = applyDrop(items, 1, 0, "into");
+    expect(fromItems(dropped)).toBe("[$a$b$c]()");
+    expect(dropped).toHaveLength(1);
+  });
+
+  it("is a no-op when dropped on itself", () => {
+    const items = toItems("$a$b")!;
+    expect(applyDrop(items, 1, 1, "into")).toBe(items);
   });
 });
