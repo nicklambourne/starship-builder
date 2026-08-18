@@ -111,8 +111,9 @@ describe("moveItem", () => {
 });
 
 describe("itemLabel", () => {
-  it("describes whitespace by length rather than showing nothing", () => {
-    expect(itemLabel({ kind: "text", value: "  " })).toBe("space × 2");
+  it("names a text piece as text and describes whitespace by length", () => {
+    expect(itemLabel({ kind: "text", value: "  " })).toBe("Text (space × 2)");
+    expect(itemLabel({ kind: "text", value: "on " })).toBe('Text "on "');
   });
 
   it("calls out $all", () => {

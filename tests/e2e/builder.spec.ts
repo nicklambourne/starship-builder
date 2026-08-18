@@ -429,6 +429,74 @@ test.describe("builder", () => {
     ).toBeVisible();
   });
 
+  test("a module can be removed outright, as well as switched off", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    await openToml(page);
+    const toml = page.getByLabel("starship.toml");
+    await expect(toml).toHaveValue(/\$git_branch/);
+
+    // The switch hides a module; the bin takes it out of the format entirely.
+    await page
+      .getByRole("button", { name: "Remove $git_branch from the prompt" })
+      .click();
+
+    await expect(toml).not.toHaveValue(/\$git_branch/);
+    await expect(
+      page.getByRole("button", { name: "Remove $git_branch from the prompt" }),
+    ).toHaveCount(0);
+  });
+
+  test("text pieces are labelled as text and removed with the same control", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    // The default preset's separators are literal text, not modules.
+    await expect(
+      page.getByRole("button", { name: /^Reorder Text / }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /^Remove Text .* from the prompt$/ }).first(),
+    ).toBeVisible();
+  });
+
+  test("the symbol picker opens in a popover, not inside the row", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    const trigger = page
+      .getByRole("button", { name: /^Insert a symbol into/ })
+      .first();
+    const row = page.locator("li").filter({ has: trigger }).first();
+    const before = await row.boundingBox();
+
+    await trigger.click();
+    const popover = page.getByRole("dialog", { name: "Nerd Font symbols" });
+    await expect(popover).toBeVisible();
+
+    // It must not stretch the row it belongs to, and it must be wider than tall.
+    const after = await row.boundingBox();
+    expect(Math.abs((after?.height ?? 0) - (before?.height ?? 0))).toBeLessThan(2);
+    const box = await popover.boundingBox();
+    expect(box!.width).toBeGreaterThan(box!.height);
+
+    await page.keyboard.press("Escape");
+    await expect(popover).toBeHidden();
+  });
+
+  test("modules carry a collapse indicator", async ({ page }) => {
+    await page.goto("./");
+    const chevron = page
+      .getByRole("button", { name: /^Expand \$directory/ })
+      .first();
+    await expect(chevron).toHaveAttribute("aria-expanded", "false");
+    await chevron.click();
+    await expect(
+      page.getByRole("button", { name: /^Collapse \$directory/ }).first(),
+    ).toHaveAttribute("aria-expanded", "true");
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {
