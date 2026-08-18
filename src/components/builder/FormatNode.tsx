@@ -48,6 +48,8 @@ export interface FormatNodeCallbacks {
   onTextChange(path: Path, value: string): void;
   /** Modules are switched on and off via their own `disabled` option. */
   isModuleEnabled(name: string): boolean;
+  /** Enabled, but rendering nothing right now — and why. */
+  inactiveNote(name: string): string | null;
   onToggleModule(name: string, enabled: boolean): void;
   isGroupEnabled(item: Extract<FormatItem, { kind: "group" }>): boolean;
   onToggleGroup(item: Extract<FormatItem, { kind: "group" }>, enabled: boolean): void;
@@ -122,6 +124,9 @@ export function FormatNode({
   };
 
   const canExpand = isModule || isGroup;
+  const moduleNote = isModule
+    ? cb.inactiveNote((item as Extract<FormatItem, { kind: "module" }>).name)
+    : null;
 
   return (
     <li
@@ -218,6 +223,14 @@ export function FormatNode({
             {isModule ? (
               <span className="truncate text-xs text-neutral-500">
                 {describeModule((item as Extract<FormatItem, { kind: "module" }>).name)}
+              </span>
+            ) : null}
+            {isModule && enabled && moduleNote ? (
+              <span
+                title={moduleNote}
+                className="truncate text-xs text-amber-300/80"
+              >
+                Not showing — {moduleNote}
               </span>
             ) : null}
           </button>

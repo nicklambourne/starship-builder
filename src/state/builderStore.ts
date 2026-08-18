@@ -14,6 +14,7 @@ import { create } from "zustand";
 import type { StarshipConfig } from "@/lib/engine/prompt";
 import type { Scenario } from "@/lib/scenarios/types";
 import { DEFAULT_SCENARIO_ID, getScenario } from "@/lib/scenarios";
+import { TERMINAL_FONTS } from "@/lib/fonts";
 import { DEFAULT_THEME_ID } from "@/lib/terminalThemes";
 
 const HISTORY_LIMIT = 100;
@@ -87,7 +88,9 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
   config: EMPTY_CONFIG,
   scenario: getScenario(DEFAULT_SCENARIO_ID),
   themeId: DEFAULT_THEME_ID,
-  fontId: "jetbrains-mono",
+  // The first bundled font is the default, so the list stays the one
+  // place that decides which font people see first.
+  fontId: TERMINAL_FONTS[0].id,
   appTheme: "dark",
   selectedModule: null,
   past: [],

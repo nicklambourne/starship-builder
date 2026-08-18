@@ -56,6 +56,7 @@ interface FormatBuilderProps {
   /** Present only for the root format, where rows manage real modules. */
   modules?: {
     isEnabled(name: string): boolean;
+    inactiveNote(name: string): string | null;
     setEnabled(name: string, enabled: boolean): void;
     renderSettings(name: string): React.ReactNode;
   };
@@ -204,6 +205,7 @@ export function FormatBuilder({
         ),
       ),
     isModuleEnabled: (name) => modules?.isEnabled(name) ?? true,
+    inactiveNote: (name) => modules?.inactiveNote(name) ?? null,
     onToggleModule: (name, enabled) => modules?.setEnabled(name, enabled),
     isGroupEnabled: (group) =>
       collectModuleNames(group.items).some((name) => modules?.isEnabled(name) ?? true),

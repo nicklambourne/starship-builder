@@ -365,6 +365,38 @@ test.describe("builder", () => {
     await expect(page.getByLabel("starship.toml")).not.toHaveValue(/\[git_branch\]/);
   });
 
+  test("explains why an enabled module shows nothing, and SSH fixes it", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    const terminal = page.getByLabel("Simulated terminal prompt");
+
+    // username and hostname are on by default but invisible in a local
+    // session — starship gates them on root/SSH. Say so rather than looking
+    // like a bug.
+    await expect(page.getByText(/Not showing — starship only shows your username/)).toBeVisible();
+    await expect(page.getByText(/Not showing — starship only shows the hostname over SSH/)).toBeVisible();
+    await expect(terminal).not.toContainText("laptop");
+
+    await openEnvSection(page, "Session");
+    await page.getByRole("switch", { name: "Connected over SSH" }).click();
+
+    await expect(terminal).toContainText("laptop");
+    await expect(
+      page.getByText(/Not showing — starship only shows the hostname over SSH/),
+    ).toHaveCount(0);
+  });
+
+  test("the preset picker starts the prompt format section", async ({ page }) => {
+    await page.goto("./");
+    const preset = page.getByLabel("Start from");
+    await expect(preset).toBeVisible();
+    // It sits in the format card, not the preview and not the header.
+    await expect(
+      page.locator("section[aria-labelledby='format-heading']").getByLabel("Start from"),
+    ).toBeVisible();
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {
@@ -373,14 +405,6 @@ test.describe("builder", () => {
     await expect(
       page.locator("summary").filter({ hasText: "Simulated environment" }),
     ).toBeVisible();
-  });
-
-  test("the preset picker lives with the preview", async ({ page }) => {
-    await page.goto("./");
-    const preset = page.getByLabel("Preset");
-    await expect(preset).toBeVisible();
-    // It sits inside the preview section, not the header.
-    await expect(page.locator("header").getByLabel("Preset")).toHaveCount(0);
   });
 
   test("pasted TOML drives the preview", async ({ page }) => {
@@ -414,7 +438,7 @@ test.describe("builder", () => {
     await page.goto("./");
     const loaded = await page.evaluate(async () => {
       await document.fonts.ready;
-      return document.fonts.check("14px 'JetBrainsMono Nerd Font Mono'");
+      return document.fonts.check("14px 'Hack Nerd Font Mono'");
     });
     expect(loaded).toBe(true);
   });

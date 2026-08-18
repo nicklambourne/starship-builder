@@ -13,14 +13,32 @@
  * Do NOT rewrite these as root-relative `/fonts/...` URLs: those are emitted
  * verbatim and 404 under the base path.
  *
- * Only the faces a user actually selects are downloaded, so the ~11 MB total
- * is a repository/deploy cost, not a page-load cost (~1 MB for the default).
+ * Only the faces a user actually selects are downloaded, so the ~28.5 MB total
+ * is a repository/deploy cost, not a page-load cost (~2.3 MB for the default,
+ * and only ~1.2 MB before the first bold glyph is drawn).
  */
 
-/* JetBrainsMono Nerd Font Mono — SIL OFL 1.1 — default */
+/* Hack Nerd Font Mono — MIT (+ Bitstream Vera for inherited outlines) — default */
+@font-face {
+  font-family: "Hack Nerd Font Mono";
+  src: url("../assets/fonts/HackNerdFontMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Hack Nerd Font Mono";
+  src: url("../assets/fonts/HackNerdFontMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* JetBrainsMono Nerd Font Mono — SIL OFL 1.1 */
 @font-face {
   font-family: "JetBrainsMono Nerd Font Mono";
-  src: url("../../public/fonts/JetBrainsMonoNerdFontMono-Regular.woff2") format("woff2");
+  src: url("../assets/fonts/JetBrainsMonoNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -28,7 +46,7 @@
 
 @font-face {
   font-family: "JetBrainsMono Nerd Font Mono";
-  src: url("../../public/fonts/JetBrainsMonoNerdFontMono-Bold.woff2") format("woff2");
+  src: url("../assets/fonts/JetBrainsMonoNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -37,7 +55,7 @@
 /* FiraCode Nerd Font Mono — SIL OFL 1.1 */
 @font-face {
   font-family: "FiraCode Nerd Font Mono";
-  src: url("../../public/fonts/FiraCodeNerdFontMono-Regular.woff2") format("woff2");
+  src: url("../assets/fonts/FiraCodeNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -45,24 +63,7 @@
 
 @font-face {
   font-family: "FiraCode Nerd Font Mono";
-  src: url("../../public/fonts/FiraCodeNerdFontMono-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Hack Nerd Font Mono — MIT (+ Bitstream Vera for inherited outlines) */
-@font-face {
-  font-family: "Hack Nerd Font Mono";
-  src: url("../../public/fonts/HackNerdFontMono-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Hack Nerd Font Mono";
-  src: url("../../public/fonts/HackNerdFontMono-Bold.woff2") format("woff2");
+  src: url("../assets/fonts/FiraCodeNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -71,7 +72,7 @@
 /* CaskaydiaCove Nerd Font Mono (Cascadia Code) — SIL OFL 1.1 */
 @font-face {
   font-family: "CaskaydiaCove Nerd Font Mono";
-  src: url("../../public/fonts/CaskaydiaCoveNerdFontMono-Regular.woff2") format("woff2");
+  src: url("../assets/fonts/CaskaydiaCoveNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -79,7 +80,7 @@
 
 @font-face {
   font-family: "CaskaydiaCove Nerd Font Mono";
-  src: url("../../public/fonts/CaskaydiaCoveNerdFontMono-Bold.woff2") format("woff2");
+  src: url("../assets/fonts/CaskaydiaCoveNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -88,7 +89,7 @@
 /* SauceCodePro Nerd Font Mono (Source Code Pro) — SIL OFL 1.1 */
 @font-face {
   font-family: "SauceCodePro Nerd Font Mono";
-  src: url("../../public/fonts/SauceCodeProNerdFontMono-Regular.woff2") format("woff2");
+  src: url("../assets/fonts/SauceCodeProNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -96,7 +97,126 @@
 
 @font-face {
   font-family: "SauceCodePro Nerd Font Mono";
-  src: url("../../public/fonts/SauceCodeProNerdFontMono-Bold.woff2") format("woff2");
+  src: url("../assets/fonts/SauceCodeProNerdFontMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* IosevkaTerm Nerd Font Mono — SIL OFL 1.1 */
+@font-face {
+  font-family: "IosevkaTerm Nerd Font Mono";
+  src: url("../assets/fonts/IosevkaTermNerdFontMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IosevkaTerm Nerd Font Mono";
+  src: url("../assets/fonts/IosevkaTermNerdFontMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* BlexMono Nerd Font Mono (IBM Plex Mono) — SIL OFL 1.1 */
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("../assets/fonts/BlexMonoNerdFontMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("../assets/fonts/BlexMonoNerdFontMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* RobotoMono Nerd Font Mono — Apache 2.0 (upstream now SIL OFL 1.1) */
+@font-face {
+  font-family: "RobotoMono Nerd Font Mono";
+  src: url("../assets/fonts/RobotoMonoNerdFontMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "RobotoMono Nerd Font Mono";
+  src: url("../assets/fonts/RobotoMonoNerdFontMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* DejaVuSansM Nerd Font Mono (DejaVu Sans Mono) — Bitstream Vera (+ Arev) */
+@font-face {
+  font-family: "DejaVuSansM Nerd Font Mono";
+  src: url("../assets/fonts/DejaVuSansMNerdFontMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DejaVuSansM Nerd Font Mono";
+  src: url("../assets/fonts/DejaVuSansMNerdFontMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Inconsolata Nerd Font Mono — SIL OFL 1.1 */
+@font-face {
+  font-family: "Inconsolata Nerd Font Mono";
+  src: url("../assets/fonts/InconsolataNerdFontMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inconsolata Nerd Font Mono";
+  src: url("../assets/fonts/InconsolataNerdFontMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* SpaceMono Nerd Font Mono — SIL OFL 1.1 */
+@font-face {
+  font-family: "SpaceMono Nerd Font Mono";
+  src: url("../assets/fonts/SpaceMonoNerdFontMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SpaceMono Nerd Font Mono";
+  src: url("../assets/fonts/SpaceMonoNerdFontMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* NotoSansM Nerd Font Mono (Noto Sans Mono) — SIL OFL 1.1 */
+@font-face {
+  font-family: "NotoSansM Nerd Font Mono";
+  src: url("../assets/fonts/NotoSansMNerdFontMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "NotoSansM Nerd Font Mono";
+  src: url("../assets/fonts/NotoSansMNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;

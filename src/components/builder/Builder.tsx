@@ -34,6 +34,7 @@ import { DEFAULT_FORMAT, renderPrompt } from "@/lib/engine/prompt";
 import { collectVariables, tryParseFormatString } from "@/lib/engine/formatString";
 import { resolvePalette } from "@/lib/engine/styleString";
 import { structuredFormatString } from "@/lib/config/defaultFormat";
+import { inactiveReason } from "@/lib/config/inactiveReason";
 import { MODULE_META, optionKind } from "@/lib/config/meta";
 import { PRESETS } from "@/lib/config/presets";
 import { encodeShare } from "@/lib/config/share";
@@ -72,8 +73,6 @@ const ROOT_OPTIONS: OptionDescriptor[] = [
 ];
 
 const CARD = "rounded-xl border border-white/10 bg-neutral-900/40 p-4";
-const BUTTON =
-  "rounded border border-white/10 px-2.5 py-1.5 text-sm text-neutral-300 transition enabled:hover:border-sky-400 disabled:opacity-40";
 const ICON_BUTTON =
   "grid size-9 place-items-center rounded border border-white/10 text-neutral-300 transition enabled:hover:border-sky-400 enabled:hover:text-sky-200 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400";
 
@@ -189,6 +188,33 @@ export function Builder() {
     [scenario, config],
   );
 
+  /**
+   * Modules that are switched on but render nothing in this environment.
+   *
+   * A switch reading "on" beside an empty prompt is the single most confusing
+   * thing about starship's defaults — `username` and `hostname` are on, and
+   * invisible, until you are root or on SSH.
+   */
+  const inactiveNotes = useMemo(() => {
+    const notes = new Map<string, string>();
+    for (const definition of ALL_MODULES) {
+      const options = {
+        ...definition.defaults,
+        ...((config[definition.name] as Record<string, unknown>) ?? {}),
+      };
+      let produces = false;
+      try {
+        produces = definition.evaluate(options, { scenario, rootConfig: config }) !== null;
+      } catch {
+        produces = false;
+      }
+      if (!produces) {
+        notes.set(definition.name, inactiveReason(definition.name, scenario, options));
+      }
+    }
+    return notes;
+  }, [config, scenario]);
+
   const moduleControls = useMemo(
     () => ({
       isEnabled(name: string) {
@@ -198,6 +224,9 @@ export function Builder() {
             ? options.disabled
             : (MODULES_BY_NAME.get(name)?.defaults.disabled ?? false);
         return !disabled;
+      },
+      inactiveNote(name: string) {
+        return inactiveNotes.get(name) ?? null;
       },
       setEnabled(name: string, enabled: boolean) {
         setModuleDisabled(name, !enabled);
@@ -209,7 +238,7 @@ export function Builder() {
     // renderSettings is redefined whenever the config changes, which is also
     // exactly when enablement can change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [config, setModuleDisabled],
+    [config, inactiveNotes, setModuleDisabled],
   );
 
   const renderSettings = useCallback(
@@ -373,9 +402,35 @@ export function Builder() {
         {/* Left column: everything that changes the prompt. */}
         <div className="flex min-w-0 flex-col gap-4">
           <section className={CARD} aria-labelledby="format-heading">
-            <h2 id="format-heading" className="mb-1 text-sm font-semibold text-neutral-100">
-              Prompt format
-            </h2>
+            <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+              <h2 id="format-heading" className="text-sm font-semibold text-neutral-100">
+                Prompt format
+              </h2>
+              {/* A preset replaces the whole format, so it starts this section. */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="preset-select" className="text-xs text-neutral-400">
+                  Start from
+                </label>
+                <select
+                  id="preset-select"
+                  defaultValue=""
+                  onChange={(event) => {
+                    loadPreset(event.target.value);
+                    event.target.value = "";
+                  }}
+                  className="rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-200 focus:border-sky-400 focus:outline-none"
+                >
+                  <option value="" disabled>
+                    a preset…
+                  </option>
+                  {PRESETS.map((preset) => (
+                    <option key={preset.id} value={preset.id}>
+                      {preset.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
             <p className="mb-3 text-xs text-neutral-500">
               What the prompt contains, and in what order. Reorder, remove, recolour,
               or add pieces here. Drag the handles to reorder; group a run of
@@ -460,8 +515,6 @@ export function Builder() {
               onThemeChange={setTheme}
               fontId={fontId}
               onFontChange={setFont}
-              presetId=""
-              onPresetChange={loadPreset}
               scenario={scenario}
               onScenarioEdit={updateScenario}
               theme={theme}

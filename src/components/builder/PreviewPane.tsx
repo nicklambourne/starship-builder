@@ -16,7 +16,6 @@
 
 import { EnvironmentPanel } from "./EnvironmentPanel";
 import { Terminal } from "@/components/terminal/Terminal";
-import { PRESETS } from "@/lib/config/presets";
 import { TERMINAL_FONTS } from "@/lib/fonts";
 import { TERMINAL_THEMES, type TerminalTheme } from "@/lib/terminalThemes";
 import type { Segment } from "@/lib/engine/types";
@@ -34,8 +33,6 @@ interface PreviewPaneProps {
   onFontChange(id: string): void;
   theme: TerminalTheme;
   fontStack: string;
-  presetId: string;
-  onPresetChange(id: string): void;
   scenario: Scenario;
   onScenarioEdit(patch: Partial<Scenario>): void;
 }
@@ -54,7 +51,6 @@ export function PreviewPane({
   onFontChange,
   theme,
   fontStack,
-  onPresetChange,
   scenario,
   onScenarioEdit,
 }: PreviewPaneProps) {
@@ -70,31 +66,7 @@ export function PreviewPane({
         fontStack={fontStack}
       />
 
-      <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="preset-select" className="text-xs text-neutral-400">
-            Preset
-          </label>
-          <select
-            id="preset-select"
-            defaultValue=""
-            onChange={(e) => {
-              onPresetChange(e.target.value);
-              e.target.value = "";
-            }}
-            className={SELECT_CLASS}
-          >
-            <option value="" disabled>
-              Load a preset…
-            </option>
-            {PRESETS.map((preset) => (
-              <option key={preset.id} value={preset.id}>
-                {preset.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
+      <div className="grid grid-cols-2 gap-2">
         <div className="flex flex-col gap-1">
           <label htmlFor="theme-select" className="text-xs text-neutral-400">
             Terminal color scheme
