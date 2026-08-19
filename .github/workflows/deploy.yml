@@ -14,23 +14,19 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
   build:
-    # Deploys only ever run on trusted refs (push to main / manual dispatch),
-    # so this can always take the self-hosted runner when one is configured.
-    # See ci.yml for the fork-PR reasoning behind the fallback chain.
-    runs-on: ${{ vars.SELF_HOSTED_RUNNER || 'ubuntu-latest' }}
-    container:
-      image: node:22-bookworm
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Enable pnpm
         run: corepack enable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
@@ -42,9 +38,6 @@ jobs:
 
   deploy:
     needs: build
-    # Kept on a GitHub-hosted runner: this job only calls the Pages deployment
-    # API, and keeping it off the LAN cluster means a runner outage cannot
-    # strand a deployment.
     runs-on: ubuntu-latest
     environment:
       name: github-pages

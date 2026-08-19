@@ -379,8 +379,10 @@ not implement.
 **M5 — Polish & launch** — remaining
 Full axe/a11y audit, keyboard-only pass, README screenshots and a demo GIF,
 CONTRIBUTING.md with an "add a module" guide, and submission to starship's
-community list. Also outstanding: the approximations listed in §13, and moving
-CI onto the self-hosted runners (see `docs/ci-runners.md`).
+community list. Also outstanding: the approximations listed in §13.
+
+CI stays on GitHub-hosted runners for as long as this repository is public;
+the self-hosted cluster is deliberately not used (see `docs/ci-runners.md`).
 
 ---
 
