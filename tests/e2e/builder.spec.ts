@@ -492,6 +492,8 @@ test.describe("builder", () => {
     page,
   }) => {
     await page.goto("./");
+    // The field and its picker live behind the row's collapse control now.
+    await page.getByRole("button", { name: /^Expand Text / }).first().click();
     const trigger = page
       .getByRole("button", { name: /^Insert a symbol into/ })
       .first();
@@ -510,6 +512,31 @@ test.describe("builder", () => {
 
     await page.keyboard.press("Escape");
     await expect(popover).toBeHidden();
+  });
+
+  test("a text piece keeps its field behind its collapse control", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    // Anchor on the drag handle: the expand button renames itself on click.
+    const row = page
+      .locator("li")
+      .filter({ has: page.getByRole("button", { name: /^Reorder Text / }) })
+      .first();
+    const expand = row.getByRole("button", { name: /^(Expand|Collapse) Text / });
+    const field = row.getByLabel(/^Text content of /);
+
+    // Collapsed, the row is a label and its controls — no field, no picker.
+    await expect(field).toBeHidden();
+    await expect(row.getByRole("button", { name: /^Insert a symbol into/ })).toBeHidden();
+
+    await expand.click();
+    await expect(field).toBeVisible();
+    await expect(row.getByRole("button", { name: /^Insert a symbol into/ })).toBeVisible();
+
+    // It still edits the prompt.
+    await field.fill(" | ");
+    await expect(page.getByLabel("Simulated terminal prompt")).toContainText("|");
   });
 
   test("modules carry a collapse indicator", async ({ page }) => {

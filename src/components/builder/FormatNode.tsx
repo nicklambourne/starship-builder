@@ -130,7 +130,11 @@ export function FormatNode({
     }
   };
 
-  const canExpand = isModule || isGroup;
+  const isText = item.kind === "text";
+  // Text carries a setting of its own — the literal it prints — so it opens
+  // like a module rather than editing in the row, where the field crowded the
+  // controls and the symbol picker had nowhere to sit.
+  const canExpand = isModule || isGroup || isText;
   const moduleNote = isModule
     ? cb.inactiveNote((item as Extract<FormatItem, { kind: "module" }>).name)
     : null;
@@ -225,7 +229,11 @@ export function FormatNode({
             className="flex min-w-0 flex-1 flex-col text-left"
           >
             <span className="flex min-w-0 items-center gap-1.5">
-              <span className={`truncate font-mono text-sm ${TONE[item.kind]}`}>
+              <span
+                className={`truncate font-mono text-sm ${TONE[item.kind]} ${
+                  isText ? "nerd-font" : ""
+                }`}
+              >
                 {label}
               </span>
               {isModule && enabled && moduleNote ? (
@@ -251,28 +259,13 @@ export function FormatNode({
             ) : null}
           </button>
         ) : (
+          // Only raw fragments are left: nothing to open, nothing to edit.
           <span className="flex min-w-0 flex-1 flex-col">
-            <span
-              className={`truncate font-mono text-sm ${TONE[item.kind]} ${
-                item.kind === "text" ? "nerd-font" : ""
-              }`}
-            >
+            <span className={`truncate font-mono text-sm ${TONE[item.kind]}`}>
               {label}
             </span>
           </span>
         )}
-
-        {item.kind === "text" ? (
-          <div className="w-36 shrink-0">
-            <SymbolInput
-              value={item.value}
-              onChange={(next) => cb.onTextChange(path, next)}
-              fontStack={cb.fontStack}
-              ariaLabel={`Text content of ${label}`}
-              className="w-full rounded border border-white/10 bg-neutral-950 px-1.5 py-0.5 text-base text-neutral-100 focus:border-accent-400 focus:outline-none"
-            />
-          </div>
-        ) : null}
 
         {isGroup ? (
           <button
@@ -318,7 +311,13 @@ export function FormatNode({
             type="button"
             aria-label={`${expanded ? "Collapse" : "Expand"} ${label}`}
             aria-expanded={expanded}
-            title={isModule ? "Show this module's settings" : "Show what is in this group"}
+            title={
+              isModule
+                ? "Show this module's settings"
+                : isText
+                  ? "Edit the text this prints"
+                  : "Show what is in this group"
+            }
             onClick={() => cb.onExpandToggle(path)}
             className={NEUTRAL_BUTTON}
           >
@@ -350,6 +349,21 @@ export function FormatNode({
       {expanded && isModule ? (
         <div className="border-t border-white/10 px-2.5 pb-3 pt-1">
           {cb.renderModuleSettings((item as Extract<FormatItem, { kind: "module" }>).name)}
+        </div>
+      ) : null}
+
+      {expanded && isText ? (
+        <div className="flex flex-col gap-1.5 border-t border-white/10 px-2.5 pb-3 pt-2">
+          <span className="text-xs text-neutral-400">
+            Printed exactly as written, between the pieces either side of it
+          </span>
+          <SymbolInput
+            value={(item as Extract<FormatItem, { kind: "text" }>).value}
+            onChange={(next) => cb.onTextChange(path, next)}
+            fontStack={cb.fontStack}
+            ariaLabel={`Text content of ${label}`}
+            className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-base text-neutral-100 focus:border-accent-400 focus:outline-none"
+          />
         </div>
       ) : null}
 
