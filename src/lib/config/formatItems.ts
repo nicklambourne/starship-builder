@@ -49,8 +49,14 @@ function elementToItem(element: FormatElement): FormatItem {
   if (element.type === "textGroup") {
     const style = styleToString(element.style);
     const inner = element.format;
-    // A group wrapping exactly one variable is a styled module.
-    if (inner.length === 1 && inner[0].type === "variable") {
+    /*
+     * A group wrapping exactly one variable is how a styled module is
+     * written, so it reads back as one — but only when it carries a style.
+     * `[$directory]()` styles nothing, so the wrapper exists for one reason
+     * only: someone grouped it. Collapsing that case dissolved every group
+     * the moment it was made, since a new group starts with one item.
+     */
+    if (inner.length === 1 && inner[0].type === "variable" && style !== "") {
       return { kind: "module", name: inner[0].name, style };
     }
     // A group of pure text is styled literal text.
@@ -81,6 +87,21 @@ export function itemToSource(item: FormatItem): string {
   if (item.kind === "raw") return item.source;
 
   if (item.kind === "group") {
+    /*
+     * `[$a](bold)` is both "a group of one, styled bold" and "a bold module":
+     * the format string cannot tell them apart, so a group of one can only
+     * survive unstyled. When one is left holding a style — usually because a
+     * group was emptied down to a single member — the style moves onto that
+     * member, which renders the same and keeps it visible in the UI. A member
+     * with its own style already overrides the group's, so it just keeps it.
+     */
+    if (item.items.length === 1 && item.style) {
+      const only = item.items[0];
+      if (only.kind !== "raw" && !only.style) {
+        return itemToSource({ ...only, style: item.style });
+      }
+      return itemToSource(only);
+    }
     return `[${item.items.map(itemToSource).join("")}](${item.style ?? ""})`;
   }
 

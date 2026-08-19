@@ -413,7 +413,7 @@ export function Builder() {
         <Explainer />
       </div>
 
-      <div className="mx-auto grid max-w-[1600px] gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(380px,0.9fr)] lg:items-start">
+      <div className="mx-auto grid max-w-[1600px] gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(460px,1.15fr)] lg:items-start">
         {/* Left column: everything that changes the prompt. */}
         <div className="flex min-w-0 flex-col gap-4">
           <details open data-section="format" className={CARD}>

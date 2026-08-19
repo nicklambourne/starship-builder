@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import type { FormatItem } from "@/lib/config/formatItems";
 import {
   fromItems,
   applyDrop,
@@ -258,5 +259,45 @@ describe("applyDrop", () => {
   it("is a no-op when dropped on itself", () => {
     const items = toItems("$a$b")!;
     expect(applyDrop(items, 1, 1, "into")).toBe(items);
+  });
+});
+
+describe("single-item groups", () => {
+  it("survives a round trip through the format string", () => {
+    // The group button makes a group of one, so this is the state every
+    // group passes through. Collapsing it back to a module made the button
+    // look dead.
+    const grouped = groupItem(toItems("$a$b")!, 0);
+    expect(fromItems(grouped)).toBe("[$a]()$b");
+    const back = toItems("[$a]()$b")!;
+    expect(back[0].kind).toBe("group");
+    expect(back[0]).toEqual({ kind: "group", style: "", items: [{ kind: "module", name: "a" }] });
+  });
+
+  it("still reads a styled single variable as a styled module", () => {
+    // `[$a](bold)` is how a module carries its own style; that has to keep
+    // working, or every styled module would become a group.
+    expect(toItems("[$a](bold)")![0]).toEqual({ kind: "module", name: "a", style: "bold" });
+  });
+});
+
+describe("a group left with one member", () => {
+  it("hands its style to that member rather than losing it", () => {
+    const group: FormatItem = {
+      kind: "group",
+      style: "bold",
+      items: [{ kind: "module", name: "a" }],
+    };
+    expect(fromItems([group])).toBe("[$a](bold)");
+  });
+
+  it("leaves a member that already has its own style alone", () => {
+    // The member's style overrides the group's, so the group's never showed.
+    const group: FormatItem = {
+      kind: "group",
+      style: "bold",
+      items: [{ kind: "module", name: "a", style: "red" }],
+    };
+    expect(fromItems([group])).toBe("[$a](red)");
   });
 });
