@@ -54,7 +54,12 @@ silently unless pinned. When changing anything under `src/lib/engine/`:
 - Module defaults must match starship **byte for byte**, including Nerd Font
   glyphs and trailing spaces in format strings.
 - Add a parity case (`tests/parity/`) for anything the harness does not already
-  cover.
+  cover. The sweep in `tests/parity/sweep.ts` gives most modules one already;
+  a module that cannot have a deterministic fixture belongs in `UNSWEEPABLE`
+  with the reason, not left out.
+- Parity runs against a **pinned** starship on pull requests and the **latest**
+  release on its weekly schedule. When the weekly run fails, the engine is
+  behind upstream: fix it and move the pin in `.github/workflows/parity.yml`.
 
 ## Worktree isolation
 
