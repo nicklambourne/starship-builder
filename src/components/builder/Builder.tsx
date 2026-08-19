@@ -9,7 +9,7 @@
  * together, which is the whole point of a live configurator.
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { EnvironmentPanel } from "./EnvironmentPanel";
 import { Explainer } from "./Explainer";
@@ -102,12 +102,27 @@ export function Builder() {
     setFont,
     appTheme,
     setAppTheme,
+    adoptSystemTheme,
     undo,
     redo,
     reset,
     past,
     future,
   } = useBuilderStore();
+
+  /*
+   * Follow the operating system's colour scheme, and keep following it if it
+   * changes — someone on an automatic day/night switch should not have to
+   * work the toggle twice a day. The store stops listening once the toggle is
+   * used.
+   */
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-color-scheme: light)");
+    const sync = () => adoptSystemTheme(query.matches ? "light" : "dark");
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, [adoptSystemTheme]);
 
   const [shareCopied, setShareCopied] = useState(false);
   const [confirmingReset, setConfirmingReset] = useState(false);

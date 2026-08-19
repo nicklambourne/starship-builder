@@ -13,7 +13,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/*
+          Runs before first paint so the interface never flashes dark at
+          someone whose system is set to light. React only takes over the
+          attribute when the toggle is used.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){}",
+          }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   );

@@ -19,6 +19,10 @@ export default defineConfig({
   use: {
     baseURL: `http://127.0.0.1:${PORT}/starship-prompt-builder/`,
     trace: "on-first-retry",
+    // The interface follows the operating system now, and Playwright's own
+    // default is light. Pinning the baseline keeps every other test on the
+    // design's default surface; the tests that care emulate their own.
+    colorScheme: "dark",
   },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },

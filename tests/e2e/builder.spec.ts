@@ -320,9 +320,12 @@ test.describe("builder", () => {
   });
 
   test("the app theme can be switched", async ({ page }) => {
+    // Explicit: the page follows the system now, so the starting point is a
+    // property of the emulated environment rather than of the app.
+    await page.emulateMedia({ colorScheme: "dark" });
     await page.goto("./");
     const html = page.locator("html");
-    await expect(html).not.toHaveAttribute("data-theme", "light");
+    await expect(html).toHaveAttribute("data-theme", "dark");
 
     await page.getByRole("button", { name: /^Switch to light theme/ }).click();
     await expect(html).toHaveAttribute("data-theme", "light");
@@ -904,6 +907,37 @@ test.describe("builder", () => {
     await context.fill("");
     await expect(namespace).toBeDisabled();
     await expect(namespace).toHaveValue("");
+  });
+
+  test("the interface starts in the system colour scheme", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.goto("./");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    // Set before paint, not after hydration.
+    const painted = await page.evaluate(
+      () => getComputedStyle(document.body).backgroundColor,
+    );
+    expect(painted).not.toBe("rgb(0, 0, 0)");
+
+    await page.emulateMedia({ colorScheme: "dark" });
+    await page.goto("./");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  });
+
+  test("the toggle outranks the system, and keeps outranking it", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: "dark" });
+    await page.goto("./");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+    await page.getByRole("button", { name: /Switch to light theme/ }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+    // The OS changing underneath must not undo a deliberate choice.
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.emulateMedia({ colorScheme: "dark" });
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   });
 
   test("there is no scenario picker; the environment panel covers it", async ({
