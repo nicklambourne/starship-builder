@@ -231,15 +231,7 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
   };
 
   return (
-    <details className="rounded-lg border border-white/10 bg-neutral-900/30">
-      <summary className="cursor-pointer px-3 py-2 text-sm font-semibold text-neutral-100">
-        Simulated environment
-        <span className="ml-2 text-xs font-normal text-neutral-500">
-          what the shell would report — decides which modules appear
-        </span>
-      </summary>
-
-      <div className="flex flex-col gap-2 border-t border-white/10 p-3">
+    <div className="flex flex-col gap-2">
         <Section title="Session" hint="user, host, shell">
           <div className="grid gap-2 sm:grid-cols-2">
             <Field label="Username">
@@ -704,7 +696,6 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
             addLabel="+ Add a variable"
           />
         </Section>
-      </div>
-    </details>
+    </div>
   );
 }

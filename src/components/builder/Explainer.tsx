@@ -16,6 +16,7 @@ export function Explainer() {
   return (
     <details
       open
+      data-section="explainer"
       className="rounded-xl border border-white/10 bg-neutral-900/40 p-4"
     >
       <summary className="cursor-pointer text-sm font-semibold text-neutral-100 marker:text-neutral-500">

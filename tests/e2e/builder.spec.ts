@@ -11,8 +11,12 @@ import { expect, test } from "@playwright/test";
 
 /** Opens the environment simulator and one of its sections. */
 async function openEnvSection(page: import("@playwright/test").Page, section: string) {
-  await page.locator("summary", { hasText: "Simulated environment" }).click();
-  await page
+  // The environment section is open by default; clicking would close it.
+  const card = page.locator("[data-section='environment']");
+  if (!(await card.evaluate((el: HTMLDetailsElement) => el.open))) {
+    await card.locator("> summary").click();
+  }
+  await card
     .locator("summary")
     .filter({ hasText: new RegExp(`^${section}`) })
     .first()
@@ -758,6 +762,65 @@ test.describe("builder", () => {
       .selectOption("fish");
     await expect(guide.getByText(/set to Fish in the simulated/)).toBeVisible();
     await expect(guide.getByText("~/.config/fish/config.fish")).toBeVisible();
+  });
+
+  test("the preview spans the page above the columns", async ({ page }, info) => {
+    await page.goto("./");
+    const preview = page.locator("[data-section='preview']");
+    const format = page.locator("[data-section='format']");
+    const explainer = page.locator("[data-section='explainer']");
+
+    const boxes = await page.evaluate(() => {
+      const box = (sel: string) => {
+        const r = document.querySelector(sel)!.getBoundingClientRect();
+        return { top: r.top, bottom: r.bottom, width: r.width };
+      };
+      return {
+        explainer: box("[data-section='explainer']"),
+        preview: box("[data-section='preview']"),
+        format: box("[data-section='format']"),
+        environment: box("[data-section='environment']"),
+      };
+    });
+    // Below the explainer, above the editor…
+    await expect(explainer).toBeVisible();
+    await expect(preview).toBeVisible();
+    expect(boxes.preview.top).toBeGreaterThanOrEqual(boxes.explainer.bottom - 1);
+    expect(boxes.preview.bottom).toBeLessThanOrEqual(boxes.format.top + 1);
+
+    // On a phone the editor follows the preview; the environment and the
+    // output sit after it.
+    if (info.project.name === "mobile") {
+      expect(boxes.format.top).toBeLessThan(boxes.environment.top);
+    }
+
+    if (info.project.name === "desktop") {
+      // …and as wide as both columns together.
+      expect(boxes.preview.width).toBeGreaterThan(boxes.format.width + 100);
+      expect(boxes.preview.width).toBeGreaterThan(boxes.environment.width + 100);
+    }
+  });
+
+  test("the environment is its own section, open with its parts closed", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    const card = page.locator("[data-section='environment']");
+    await expect(card).toHaveAttribute("open", "");
+    // Its heading is no longer buried inside the preview.
+    await expect(page.locator("[data-section='preview']").getByText("Simulated environment")).toHaveCount(0);
+
+    const inner = card.locator("details");
+    const count = await inner.count();
+    expect(count).toBeGreaterThan(3);
+    for (let i = 0; i < count; i += 1) {
+      await expect(inner.nth(i)).not.toHaveAttribute("open", "");
+    }
+
+    // The controls still reach the preview from their new home.
+    await openEnvSection(page, "Session");
+    await card.getByLabel("Username").fill("ada");
+    await expect(page.getByLabel("Simulated terminal prompt")).toContainText("ada");
   });
 
   test("there is no scenario picker; the environment panel covers it", async ({

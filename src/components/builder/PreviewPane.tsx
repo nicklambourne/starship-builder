@@ -14,7 +14,6 @@
  * without a patched font.
  */
 
-import { EnvironmentPanel } from "./EnvironmentPanel";
 import { Terminal } from "@/components/terminal/Terminal";
 import { TERMINAL_FONTS } from "@/lib/fonts";
 import { TERMINAL_THEMES, type TerminalTheme } from "@/lib/terminalThemes";
@@ -33,8 +32,6 @@ interface PreviewPaneProps {
   onFontChange(id: string): void;
   theme: TerminalTheme;
   fontStack: string;
-  scenario: Scenario;
-  onScenarioEdit(patch: Partial<Scenario>): void;
 }
 
 const SELECT_CLASS =
@@ -51,8 +48,6 @@ export function PreviewPane({
   onFontChange,
   theme,
   fontStack,
-  scenario,
-  onScenarioEdit,
 }: PreviewPaneProps) {
 
   return (
@@ -102,8 +97,6 @@ export function PreviewPane({
           </select>
         </div>
       </div>
-
-      <EnvironmentPanel scenario={scenario} onChange={onScenarioEdit} />
 
       {warnings.length > 0 ? (
         <ul
