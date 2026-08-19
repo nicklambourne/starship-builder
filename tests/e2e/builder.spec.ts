@@ -23,7 +23,7 @@ async function openEnvSection(page: import("@playwright/test").Page, section: st
 async function openToml(page: import("@playwright/test").Page) {
   const card = page.locator("[data-section='toml']");
   if (!(await card.evaluate((el: HTMLDetailsElement) => el.open))) {
-    await card.locator("summary").click();
+    await card.locator("> summary").click();
   }
 }
 
@@ -269,7 +269,7 @@ test.describe("builder", () => {
     await expect(card).not.toHaveAttribute("open", "");
     await expect(page.getByLabel("starship.toml")).toBeHidden();
 
-    await card.locator("summary").click();
+    await card.locator("> summary").click();
     await expect(page.getByLabel("starship.toml")).toBeVisible();
   });
 
@@ -632,24 +632,45 @@ test.describe("builder", () => {
 
   test("the toml card's chevron follows its download button", async ({ page }) => {
     await page.goto("./");
-    const summary = page.locator("[data-section='toml'] summary");
+    const summary = page.locator("[data-section='toml'] > summary");
     const boxes = await summary.evaluate((el) => {
       const download = el.querySelector("[aria-label='Download config']")!;
       const chevron = el.querySelector(".section-chevron")!;
       return {
         downloadRight: download.getBoundingClientRect().right,
         chevronLeft: chevron.getBoundingClientRect().left,
+        chevronRight: chevron.getBoundingClientRect().right,
+        summaryRight: el.getBoundingClientRect().right,
       };
     });
     expect(boxes.chevronLeft).toBeGreaterThanOrEqual(boxes.downloadRight);
+    // Right-aligned: nothing but the chevron sits between it and the edge.
+    expect(boxes.summaryRight - boxes.chevronRight).toBeLessThan(4);
+  });
+
+  test("the download button is icon-only on a phone", async ({ page }, info) => {
+    await page.goto("./");
+    const download = page
+      .locator("[data-section='toml']")
+      .getByLabel("Download config");
+    // The label is what gives way; the button keeps its accessible name.
+    await expect(download).toContainText(
+      info.project.name === "mobile" ? "" : "Download config",
+    );
+    const width = await download.evaluate((el) => el.getBoundingClientRect().width);
+    if (info.project.name === "mobile") expect(width).toBeLessThan(48);
+    else expect(width).toBeGreaterThan(80);
   });
 
   test("the usage guide explains what to do with the file", async ({ page }) => {
     await page.goto("./");
+    const toml = page.locator("[data-section='toml']");
     const guide = page.locator("[data-section='usage']");
-    await expect(guide).not.toHaveAttribute("open", "");
+    // The guide lives inside the toml card, next to the file it describes.
+    await expect(toml.locator("[data-section='usage']")).toHaveCount(1);
+    await expect(guide).toBeHidden();
 
-    await guide.locator("summary").first().click();
+    await toml.locator("> summary").click();
     await expect(guide.getByText("Put the file where starship looks for it")).toBeVisible();
 
     // The init line follows the shell chosen in the simulated environment.

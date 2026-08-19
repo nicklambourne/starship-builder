@@ -559,29 +559,41 @@ export function Builder() {
               <span className="text-sm font-semibold text-neutral-100">
                 starship.toml
               </span>
-              <span className="text-xs text-neutral-500">view or paste a config</span>
-              <span
-                role="button"
-                tabIndex={0}
-                aria-label="Download config"
-                onClick={(event) => {
-                  event.preventDefault();
-                  downloadConfig();
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
+              {/* The bar is tight on a phone; the button matters more. */}
+              <span className="hidden text-xs text-neutral-500 sm:inline">
+                view or paste a config
+              </span>
+              {/*
+                * The chevron carries its own `margin-left: auto`, so the two
+                * of them would split the free space between them. Kept
+                * together, the pair sits hard right.
+                */}
+              <span className="ml-auto flex items-center gap-3">
+                <span
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Download config"
+                  onClick={(event) => {
                     event.preventDefault();
                     downloadConfig();
-                  }
-                }}
-                className="ml-auto inline-flex cursor-pointer items-center gap-1.5 rounded bg-emerald-600 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
-              >
-                <DownloadIcon />
-                Download config
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      downloadConfig();
+                    }
+                  }}
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded bg-emerald-600 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+                >
+                  <DownloadIcon />
+                  {/* On a phone the icon carries it; the name stays as the
+                      accessible label. */}
+                  <span className="hidden sm:inline">Download config</span>
+                </span>
+                {/* After the download: the button is the point of this bar,
+                    the chevron only says the card opens. */}
+                <ChevronIcon className="section-chevron text-neutral-500" />
               </span>
-              {/* After the download: the button is the point of this bar, the
-                  chevron only says the card opens. */}
-              <ChevronIcon className="section-chevron text-neutral-500" />
             </summary>
             <div className="mt-3">
               <TomlPane
@@ -590,9 +602,12 @@ export function Builder() {
                 defaults={defaultsByModule}
               />
             </div>
-          </details>
 
-          <UsageGuide shell={scenario.shell} className={CARD} />
+            <UsageGuide
+              shell={scenario.shell}
+              className="mt-5 border-t border-white/10 pt-4"
+            />
+          </details>
         </div>
       </div>
 
