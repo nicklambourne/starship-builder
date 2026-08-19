@@ -40,6 +40,7 @@ import { collectVariables, tryParseFormatString } from "@/lib/engine/formatStrin
 import { resolvePalette } from "@/lib/engine/styleString";
 import { structuredFormatString } from "@/lib/config/defaultFormat";
 import { inactiveReason } from "@/lib/config/inactiveReason";
+import { rowStyleReaches } from "@/lib/config/styleReach";
 import { MODULE_META, optionKind } from "@/lib/config/meta";
 import { PRESETS } from "@/lib/config/presets";
 import { encodeShare } from "@/lib/config/share";
@@ -232,6 +233,16 @@ export function Builder() {
       },
       inactiveNote(name: string) {
         return inactiveNotes.get(name) ?? null;
+      },
+      /*
+       * Whether a style set here could change anything this module prints.
+       * Read from the module's live format, not a fixed list, so editing that
+       * format re-enables the control.
+       */
+      styleReaches(name: string) {
+        const options = (config[name] as Record<string, unknown>) ?? {};
+        const format = options.format ?? MODULES_BY_NAME.get(name)?.defaults.format;
+        return typeof format === "string" ? rowStyleReaches(format) : true;
       },
       setEnabled(name: string, enabled: boolean) {
         setModuleDisabled(name, !enabled);
