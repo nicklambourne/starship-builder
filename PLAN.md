@@ -385,9 +385,8 @@ code point. A coverage test fails if starship gains a module the registry does
 not implement.
 
 **M5 — Polish & launch** — remaining
-README screenshots and a demo GIF,
-CONTRIBUTING.md with an "add a module" guide, and submission to starship's
-community list. Also outstanding: the approximations listed in §13.
+Submission to starship's community list. Also outstanding: the approximations
+listed in §13.
 
 CI stays on GitHub-hosted runners for as long as this repository is public;
 the self-hosted cluster is deliberately not used (see `docs/ci-runners.md`).

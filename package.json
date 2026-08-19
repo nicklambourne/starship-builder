@@ -18,7 +18,9 @@
     "build:glyphs": "node scripts/build-glyphs.mjs",
     "build:data": "pnpm build:schema && pnpm build:presets && pnpm build:glyphs",
     "build:fonts": "node scripts/build-font-subsets.mjs",
-    "build:og": "node scripts/build-og-image.mjs"
+    "build:og": "node scripts/build-og-image.mjs",
+    "build:screenshots": "node scripts/build-screenshots.mjs",
+    "build:demo": "node scripts/build-demo.mjs"
   },
   "dependencies": {
     "@heroui/react": "^3.2.1",
