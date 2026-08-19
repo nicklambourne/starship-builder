@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { EnvironmentPanel } from "./EnvironmentPanel";
 import { Explainer } from "./Explainer";
+import { PaletteEditor } from "./PaletteEditor";
 import { FormatBuilder } from "./FormatBuilder";
 import { PreviewPane } from "./PreviewPane";
 import { SiteFooter } from "./SiteFooter";
@@ -669,6 +670,24 @@ export function Builder() {
                 onChange={(next) => setRootOption("add_newline", next)}
               />
             </div>
+
+            <details className="mt-3">
+              <summary className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-300">
+                Palettes
+                <span className="ml-2 text-neutral-600">
+                  name colours once, use them everywhere
+                </span>
+              </summary>
+              <div className="mt-2">
+                <PaletteEditor
+                  palettes={(config.palettes ?? {}) as Record<string, Record<string, string>>}
+                  active={config.palette ?? null}
+                  onChange={(palettes) => setRootOption("palettes", palettes)}
+                  onActivate={(name) => setRootOption("palette", name ?? undefined)}
+                  theme={theme}
+                />
+              </div>
+            </details>
 
             <details className="mt-3">
               <summary className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-300">

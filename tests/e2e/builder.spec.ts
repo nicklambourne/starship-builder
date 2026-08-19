@@ -1082,6 +1082,34 @@ test.describe("builder", () => {
       .toBe(before![2]);
   });
 
+  test("palettes can be edited, not just referenced", async ({ page }) => {
+    await page.goto("./");
+    await page.locator("summary").filter({ hasText: "name colours once" }).click();
+
+    // The default preset ships a palette, so there is something to edit.
+    await expect(page.getByLabel("Active palette")).toHaveValue("catppuccin_mocha");
+    const terminal = page.getByLabel("Simulated terminal prompt");
+    const before = await terminal.innerHTML();
+
+    // `peach` is in the preset's prompt, so recolouring it must show.
+    await page.getByLabel("Value of colour peach").fill("#ff0000");
+    await expect
+      .poll(async () => /rgb\(255, ?0, ?0\)/i.test(await terminal.innerHTML()))
+      .toBe(true);
+    expect(await terminal.innerHTML()).not.toBe(before);
+
+    // And a palette can be made from nothing.
+    await page.getByRole("button", { name: "+ New palette" }).click();
+    await page.getByLabel("New palette name").fill("mine");
+    await page.getByRole("button", { name: "Create" }).click();
+    await expect(page.getByLabel("Active palette")).toHaveValue("mine");
+    await page.getByRole("button", { name: "+ Add a colour" }).click();
+    await expect(page.getByLabel(/^Name of colour /)).toHaveCount(1);
+
+    await openToml(page);
+    await expect(page.getByLabel("starship.toml")).toHaveValue(/palette = "mine"/);
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {
