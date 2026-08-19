@@ -30,14 +30,18 @@ function Art() {
       {/*
         Ring, near-complete, gap at the upper right. The ends are set from the
         rocket rather than round numbers: its upper flank crosses the circle at
-        296.1° and its lower flank at 322.5°, so the ring stops 4° clear of the
-        first and resumes 18° after the second.
+        296.1° and its lower flank at 322.5°, so the ring stops 8° clear of the
+        first and resumes 12° after the second. The upper gap is the wider of
+        the two on purpose: the nose crosses the ring at a shallower angle
+        there, so an equal arc would look tighter than it is.
       */}
-      <path d="M 52.74 24.66 A 22 22 0 1 1 40.28 11.62" />
-      {/* Exhaust, branching off the ring at the lower left. */}
+      <path d="M 51.86 22.53 A 22 22 0 1 1 38.83 11.09" />
+      {/*
+        A single exhaust line, branching off the ring at the lower left. Extra
+        trailing strokes crowd the inside of the ring and turn to noise once
+        the mark is scaled to the header.
+      */}
       <path d="M 12.95 43 C 21.5 45.5, 27 39.5, 31 34 C 33.5 30.5, 36 26.5, 38.6 22.6" />
-      <path d="M 17.5 36.5 C 22 36.5, 26 33.5, 29.5 29.5" opacity="0.75" />
-      <path d="M 20.5 48 C 26 47, 30.5 43, 33.5 38.5" opacity="0.55" />
       {/* Rocket, drawn upright then rotated onto its flight path. */}
       <g transform="translate(44 17) rotate(45)">
         <path d="M 0 -11 C 4.5 -5.5, 5.5 1.5, 4.5 7 L -4.5 7 C -5.5 1.5, -4.5 -5.5, 0 -11 Z" />
