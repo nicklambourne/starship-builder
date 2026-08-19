@@ -497,6 +497,17 @@ test.describe("builder", () => {
     ).toHaveAttribute("aria-expanded", "true");
   });
 
+  test("the header carries the logo, not an emoji", async ({ page }) => {
+    await page.goto("./");
+    const heading = page.getByRole("heading", { level: 1 });
+    await expect(heading).toHaveText("Starship Builder");
+    // The mark is decorative — the heading text already names the site.
+    await expect(heading.locator("svg")).toBeVisible();
+
+    const favicon = page.locator("link[rel='icon']");
+    await expect(favicon).toHaveAttribute("href", /icon\..*svg/);
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {
