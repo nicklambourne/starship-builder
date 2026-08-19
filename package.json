@@ -16,7 +16,8 @@
     "build:schema": "node scripts/build-schema.mjs",
     "build:presets": "node scripts/build-presets.mjs",
     "build:glyphs": "node scripts/build-glyphs.mjs",
-    "build:data": "pnpm build:schema && pnpm build:presets && pnpm build:glyphs"
+    "build:data": "pnpm build:schema && pnpm build:presets && pnpm build:glyphs",
+    "build:fonts": "node scripts/build-font-subsets.mjs"
   },
   "dependencies": {
     "@heroui/react": "^3.2.1",
@@ -35,6 +36,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/coverage-v8": "^4.1.10",
+    "subset-font": "^2.5.0",
     "tailwindcss": "^4.3.1",
     "typescript": "^5",
     "vitest": "^4.1.10"

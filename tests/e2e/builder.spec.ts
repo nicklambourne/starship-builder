@@ -1127,4 +1127,73 @@ test.describe("builder", () => {
     });
     expect(loaded).toBe(true);
   });
+
+  test("a visit fetches the subsets, not the whole patched font", async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name === "mobile", "one platform is enough");
+    const fonts: { name: string; bytes: number }[] = [];
+    page.on("response", async (response) => {
+      if (!response.url().endsWith(".woff2")) return;
+      try {
+        fonts.push({
+          name: response.url().split("/").pop()!,
+          bytes: (await response.body()).length,
+        });
+      } catch {
+        // A cached response with no body is not what this is measuring.
+      }
+    });
+
+    await page.goto("./", { waitUntil: "networkidle" });
+    await page.waitForTimeout(1000);
+
+    // Every face fetched is a subset. The 1.2 MB originals are for the long
+    // tail, and nothing on screen at rest needs one.
+    expect(fonts.length).toBeGreaterThan(0);
+    const wholeFonts = fonts
+      .map((font) => font.name)
+      .filter((name) => !/\.(text|icons)\./.test(name));
+    expect(wholeFonts).toEqual([]);
+    const total = fonts.reduce((sum, font) => sum + font.bytes, 0);
+    // Was ~2.4 MB before the split; leave room to breathe, catch a regression.
+    expect(total).toBeLessThan(600 * 1024);
+  });
+
+  test("a glyph outside the subsets still draws", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === "mobile", "one platform is enough");
+    await page.goto("./");
+    await page.waitForTimeout(800);
+
+    // U+F408 is in the patched font but in neither subset — exactly the case
+    // the third tier exists for. It must render, not tofu.
+    const ink = await page.evaluate(async () => {
+      const draw = (character: string) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = canvas.height = 80;
+        const context = canvas.getContext("2d")!;
+        context.font = '64px "Hack Nerd Font Mono"';
+        context.textBaseline = "middle";
+        context.fillStyle = "#fff";
+        context.fillText(character, 4, 40);
+        const data = context.getImageData(0, 0, 80, 80).data;
+        let hash = 0;
+        for (let i = 3; i < data.length; i += 4) {
+          if (data[i] > 16) hash = (hash * 31 + i) >>> 0;
+        }
+        return hash;
+      };
+      const rare = "\u{f408}";
+      const span = document.createElement("span");
+      span.className = "nerd-font";
+      span.style.fontSize = "64px";
+      span.textContent = rare;
+      document.body.append(span);
+      await document.fonts.load('64px "Hack Nerd Font Mono"', rare);
+      await new Promise((resolve) => setTimeout(resolve, 900));
+      return { rare: draw(rare), missing: draw("\u{10FFFD}") };
+    });
+
+    expect(ink.rare).not.toBe(ink.missing);
+  });
 });
