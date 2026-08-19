@@ -1,11 +1,11 @@
-# Starship Builder — Project Plan
+# Starship Prompt Builder — Project Plan
 
 A live, in-browser configurator for the [Starship](https://starship.rs) cross-shell
 prompt. Point, click, and preview your prompt in a simulated terminal — then export
 a `starship.toml` that reproduces exactly what you saw.
 
-- **Live site:** https://nicklambourne.github.io/starship-builder/
-- **Repo:** https://github.com/nicklambourne/starship-builder
+- **Live site:** https://nicklambourne.github.io/starship-prompt-builder/
+- **Repo:** https://github.com/nicklambourne/starship-prompt-builder
 - **Status:** M0–M4 complete. All 102 starship modules implemented, the parity
   harness is green against real starship, and the builder is live. M5 (polish,
   a11y audit, launch) is what remains.
@@ -18,7 +18,7 @@ Starship is configured through a single `starship.toml` with ~80 modules, each w
 its own options, format strings, and style strings. The feedback loop today is:
 edit TOML → reload shell → squint → repeat. There is no official visual editor.
 
-Starship Builder closes that loop: every setting change re-renders a simulated
+Starship Prompt Builder closes that loop: every setting change re-renders a simulated
 prompt instantly, across multiple mocked shell contexts (clean repo, dirty repo,
 failed command, Python project, SSH session, …), and the resulting TOML is always
 one click away.
@@ -339,7 +339,7 @@ parity + Playwright on PRs touching the engine and on `main`; Pages deploy on
 | TOML         | smol-toml                         | parse + stringify, small, maintained         |
 | Sharing      | lz-string                         | URL-fragment compression, tiny               |
 | Tests        | vitest, Playwright                | fast unit runner; e2e against prod build     |
-| Hosting      | GitHub Pages (`basePath: /starship-builder`) | free, static, fits goal 4         |
+| Hosting      | GitHub Pages (`basePath: /starship-prompt-builder`) | free, static, fits goal 4         |
 | Dev env      | nix + direnv (`shell.nix`)        | pinned node/pnpm, no global installs         |
 
 ---
@@ -423,5 +423,5 @@ file. The ones worth knowing:
 - Starship is **ISC**-licensed; vendored artefacts (config schema, preset
   TOMLs) retain attribution in `data/README.md` and are synced, not forked.
 - JetBrainsMono Nerd Font: **OFL 1.1** (licence shipped alongside the subset).
-- "Starship Builder" is an unaffiliated community tool; the README states this
+- "Starship Prompt Builder" is an unaffiliated community tool; the README states this
   and links to the official project.

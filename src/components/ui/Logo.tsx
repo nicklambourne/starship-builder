@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * The Starship Builder mark: a rocket punching out of a ring, trailing exhaust.
+ * The Starship Prompt Builder mark: a rocket punching out of a ring, trailing exhaust.
  *
  * Neon is built from stacked strokes of the same geometry rather than a CSS
  * glow: a wide blurred pass for the bloom, a saturated pass for the tube, then

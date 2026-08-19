@@ -1,7 +1,7 @@
 /**
  * Site footer: attribution, the licences page, and the disclaimer.
  *
- * The licences link goes through `next/link` so the `/starship-builder` base
+ * The licences link goes through `next/link` so the `/starship-prompt-builder` base
  * path is applied by the router rather than hard-coded here.
  */
 
@@ -28,7 +28,7 @@ export function SiteFooter() {
         </Link>
       </p>
       <p>
-        Starship Builder is MIT licensed and unaffiliated with the Starship
+        Starship Prompt Builder is MIT licensed and unaffiliated with the Starship
         project.
       </p>
     </footer>

@@ -1,6 +1,6 @@
 # Third-party notices
 
-Starship Builder is [MIT licensed](LICENSE). It redistributes the third-party
+Starship Prompt Builder is [MIT licensed](LICENSE). It redistributes the third-party
 work listed below. Nothing here is affiliated with or endorsed by the projects
 named.
 

@@ -605,7 +605,7 @@ test.describe("builder", () => {
   test("the header carries the logo, not an emoji", async ({ page }) => {
     await page.goto("./");
     const heading = page.getByRole("heading", { level: 1 });
-    await expect(heading).toHaveText("Starship Builder");
+    await expect(heading).toHaveText("Starship Prompt Builder");
     // The mark is decorative — the heading text already names the site.
     await expect(heading.locator("svg")).toBeVisible();
 
