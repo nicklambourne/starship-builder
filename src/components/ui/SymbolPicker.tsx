@@ -77,7 +77,7 @@ export function SymbolPicker({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search symbols — try python, branch, arrow…"
-          className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
+          className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1 text-base text-neutral-100 focus:border-accent-400 focus:outline-none"
         />
         <button
           type="button"

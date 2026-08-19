@@ -103,7 +103,7 @@ export function TomlPane({ config, onConfigChange, defaults }: TomlPaneProps) {
         onChange={(e) => commit(e.target.value)}
         spellCheck={false}
         aria-invalid={error !== null}
-        className={`min-h-64 flex-1 resize-y rounded border bg-neutral-950 p-3 font-mono text-xs leading-relaxed text-neutral-200 focus:outline-none ${
+        className={`min-h-64 flex-1 resize-y rounded border bg-neutral-950 p-3 font-mono text-base leading-relaxed text-neutral-200 focus:outline-none ${
           error ? "border-red-500/60" : "border-white/10 focus:border-accent-400"
         }`}
       />

@@ -60,7 +60,7 @@ export function SymbolInput({
           style={{ fontFamily: fontStack }}
           className={
             className ??
-            "w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
+            "w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-base text-neutral-100 focus:border-accent-400 focus:outline-none"
           }
         />
         <button

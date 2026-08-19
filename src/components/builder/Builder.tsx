@@ -435,7 +435,7 @@ export function Builder() {
                     loadPreset(event.target.value);
                     event.target.value = "";
                   }}
-                  className="rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-200 focus:border-accent-400 focus:outline-none"
+                  className="rounded border border-white/10 bg-neutral-950 px-2 py-1 text-base text-neutral-200 focus:border-accent-400 focus:outline-none"
                 >
                   <option value="" disabled>
                     a preset…

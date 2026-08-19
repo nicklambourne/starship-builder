@@ -20,13 +20,17 @@ import { useId, useMemo, useState } from "react";
 import { MODIFIER_ICONS } from "@/components/ui/modifierIcons";
 import { NAMED_COLORS, type Color } from "@/lib/engine/types";
 import { STYLE_MODIFIERS } from "@/lib/engine/types";
-import { type Palette, parseStyleString } from "@/lib/engine/styleString";
+import { type Palette, parseColorString, parseStyleString } from "@/lib/engine/styleString";
+import { resolveSwatchColor } from "@/components/ui/StyleSwatch";
+import type { TerminalTheme } from "@/lib/terminalThemes";
 
 interface StyleStringBuilderProps {
   value: string;
   onChange(next: string): void;
   palette?: Palette;
   paletteNames?: string[];
+  /** Needed to resolve palette entries that name an ANSI colour. */
+  theme: TerminalTheme;
 }
 
 function colorToken(color: Color | undefined): string {
@@ -93,11 +97,15 @@ function ColorPicker({
   value,
   onChange,
   paletteNames = [],
+  palette,
+  theme,
 }: {
   label: string;
   value: string;
   onChange(next: string): void;
   paletteNames?: string[];
+  palette?: Palette;
+  theme: TerminalTheme;
 }) {
   const id = useId();
   const hexValue = value.startsWith("#") ? value : "#000000";
@@ -131,21 +139,40 @@ function ColorPicker({
             style={{ backgroundColor: `var(--ansi-${name})` }}
           />
         ))}
-        {paletteNames.map((name) => (
-          <button
-            key={name}
-            type="button"
-            aria-label={`${label}: palette colour ${name}`}
-            aria-pressed={value === name}
-            title={`palette: ${name}`}
-            onClick={() => onChange(name)}
-            className={`${SWATCH_BASE} grid place-items-center bg-neutral-700 text-[9px] text-neutral-200 ${
-              value === name ? "ring-2 ring-accent-400" : ""
-            }`}
-          >
-            {name.slice(0, 2)}
-          </button>
-        ))}
+        {paletteNames.map((name) => {
+          /*
+           * A palette entry is a name pointing at a colour, so it has to be
+           * resolved before it can be shown — these used to render as a grey
+           * chip with the first two letters of the name, which told you what
+           * the colour was called and nothing about what it looked like.
+           *
+           * An entry can also name an ANSI colour rather than a hex value,
+           * which is why the theme is needed to resolve it.
+           */
+          const resolved = resolveSwatchColor(
+            parseColorString(name.toLowerCase(), palette),
+            theme,
+          );
+          return (
+            <button
+              key={name}
+              type="button"
+              aria-label={`${label}: palette colour ${name}`}
+              aria-pressed={value === name}
+              title={resolved ? `palette: ${name}` : `palette: ${name} — unresolved`}
+              onClick={() => onChange(name)}
+              className={`${SWATCH_BASE} ${
+                resolved
+                  ? ""
+                  : "grid place-items-center bg-neutral-700 text-[9px] text-neutral-200"
+              } ${value === name ? "ring-2 ring-accent-400" : ""}`}
+              style={resolved ? { backgroundColor: resolved } : undefined}
+            >
+              {/* Only a dangling reference falls back to naming itself. */}
+              {resolved ? null : name.slice(0, 2)}
+            </button>
+          );
+        })}
       </div>
       <div className="flex items-center gap-2">
         <label htmlFor={id} className="text-xs text-neutral-500">
@@ -168,6 +195,7 @@ export function StyleStringBuilder({
   onChange,
   palette,
   paletteNames,
+  theme,
 }: StyleStringBuilderProps) {
   const [showRaw, setShowRaw] = useState(false);
   const parts = useMemo(() => decompose(value), [value]);
@@ -214,12 +242,16 @@ export function StyleStringBuilder({
           value={parts.fg}
           onChange={(fg) => update({ fg })}
           paletteNames={paletteNames}
+          palette={palette}
+          theme={theme}
         />
         <ColorPicker
           label="Background"
           value={parts.bg}
           onChange={(bg) => update({ bg })}
           paletteNames={paletteNames}
+          palette={palette}
+          theme={theme}
         />
       </div>
 
@@ -248,7 +280,7 @@ export function StyleStringBuilder({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             spellCheck={false}
-            className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
+            className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-base text-neutral-100 focus:border-accent-400 focus:outline-none"
             placeholder="bold fg:#af8700 bg:blue"
           />
           <p className="text-xs text-neutral-500">
