@@ -876,6 +876,36 @@ test.describe("builder", () => {
     await expect(card.locator("> p")).toContainText("which modules appear");
   });
 
+  test("the kubernetes namespace waits for a context, and says so", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    await openEnvSection(page, "Cloud & orchestration");
+    const namespace = page.getByLabel("Kubernetes namespace");
+    const context = page.getByLabel("Kubernetes context");
+
+    // Without a context there is nothing for a namespace to belong to; it used
+    // to swallow every keystroke instead of saying that.
+    await expect(namespace).toBeDisabled();
+    const note = page.getByText(/Set a context first/);
+    await expect(note).toBeVisible();
+    await expect(namespace).toHaveAttribute(
+      "aria-describedby",
+      await note.getAttribute("id") as string,
+    );
+
+    await context.fill("prod-cluster");
+    await expect(namespace).toBeEnabled();
+    await expect(note).toHaveCount(0);
+    await namespace.fill("production");
+    await expect(namespace).toHaveValue("production");
+
+    // Clearing the context takes the namespace with it, as starship would.
+    await context.fill("");
+    await expect(namespace).toBeDisabled();
+    await expect(namespace).toHaveValue("");
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {

@@ -219,6 +219,11 @@ function PairEditor({
 
 export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) {
   const git = scenario.git;
+  const namespaceId = useId();
+  const namespaceNoteId = useId();
+  // starship's kubernetes module returns nothing without a context, so the
+  // namespace has nothing to attach to until one is set.
+  const hasKubeContext = Boolean(scenario.kubernetes?.context);
 
   const setGit = (patch: Partial<GitState>) => {
     if (!git) return;
@@ -673,20 +678,40 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
                 className={INPUT}
               />
             </Field>
-            <Field label="Kubernetes namespace">
+            {/*
+              starship reads the namespace out of the current kubeconfig
+              context, so there is no namespace without one — the module
+              returns nothing at all. This used to be enforced by silently
+              dropping every keystroke, which read as a broken field.
+              Written out longhand rather than through `Field` so the note can
+              sit outside the label and stay out of the input's name.
+            */}
+            <div className="flex flex-col gap-1 text-xs text-neutral-400">
+              <label htmlFor={namespaceId}>Kubernetes namespace</label>
               <input
+                id={namespaceId}
                 value={scenario.kubernetes?.namespace ?? ""}
-                placeholder="none"
-                onChange={(e) =>
+                placeholder={hasKubeContext ? "none" : "needs a context"}
+                disabled={!hasKubeContext}
+                aria-describedby={hasKubeContext ? undefined : namespaceNoteId}
+                onChange={(e) => {
+                  // Unreachable without a context: the input is disabled.
+                  if (!scenario.kubernetes) return;
                   onChange({
-                    kubernetes: scenario.kubernetes
-                      ? { ...scenario.kubernetes, namespace: e.target.value }
-                      : undefined,
-                  })
-                }
-                className={INPUT}
+                    kubernetes: { ...scenario.kubernetes, namespace: e.target.value },
+                  });
+                }}
+                className={`${INPUT} ${
+                  hasKubeContext ? "" : "cursor-not-allowed opacity-50"
+                }`}
               />
-            </Field>
+              {hasKubeContext ? null : (
+                <p id={namespaceNoteId} className="text-[11px] text-neutral-500">
+                  Set a context first — starship takes the namespace from it,
+                  and shows nothing without one.
+                </p>
+              )}
+            </div>
             <Field label="Terraform workspace">
               <input
                 value={scenario.terraform?.workspace ?? ""}
