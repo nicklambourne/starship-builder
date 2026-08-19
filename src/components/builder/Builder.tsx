@@ -115,6 +115,9 @@ export function Builder() {
     future,
   } = useBuilderStore();
 
+  // The starship.toml card is a disclosure of its own making; see below.
+  const [tomlOpen, setTomlOpen] = useState(false);
+
   // Guards the save effect until the restore has run.
   const [sessionReady, setSessionReady] = useState(false);
 
@@ -674,7 +677,7 @@ export function Builder() {
             <details className="mt-3">
               <summary className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-300">
                 Palettes
-                <span className="ml-2 text-neutral-600">
+                <span className="ml-2 text-neutral-500">
                   name colours once, use them everywhere
                 </span>
               </summary>
@@ -747,60 +750,85 @@ export function Builder() {
             download is the reason most people came, so it lives in the header
             bar and works without opening anything.
           */}
-          <details data-section="toml" className={CARD}>
-            <summary className="section-summary flex items-center gap-3">
-              <span className="text-sm font-semibold text-neutral-100">
-                starship.toml
-              </span>
-              {/* The bar is tight on a phone; the button matters more. */}
-              <span className="hidden text-xs text-neutral-500 sm:inline">
-                view or paste a config
-              </span>
-              {/*
-                * The chevron carries its own `margin-left: auto`, so the two
-                * of them would split the free space between them. Kept
-                * together, the pair sits hard right.
-                */}
-              <span className="ml-auto flex items-center gap-3">
-                <span
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Download config"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    downloadConfig();
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      downloadConfig();
-                    }
-                  }}
-                  className="inline-flex cursor-pointer items-center gap-1.5 rounded bg-emerald-600 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
-                >
-                  <DownloadIcon />
-                  {/* On a phone the icon carries it; the name stays as the
-                      accessible label. */}
-                  <span className="hidden sm:inline">Download config</span>
+          {/*
+            A disclosure built by hand rather than a <details>, for one
+            reason: the download button belongs on the header row, and a
+            control inside a <summary> is a control inside a control —
+            ambiguous to a screen reader, out of order for a keyboard. A
+            <details> gives its non-summary children to a hidden slot, so the
+            button cannot live beside the summary either. A button and a
+            region, wired together, have neither problem.
+          */}
+          <section
+            data-section="toml"
+            data-open={tomlOpen ? "" : undefined}
+            className={CARD}
+          >
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                aria-expanded={tomlOpen}
+                aria-controls="toml-body"
+                onClick={() => setTomlOpen((open) => !open)}
+                className="flex min-w-0 flex-1 items-center gap-3 text-left"
+              >
+                <span className="text-sm font-semibold text-neutral-100">
+                  starship.toml
                 </span>
-                {/* After the download: the button is the point of this bar,
-                    the chevron only says the card opens. */}
-                <ChevronIcon className="section-chevron text-neutral-500" />
+                {/* The bar is tight on a phone; the button matters more. */}
+                <span className="hidden text-xs text-neutral-500 sm:inline">
+                  view or paste a config
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={downloadConfig}
+                className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded bg-emerald-700 px-2.5 py-1.5 text-xs font-medium text-on-solid transition hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+              >
+                <DownloadIcon />
+                {/* On a phone the icon carries it; the name stays as the
+                    accessible label. */}
+                <span className="hidden sm:inline">Download config</span>
+                <span className="sr-only sm:hidden">Download config</span>
+              </button>
+
+              {/*
+                The chevron trails the download button, where it has always
+                been. It is decoration that happens to be clickable — the
+                labelled control to its left is the one keyboards and screen
+                readers use, so this stays out of the accessibility tree
+                rather than becoming a second, unnamed way to do the same
+                thing.
+              */}
+              <span
+                aria-hidden="true"
+                onClick={() => setTomlOpen((open) => !open)}
+                className="shrink-0 cursor-pointer text-neutral-500"
+              >
+                <ChevronIcon
+                  className={`transition-transform ${tomlOpen ? "rotate-90" : ""}`}
+                />
               </span>
-            </summary>
-            <div className="mt-3">
-              <TomlPane
-                config={{ ...config, format }}
-                onConfigChange={setConfig}
-                defaults={defaultsByModule}
-              />
             </div>
 
-            <UsageGuide
-              shell={scenario.shell}
-              className="mt-5 border-t border-white/10 pt-4"
-            />
-          </details>
+            {tomlOpen ? (
+              <div id="toml-body">
+                <div className="mt-3">
+                  <TomlPane
+                    config={{ ...config, format }}
+                    onConfigChange={setConfig}
+                    defaults={defaultsByModule}
+                  />
+                </div>
+
+                <UsageGuide
+                  shell={scenario.shell}
+                  className="col-span-2 mt-5 border-t border-white/10 pt-4"
+                />
+              </div>
+            ) : null}
+          </section>
         </div>
       </div>
 

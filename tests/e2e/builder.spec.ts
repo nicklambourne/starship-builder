@@ -25,10 +25,8 @@ async function openEnvSection(page: import("@playwright/test").Page, section: st
 
 /** The TOML card is collapsed by default; open it before reading or editing. */
 async function openToml(page: import("@playwright/test").Page) {
-  const card = page.locator("[data-section='toml']");
-  if (!(await card.evaluate((el: HTMLDetailsElement) => el.open))) {
-    await card.locator("> summary").click();
-  }
+  const toggle = page.locator("[data-section='toml'] button[aria-expanded]");
+  if ((await toggle.getAttribute("aria-expanded")) !== "true") await toggle.click();
 }
 
 /**
@@ -269,11 +267,12 @@ test.describe("builder", () => {
 
   test("the starship.toml card starts closed and sits at the end", async ({ page }) => {
     await page.goto("./");
-    const card = page.locator("[data-section='toml']");
-    await expect(card).not.toHaveAttribute("open", "");
+    const toggle = page.locator("[data-section='toml'] button[aria-expanded]");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
     await expect(page.getByLabel("starship.toml")).toBeHidden();
 
-    await card.locator("> summary").click();
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
     await expect(page.getByLabel("starship.toml")).toBeVisible();
   });
 
@@ -341,10 +340,11 @@ test.describe("builder", () => {
 
   test("the config downloads without opening the TOML card", async ({ page }) => {
     await page.goto("./");
-    const card = page.locator("[data-section='toml']");
-    await expect(card).not.toHaveAttribute("open", "");
+    await expect(
+      page.locator("[data-section='toml'] button[aria-expanded]"),
+    ).toHaveAttribute("aria-expanded", "false");
 
-    const download = page.getByLabel("Download config");
+    const download = page.getByRole("button", { name: "Download config" });
     await expect(download).toBeVisible();
 
     const [file] = await Promise.all([
@@ -353,7 +353,9 @@ test.describe("builder", () => {
     ]);
     expect(file.suggestedFilename()).toBe("starship.toml");
     // Downloading must not have expanded the card.
-    await expect(card).not.toHaveAttribute("open", "");
+    await expect(
+      page.locator("[data-section='toml'] button[aria-expanded]"),
+    ).toHaveAttribute("aria-expanded", "false");
   });
 
   test("resetting asks first and can be cancelled", async ({ page }) => {
@@ -713,27 +715,34 @@ test.describe("builder", () => {
 
   test("the toml card's chevron follows its download button", async ({ page }) => {
     await page.goto("./");
-    const summary = page.locator("[data-section='toml'] > summary");
-    const boxes = await summary.evaluate((el) => {
-      const download = el.querySelector("[aria-label='Download config']")!;
-      const chevron = el.querySelector(".section-chevron")!;
-      return {
-        downloadRight: download.getBoundingClientRect().right,
-        chevronLeft: chevron.getBoundingClientRect().left,
-        chevronRight: chevron.getBoundingClientRect().right,
-        summaryRight: el.getBoundingClientRect().right,
-      };
-    });
+    const boxes = await page
+      .locator("[data-section='toml']")
+      .evaluate((el) => {
+        const buttons = [...el.querySelectorAll("button")];
+        const download = buttons.find((b) => /Download config/.test(b.textContent ?? ""))!;
+        const chevron = el.querySelector("svg.transition-transform")!;
+        return {
+          downloadRight: download.getBoundingClientRect().right,
+          chevronLeft: chevron.getBoundingClientRect().left,
+          chevronRight: chevron.getBoundingClientRect().right,
+          cardRight: el.getBoundingClientRect().right,
+          sameRow:
+            Math.abs(
+              download.getBoundingClientRect().top - chevron.getBoundingClientRect().top,
+            ) < 20,
+        };
+      });
     expect(boxes.chevronLeft).toBeGreaterThanOrEqual(boxes.downloadRight);
-    // Right-aligned: nothing but the chevron sits between it and the edge.
-    expect(boxes.summaryRight - boxes.chevronRight).toBeLessThan(4);
+    expect(boxes.sameRow).toBe(true);
+    // Right-aligned: nothing but the chevron and the card's padding beyond it.
+    expect(boxes.cardRight - boxes.chevronRight).toBeLessThan(24);
   });
 
   test("the download button is icon-only on a phone", async ({ page }, info) => {
     await page.goto("./");
     const download = page
       .locator("[data-section='toml']")
-      .getByLabel("Download config");
+      .getByRole("button", { name: "Download config" });
     // The label is what gives way; the button keeps its accessible name.
     await expect(download).toContainText(
       info.project.name === "mobile" ? "" : "Download config",
@@ -748,10 +757,9 @@ test.describe("builder", () => {
     const toml = page.locator("[data-section='toml']");
     const guide = page.locator("[data-section='usage']");
     // The guide lives inside the toml card, next to the file it describes.
+    await expect(guide).toHaveCount(0);
+    await openToml(page);
     await expect(toml.locator("[data-section='usage']")).toHaveCount(1);
-    await expect(guide).toBeHidden();
-
-    await toml.locator("> summary").click();
     await expect(guide.getByText("Put the file where starship looks for it")).toBeVisible();
 
     // The init line follows the shell chosen in the simulated environment.

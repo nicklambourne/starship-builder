@@ -1,0 +1,48 @@
+/**
+ * WCAG 2.1 AA, enforced rather than assumed.
+ *
+ * The interface is dense, themed twice over, and colours several things by
+ * meaning — which is exactly where contrast quietly slips. When this was first
+ * run it found 81 failures: muted text below the floor on every card surface,
+ * an amber pill unreadable on white, settings fields with no label at all, and
+ * the download button nested inside a `<summary>`, a control inside a control.
+ *
+ * Every disclosure is opened first: the app hides most of itself behind
+ * `<details>`, and an audit of the closed page would pass by looking at almost
+ * nothing.
+ */
+
+import AxeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
+
+const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
+
+async function openEverything(page: import("@playwright/test").Page) {
+  await page.goto("./");
+  await expect(page.getByLabel("Simulated terminal prompt")).toBeVisible();
+  await page.evaluate(() => {
+    for (const disclosure of document.querySelectorAll("details")) {
+      disclosure.open = true;
+    }
+  });
+  // Opening the module list mounts a hundred rows; give them a frame.
+  await page.waitForTimeout(600);
+}
+
+for (const scheme of ["dark", "light"] as const) {
+  test(`the ${scheme} theme has no accessibility violations`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await openEverything(page);
+
+    const { violations } = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+
+    // Named in the failure, so a regression says which rule and where rather
+    // than only how many.
+    expect(
+      violations.map(
+        (violation) =>
+          `${violation.id} (${violation.impact}) ×${violation.nodes.length}: ${violation.nodes[0]?.target.join(" ")}`,
+      ),
+    ).toEqual([]);
+  });
+}

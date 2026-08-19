@@ -57,7 +57,16 @@ function Command({ children }: { children: string }) {
 
   return (
     <span className="flex items-stretch gap-1.5">
-      <code className="min-w-0 flex-1 overflow-x-auto rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-200">
+      {/*
+        A long command scrolls sideways on a phone, and a region that scrolls
+        has to be focusable or the overflow is reachable by mouse only.
+      */}
+      <code
+        tabIndex={0}
+        role="region"
+        aria-label="Command"
+        className="min-w-0 flex-1 overflow-x-auto rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-400"
+      >
         {children}
       </code>
       <button

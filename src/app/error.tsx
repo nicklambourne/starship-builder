@@ -69,7 +69,7 @@ export default function BuilderError({
           <button
             type="button"
             onClick={download}
-            className="inline-flex items-center gap-1.5 rounded bg-emerald-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
+            className="inline-flex items-center gap-1.5 rounded bg-emerald-700 px-3 py-2 text-sm font-medium text-on-solid transition hover:bg-emerald-600"
           >
             <DownloadIcon />
             Download your config

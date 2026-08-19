@@ -385,7 +385,7 @@ code point. A coverage test fails if starship gains a module the registry does
 not implement.
 
 **M5 — Polish & launch** — remaining
-Full axe/a11y audit, keyboard-only pass, README screenshots and a demo GIF,
+README screenshots and a demo GIF,
 CONTRIBUTING.md with an "add a module" guide, and submission to starship's
 community list. Also outstanding: the approximations listed in §13.
 
