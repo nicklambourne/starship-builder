@@ -13,7 +13,7 @@
  * the thing that configures it are one row.
  */
 
-import type { DragEvent, KeyboardEvent, ReactNode } from "react";
+import type { KeyboardEvent, PointerEvent, ReactNode } from "react";
 
 import { StyleSwatch } from "@/components/ui/StyleSwatch";
 import { Toggle } from "@/components/ui/Toggle";
@@ -45,10 +45,8 @@ function inertStyleReason(label: string): string {
 const DANGER_BUTTON = `${ROW_BUTTON} hover:border-red-400 hover:bg-red-400/10 hover:text-red-300`;
 
 export interface FormatNodeCallbacks {
-  onDragStart(path: Path): void;
-  onDragEnd(): void;
-  onDragOverNode(path: Path, position: DropPosition): void;
-  onDropNode(path: Path, position: DropPosition): void;
+  /** Begins a drag from a row's handle; pointer events cover touch too. */
+  onHandlePointerDown(event: PointerEvent<HTMLElement>, path: Path): void;
   onNudge(path: Path, direction: -1 | 1): void;
   onGroup(path: Path): void;
   onUngroup(path: Path): void;
@@ -93,14 +91,6 @@ const TONE: Record<FormatItem["kind"], string> = {
  * the middle half drops into a group. Half the row goes to grouping because it
  * is the harder gesture to aim.
  */
-function positionWithin(event: DragEvent<HTMLElement>): DropPosition {
-  const box = event.currentTarget.getBoundingClientRect();
-  const offset = (event.clientY - box.top) / box.height;
-  if (offset < 0.25) return "before";
-  if (offset > 0.75) return "after";
-  return "into";
-}
-
 export function FormatNode({
   item,
   path,
@@ -156,17 +146,6 @@ export function FormatNode({
   return (
     <li
       data-format-row={key}
-      onDragOver={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        event.dataTransfer.dropEffect = "move";
-        cb.onDragOverNode(path, positionWithin(event));
-      }}
-      onDrop={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        cb.onDropNode(path, positionWithin(event));
-      }}
       className={`relative rounded border bg-neutral-900/60 transition ${
         dragging ? "border-accent-400/40 opacity-40" : "border-white/10"
       } ${dropPosition === "into" ? "ring-2 ring-emerald-400/70" : ""} ${
@@ -189,17 +168,13 @@ export function FormatNode({
       <div className="flex items-center gap-1 px-1.5 py-1">
         <button
           type="button"
-          draggable
-          onDragStart={(event) => {
-            event.dataTransfer.effectAllowed = "move";
-            // Firefox refuses to start a drag without payload.
-            event.dataTransfer.setData("text/plain", key);
-            event.stopPropagation();
-            cb.onDragStart(path);
-          }}
-          onDragEnd={cb.onDragEnd}
+          onPointerDown={(event) => cb.onHandlePointerDown(event, path)}
           onKeyDown={handleKeyDown}
           aria-label={`Reorder ${label}. Press the arrow keys to move it, or drag it onto another piece to group them.`}
+          // Without `touch-action: none` the browser claims the gesture as a
+          // scroll before the first pointermove arrives, which is why the
+          // handles did nothing on a phone.
+          style={{ touchAction: "none" }}
           className="shrink-0 cursor-grab rounded px-1 py-0.5 text-neutral-600 transition hover:bg-white/10 hover:text-neutral-200 active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-400"
         >
           <svg width="10" height="16" viewBox="0 0 10 16" aria-hidden="true" fill="currentColor">
