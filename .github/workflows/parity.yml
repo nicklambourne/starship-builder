@@ -22,16 +22,10 @@ concurrency:
   group: parity-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
   parity:
-    # See ci.yml for why fork PRs are pinned to GitHub-hosted runners.
-    runs-on: ${{ (github.event.pull_request.head.repo.fork && 'ubuntu-latest') || vars.SELF_HOSTED_RUNNER || 'ubuntu-latest' }}
-    container:
-      image: node:22-bookworm
+    # GitHub-hosted, always — see ci.yml.
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -53,6 +47,11 @@ jobs:
 
       - name: Enable pnpm
         run: corepack enable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 

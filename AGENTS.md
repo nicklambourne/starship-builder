@@ -136,12 +136,13 @@ listed as author, committer, or co-author.
 
 ## CI
 
-See [.github/workflows/](.github/workflows/). Jobs run on the `ubox`
-self-hosted Actions Runner Controller cluster for trusted events, and on
-GitHub-hosted runners for pull requests from forks — this repository is public
-and the ubox cluster sits on a LAN. Do not remove that split.
+See [.github/workflows/](.github/workflows/). **Every job runs on
+GitHub-hosted runners, and must keep doing so while this repository is
+public.** A fork's pull request is attacker-authored code; the `ubox`
+self-hosted cluster sits on a home LAN. Do not add `runs-on` expressions that
+select a self-hosted runner, even guarded ones — the reasoning, including why
+the fork-PR guard was rejected rather than kept, is in
+[docs/ci-runners.md](docs/ci-runners.md).
 
-Because ARC runs in Kubernetes container mode without Docker-in-Docker, the
-`actions/setup-*` actions do not work on the self-hosted runners. Toolchains
-come from the job container image instead (see the `container:` key), so add
-tools there rather than reaching for a setup action.
+Toolchains come from `actions/setup-node`; pnpm is resolved through corepack
+from the `packageManager` field.
