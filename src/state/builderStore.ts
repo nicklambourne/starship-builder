@@ -58,6 +58,12 @@ export interface BuilderState {
   future: StarshipConfig[];
 
   setConfig(next: StarshipConfig, options?: { transient?: boolean }): void;
+  /**
+   * Adopts a config that arrived in the URL. It becomes the starting point
+   * rather than an edit, so undo does not walk back to a prompt the visitor
+   * never saw.
+   */
+  loadShared(config: StarshipConfig): void;
   updateModuleOption(module: string, key: string, value: unknown): void;
   resetModuleOption(module: string, key: string): void;
   setModuleDisabled(module: string, disabled: boolean): void;
@@ -142,6 +148,10 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
       past: [...past, config].slice(-HISTORY_LIMIT),
       future: [],
     });
+  },
+
+  loadShared(config) {
+    set({ config, past: [], future: [] });
   },
 
   updateModuleOption(module, key, value) {
