@@ -32,6 +32,18 @@ Use the narrowest relevant check while iterating, then run every applicable
 check before handing work back. `pnpm build` runs the TypeScript check too, so
 a green `pnpm build` is the minimum bar before opening a PR.
 
+### Accessibility
+
+`tests/e2e/accessibility.spec.ts` runs axe over the whole interface — every
+disclosure forced open — in both themes, and fails on any WCAG 2.1 AA
+violation. Two rules it has already caught, worth knowing before adding UI:
+
+- **Contrast is measured against the real surface.** The light theme reverses
+  the neutral ramp, so a shade chosen for a dark card can land at 2:1 on a
+  light one, and 3:1 (the bar for borders) is not enough for text.
+- **`text-white` is not white in the light theme** — `--color-white` is
+  reversed with the ramp. Filled buttons use `.text-on-solid`.
+
 ### Verification standards
 
 - Check **real exit codes**. `cmd | tail` reports the exit status of `tail`, not

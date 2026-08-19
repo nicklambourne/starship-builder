@@ -37,7 +37,7 @@
   --color-neutral-900: #f7f7f8;
   --color-neutral-800: #ececee;
   --color-neutral-700: #d9d9de;
-  --color-neutral-600: #9b9ba3;
+  --color-neutral-600: #71717a;
   --color-neutral-500: #6c6c75;
   --color-neutral-400: #55555d;
   --color-neutral-300: #3d3d44;
@@ -57,7 +57,7 @@
   --color-emerald-200: #065f46;
   --color-emerald-300: #047857;
   --color-amber-200: #92400e;
-  --color-amber-300: #a16207;
+  --color-amber-300: #7a4f0a;
   --color-amber-400: #92400e;
   --color-amber-500: #b45309;
   --color-emerald-400: #047857;
@@ -86,6 +86,14 @@ body {
  * swallow.
  */
 @theme {
+  /*
+   * Muted text. Tailwind's own neutral-500 (#737373) lands between 3.88 and
+   * 4.18 against the surfaces used here — under the 4.5 that WCAG asks of
+   * text this size, and it is the colour nearly every hint and description in
+   * the interface is set in.
+   */
+  --color-neutral-500: #949494;
+
   --color-accent-200: #ffb066;
   --color-accent-300: #ff9d4d;
   --color-accent-400: #ff7a1a;
@@ -95,7 +103,7 @@ body {
 
 :root[data-theme="light"] {
   --color-accent-200: #803706;
-  --color-accent-300: #9a4409;
+  --color-accent-300: #8a3d07;
   --color-accent-400: #b2500e;
   --color-accent-500: #b2500e;
   --color-accent-600: #803706;
@@ -181,6 +189,15 @@ details[open] > .section-summary .section-chevron {
 
 .nerd-font {
   font-family: var(--nerd-font-stack, ui-monospace, monospace);
+}
+
+/*
+ * Text on a saturated filled button. `text-white` is not white in the light
+ * theme — the neutral ramp is reversed, `--color-white` with it — so a filled
+ * button quietly lost its white text and took the contrast with it.
+ */
+.text-on-solid {
+  color: #ffffff;
 }
 
 /*

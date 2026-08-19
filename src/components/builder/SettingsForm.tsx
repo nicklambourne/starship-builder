@@ -56,21 +56,31 @@ function isStringMap(value: unknown): value is Record<string, string> {
 
 function Row({
   label,
+  labelFor,
   description,
   isOverridden,
   onReset,
   children,
 }: {
   label: string;
+  /**
+   * The control this row names, when the control is a bare input. Toggles,
+   * symbol fields and map editors carry their own accessible names, and a
+   * label pointing at a wrapper rather than an input helps nobody.
+   */
+  labelFor?: string;
   description?: string;
   isOverridden: boolean;
   onReset(): void;
   children: React.ReactNode;
 }) {
+  const Name = labelFor ? "label" : "span";
   return (
     <div className="flex flex-col gap-1.5 border-b border-white/5 py-3 last:border-b-0">
       <div className="flex items-center justify-between gap-3">
-        <span className="font-mono text-sm text-neutral-200">{label}</span>
+        <Name htmlFor={labelFor} className="font-mono text-sm text-neutral-200">
+          {label}
+        </Name>
         {isOverridden ? (
           <button
             type="button"
@@ -113,6 +123,9 @@ export function SettingsForm({
           <Row
             key={option.key}
             label={option.key}
+            labelFor={
+              option.kind === "number" || option.kind === "enum" ? controlId : undefined
+            }
             description={option.description}
             isOverridden={isOverridden}
             onReset={() => onReset(option.key)}

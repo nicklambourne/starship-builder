@@ -149,7 +149,10 @@ export function FormatNode({
       className={`relative rounded border bg-neutral-900/60 transition ${
         dragging ? "border-accent-400/40 opacity-40" : "border-white/10"
       } ${dropPosition === "into" ? "ring-2 ring-emerald-400/70" : ""} ${
-        enabled ? "" : "opacity-55"
+        // 55% put the text below the contrast floor and 75% still missed it
+        // by a hair (4.45 against 4.5); 85% clears it, and with the switch
+        // beside it the row still reads as off.
+        enabled ? "" : "opacity-85"
       }`}
     >
       {dropPosition === "before" ? (
@@ -242,7 +245,11 @@ export function FormatNode({
               ) : null}
             </span>
             {isModule ? (
-              <span className="truncate text-xs text-neutral-500">
+              <span
+                className={`truncate text-xs ${
+                  enabled ? "text-neutral-500" : "text-neutral-400"
+                }`}
+              >
                 {describeModule((item as Extract<FormatItem, { kind: "module" }>).name)}
               </span>
             ) : null}
