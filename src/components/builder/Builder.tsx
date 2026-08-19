@@ -11,6 +11,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 
+import { EnvironmentPanel } from "./EnvironmentPanel";
 import { Explainer } from "./Explainer";
 import { FormatBuilder } from "./FormatBuilder";
 import { PreviewPane } from "./PreviewPane";
@@ -420,8 +421,34 @@ export function Builder() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1600px] px-4 pt-4">
+      <div className="mx-auto flex max-w-[1600px] flex-col gap-4 px-4 pt-4">
         <Explainer />
+
+        {/*
+          Full width, above the columns: the prompt is a single long line, and
+          in a half-width column it wrapped for anyone with more than a couple
+          of modules turned on.
+        */}
+        <details open data-section="preview" className={CARD}>
+          <summary className="section-summary flex items-center gap-3">
+            <span className="text-sm font-semibold text-neutral-100">Preview</span>
+            <ChevronIcon className="section-chevron text-neutral-500" />
+          </summary>
+          <div className="mt-3">
+            <PreviewPane
+              lines={rendered.lines}
+              right={rendered.right}
+              leadingNewline={rendered.leadingNewline}
+              warnings={rendered.warnings}
+              themeId={themeId}
+              onThemeChange={setTheme}
+              fontId={fontId}
+              onFontChange={setFont}
+              theme={theme}
+              fontStack={font.stack}
+            />
+          </div>
+        </details>
       </div>
 
       <div className="mx-auto grid max-w-[1600px] gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(460px,1.15fr)] lg:items-start">
@@ -536,27 +563,29 @@ export function Builder() {
           the grid collapses to one column, because a preview sitting below a
           102-module list is a preview nobody sees while editing.
         */}
-        <div className="order-first flex min-w-0 flex-col gap-4 lg:order-none lg:sticky lg:top-4">
-          <details open data-section="preview" className={CARD}>
-            <summary className="section-summary flex items-center gap-3">
-              <span className="text-sm font-semibold text-neutral-100">Preview</span>
+        {/*
+          No longer hoisted on a phone: that existed to lift the preview above
+          a 102-module list, and the preview now sits above both columns. The
+          editor is what you came to use, so it comes first.
+        */}
+        <div className="flex min-w-0 flex-col gap-4">
+          {/*
+            Open by default: it decides which modules appear at all, so a
+            module that renders nothing has its explanation one glance away.
+            Its own sections stay closed — all of them open at once is a wall.
+          */}
+          <details open data-section="environment" className={CARD}>
+            <summary className="section-summary flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="text-sm font-semibold text-neutral-100">
+                Simulated environment
+              </span>
+              <span className="text-xs text-neutral-500">
+                what the shell would report — decides which modules appear
+              </span>
               <ChevronIcon className="section-chevron text-neutral-500" />
             </summary>
             <div className="mt-3">
-            <PreviewPane
-              lines={rendered.lines}
-              right={rendered.right}
-              leadingNewline={rendered.leadingNewline}
-              warnings={rendered.warnings}
-              themeId={themeId}
-              onThemeChange={setTheme}
-              fontId={fontId}
-              onFontChange={setFont}
-              scenario={scenario}
-              onScenarioEdit={updateScenario}
-              theme={theme}
-              fontStack={font.stack}
-            />
+              <EnvironmentPanel scenario={scenario} onChange={updateScenario} />
             </div>
           </details>
 
