@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Starship Builder",
+  title: "Starship Prompt Builder",
   description:
     "A live, in-browser configurator for the Starship cross-shell prompt.",
 };

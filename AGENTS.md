@@ -1,11 +1,11 @@
-# Agent guide — Starship Builder
+# Agent guide — Starship Prompt Builder
 
 Conventions for agents (and humans) working in this repository. Read
 [PLAN.md](PLAN.md) for what the project is and where it is going.
 
 ## Repository shape
 
-Fully static Next.js app, exported to GitHub Pages under the `/starship-builder`
+Fully static Next.js app, exported to GitHub Pages under the `/starship-prompt-builder`
 base path. Everything runs client-side; there is no backend.
 
 - `src/lib/engine/` — the rendering engine. **Pure TypeScript, no React
@@ -70,8 +70,8 @@ pair.
 
 Use this convention:
 
-- Worktree root: `/private/tmp/starship-builder-worktrees/`
-- Worktree path: `/private/tmp/starship-builder-worktrees/<task-slug>`
+- Worktree root: `/private/tmp/starship-prompt-builder-worktrees/`
+- Worktree path: `/private/tmp/starship-prompt-builder-worktrees/<task-slug>`
 - Branch: `agent/<task-slug>`
 - `<task-slug>`: short, lowercase, kebab-case, descriptive of the PR
 
@@ -85,7 +85,7 @@ Before making changes:
 
    ```sh
    git worktree add -b agent/<task-slug> \
-     /private/tmp/starship-builder-worktrees/<task-slug> origin/main
+     /private/tmp/starship-prompt-builder-worktrees/<task-slug> origin/main
    ```
 
 4. Report the worktree's absolute path and branch name before editing, and
@@ -107,7 +107,7 @@ After GitHub confirms the PR is **merged**, remove only this agent's own
 worktree, and only when `git status --short` in it is empty:
 
 ```sh
-git worktree remove /private/tmp/starship-builder-worktrees/<task-slug>
+git worktree remove /private/tmp/starship-prompt-builder-worktrees/<task-slug>
 git branch -D agent/<task-slug>
 ```
 

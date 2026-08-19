@@ -1,11 +1,11 @@
-# 🚀 Starship Builder
+# 🚀 Starship Prompt Builder
 
 A live, in-browser configurator for the [Starship](https://starship.rs)
 cross-shell prompt. Toggle modules, tweak formats and styles, and watch a
 simulated terminal re-render your prompt instantly — then export the
 `starship.toml` that reproduces it.
 
-**Live:** https://nicklambourne.github.io/starship-builder/
+**Live:** https://nicklambourne.github.io/starship-prompt-builder/
 
 > **Status: early days.** The scaffold and project plan are in place; the
 > rendering engine is next. See [PLAN.md](PLAN.md) for the full roadmap.
@@ -35,7 +35,7 @@ pnpm dev
 ```
 
 Or bring your own Node ≥ 20 with pnpm. The site is a fully static Next.js
-export (`pnpm build` → `out/`), served under the `/starship-builder` base path.
+export (`pnpm build` → `out/`), served under the `/starship-prompt-builder` base path.
 
 Stack: Next.js 16 · React 19 · HeroUI v3 · Tailwind CSS v4 · TypeScript.
 
@@ -47,7 +47,7 @@ Not quite ready for contributions until the M1 engine lands (see
 
 ## Licence
 
-[MIT](LICENSE). Starship Builder is an unaffiliated community tool. Starship
+[MIT](LICENSE). Starship Prompt Builder is an unaffiliated community tool. Starship
 itself is ISC-licensed — vendored artefacts (config schema, presets) retain
 attribution in [data/README.md](data/README.md).
 

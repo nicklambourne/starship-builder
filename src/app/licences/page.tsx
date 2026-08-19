@@ -12,7 +12,7 @@
  * behind each grant (and the two families excluded on licence grounds) lives in
  * `THIRD_PARTY.md` and `public/fonts/README.md`.
  *
- * Links to the bundled texts use `next/link` so the `/starship-builder` base
+ * Links to the bundled texts use `next/link` so the `/starship-prompt-builder` base
  * path is applied by the router; `target="_blank"` keeps the router from
  * intercepting the click, since these are static files and not routes.
  */
@@ -22,7 +22,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/builder/SiteFooter";
 import { TERMINAL_FONTS } from "@/lib/fonts";
 
-export const metadata = { title: "Licences — Starship Builder" };
+export const metadata = { title: "Licences — Starship Prompt Builder" };
 
 interface FontNotice {
   /** File name under `public/fonts/licences/`. */
@@ -153,8 +153,8 @@ export default function LicencesPage() {
             Licences
           </h1>
           <p className="text-sm text-neutral-400">
-            Starship Builder is{" "}
-            <External href="https://github.com/nicklambourne/starship-builder/blob/main/LICENSE">
+            Starship Prompt Builder is{" "}
+            <External href="https://github.com/nicklambourne/starship-prompt-builder/blob/main/LICENSE">
               MIT licensed
             </External>{" "}
             and is not affiliated with or endorsed by any of the projects named

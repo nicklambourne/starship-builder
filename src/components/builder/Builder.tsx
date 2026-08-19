@@ -356,7 +356,7 @@ export function Builder() {
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-white/10 px-4 py-3">
         <h1 className="flex items-center gap-2 text-lg font-semibold tracking-tight">
           <Logo size={30} />
-          Starship Builder
+          Starship Prompt Builder
         </h1>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -402,7 +402,7 @@ export function Builder() {
             {appTheme === "dark" ? <SunIcon /> : <MoonIcon />}
           </button>
           <a
-            href="https://github.com/nicklambourne/starship-builder"
+            href="https://github.com/nicklambourne/starship-prompt-builder"
             aria-label="View this project on GitHub"
             title="View this project on GitHub"
             className={ICON_BUTTON}

@@ -4,7 +4,7 @@ import { defineConfig, devices } from "@playwright/test";
  * E2E runs against the PRODUCTION static export, not the dev server.
  *
  * The dev server hides real bugs: it is slower (masking races), serves
- * unminified output, and does not exercise the `/starship-builder` base path
+ * unminified output, and does not exercise the `/starship-prompt-builder` base path
  * that GitHub Pages actually serves under — which is precisely where asset and
  * routing mistakes hide.
  */
@@ -17,7 +17,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "list" : "html",
   use: {
-    baseURL: `http://127.0.0.1:${PORT}/starship-builder/`,
+    baseURL: `http://127.0.0.1:${PORT}/starship-prompt-builder/`,
     trace: "on-first-retry",
   },
   projects: [
@@ -29,7 +29,7 @@ export default defineConfig({
   webServer: {
     // `serve-export` publishes out/ under the base path the site really uses.
     command: "pnpm build && pnpm serve:export",
-    url: `http://127.0.0.1:${PORT}/starship-builder/`,
+    url: `http://127.0.0.1:${PORT}/starship-prompt-builder/`,
     // Never reuse: a stale server silently tests the previous build.
     reuseExistingServer: false,
     timeout: 180_000,

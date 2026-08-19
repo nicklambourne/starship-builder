@@ -38,7 +38,7 @@ Three steps, all requiring access this repository's tooling does not have
 ### 1. Install the ARC GitHub App on this repository
 
 The `arc-github-app` secret in the `arc-runners` namespace authenticates every
-scale set. Its GitHub App must be installed on `nicklambourne/starship-builder`
+scale set. Its GitHub App must be installed on `nicklambourne/starship-prompt-builder`
 in addition to the existing private repos. No secret needs to change — only the
 App's repository access list.
 
@@ -48,10 +48,10 @@ private repos"; that line needs updating once this repo is added.
 ### 2. Add the scale set to the cluster
 
 In `noodle`, add the values file
-`state/ci-cluster/values/starship-builder-values.yaml`:
+`state/ci-cluster/values/starship-prompt-builder-values.yaml`:
 
 ```yaml
-githubConfigUrl: "https://github.com/nicklambourne/starship-builder"
+githubConfigUrl: "https://github.com/nicklambourne/starship-prompt-builder"
 githubConfigSecret: arc-github-app
 
 minRunners: 0
@@ -101,7 +101,7 @@ and register it in `state/ci-cluster/arc.tf`, keeping the reasoning next to the
 existing policy comment:
 
 ```hcl
-  # starship-builder is also public, and is the one deliberate exception. The
+  # starship-prompt-builder is also public, and is the one deliberate exception. The
   # risk a public repo carries is a fork PR executing attacker-controlled code
   # on a LAN box; that is fenced off workflow-side rather than here. Every job
   # in that repo selects its runner from
@@ -114,7 +114,7 @@ existing policy comment:
     kairno           = "${path.module}/values/kairno-values.yaml"
     everyscreen      = "${path.module}/values/everyscreen-values.yaml"
     byteling         = "${path.module}/values/byteling-values.yaml"
-    starship-builder = "${path.module}/values/starship-builder-values.yaml"
+    starship-prompt-builder = "${path.module}/values/starship-prompt-builder-values.yaml"
   }
 ```
 
@@ -125,7 +125,7 @@ Then `terraform apply` from `state/ci-cluster/`.
 Once runners register, set the repository variable:
 
 ```bash
-gh variable set SELF_HOSTED_RUNNER --repo nicklambourne/starship-builder --body starship-builder
+gh variable set SELF_HOSTED_RUNNER --repo nicklambourne/starship-prompt-builder --body starship-prompt-builder
 ```
 
 The value is the **Helm release name** — ARC matches the scale set's
@@ -135,7 +135,7 @@ GitHub-hosted runners with no code change.
 Also confirm fork-PR approval is at its strictest:
 
 ```bash
-gh api -X PUT repos/nicklambourne/starship-builder/actions/permissions/workflow \
+gh api -X PUT repos/nicklambourne/starship-prompt-builder/actions/permissions/workflow \
   -F default_workflow_permissions=read
 ```
 
