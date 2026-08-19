@@ -170,7 +170,7 @@ export const SCENARIOS: Scenario[] = [
     id: "rebase",
     label: "Rebase in progress",
     description: "An interactive rebase paused on a conflict.",
-    path: "/Users/you/code/starship-builder",
+    path: "/Users/you/code/starship",
     files: ["package.json", "src", "README.md"],
     status: 1,
     git: {
@@ -188,7 +188,7 @@ export const SCENARIOS: Scenario[] = [
       untracked: 0,
       conflicted: 2,
       stashed: 0,
-      root: "/Users/you/code/starship-builder",
+      root: "/Users/you/code/starship",
       hasRemote: true,
       remoteBranch: "feat/engine",
       remoteName: "origin",
