@@ -15,6 +15,7 @@
  */
 
 import { useId } from "react";
+import { TrashIcon } from "./icons";
 
 import { SymbolInput } from "./SymbolInput";
 
@@ -79,9 +80,9 @@ export function MapEditor({
               delete next[key];
               onChange(next);
             }}
-            className="shrink-0 rounded px-1.5 py-1 text-xs text-neutral-500 transition hover:bg-white/10 hover:text-red-300"
+            className="shrink-0 rounded px-1.5 py-1 text-neutral-500 transition hover:bg-white/10 hover:text-red-300"
           >
-            ✕
+            <TrashIcon />
           </button>
         </div>
       ))}

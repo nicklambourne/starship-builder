@@ -14,6 +14,7 @@
  */
 
 import { useId } from "react";
+import { TrashIcon } from "@/components/ui/icons";
 
 import { Toggle } from "@/components/ui/Toggle";
 import type { GitState, OsType, Scenario } from "@/lib/scenarios/types";
@@ -57,19 +58,29 @@ const SHELLS: Scenario["shell"][] = [
 ];
 
 /** Tools offered as one-click version toggles, keyed by module name. */
-const COMMON_TOOLS: { key: string; label: string; version: string }[] = [
-  { key: "nodejs", label: "Node.js", version: "22.19.0" },
-  { key: "python", label: "Python", version: "3.13.1" },
-  { key: "rust", label: "Rust", version: "1.84.0" },
-  { key: "golang", label: "Go", version: "1.24.0" },
-  { key: "java", label: "Java", version: "21.0.5" },
-  { key: "ruby", label: "Ruby", version: "3.4.1" },
-  { key: "php", label: "PHP", version: "8.4.2" },
-  { key: "dotnet", label: ".NET", version: "9.0.101" },
-  { key: "deno", label: "Deno", version: "2.1.4" },
-  { key: "bun", label: "Bun", version: "1.1.42" },
-  { key: "terraform", label: "Terraform", version: "1.10.3" },
-  { key: "docker", label: "Docker", version: "27.4.0" },
+/*
+ * Symbols come from starship's own nerd-font-symbols preset, so a tool is
+ * marked with the glyph its module prints. The defaults are emoji and, for
+ * .NET, the bare string ".NET" — no use as a row of icons.
+ */
+export const COMMON_TOOLS: {
+  key: string;
+  label: string;
+  version: string;
+  symbol: string;
+}[] = [
+  { key: "nodejs", label: "Node.js", version: "22.19.0", symbol: "\ue718" },
+  { key: "python", label: "Python", version: "3.13.1", symbol: "\ue235" },
+  { key: "rust", label: "Rust", version: "1.84.0", symbol: "\u{f1617}" },
+  { key: "golang", label: "Go", version: "1.24.0", symbol: "\ue627" },
+  { key: "java", label: "Java", version: "21.0.5", symbol: "\ue738" },
+  { key: "ruby", label: "Ruby", version: "3.4.1", symbol: "\ue791" },
+  { key: "php", label: "PHP", version: "8.4.2", symbol: "\ue608" },
+  { key: "dotnet", label: ".NET", version: "9.0.101", symbol: "\ue77f" },
+  { key: "deno", label: "Deno", version: "2.1.4", symbol: "\ue7c0" },
+  { key: "bun", label: "Bun", version: "1.1.42", symbol: "\ue76f" },
+  { key: "terraform", label: "Terraform", version: "1.10.3", symbol: "\ue69a" },
+  { key: "docker", label: "Docker", version: "27.4.0", symbol: "\uf308" },
 ];
 
 function Section({
@@ -180,9 +191,9 @@ function PairEditor({
               delete next[key];
               onChange(next);
             }}
-            className="shrink-0 rounded px-1.5 py-1 text-xs text-neutral-500 transition hover:bg-white/10 hover:text-red-300"
+            className="shrink-0 rounded px-1.5 py-1 text-neutral-500 transition hover:bg-white/10 hover:text-red-300"
           >
-            ✕
+            <TrashIcon />
           </button>
         </div>
       ))}
@@ -548,19 +559,23 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
                   key={tool.key}
                   type="button"
                   aria-pressed={present}
+                  aria-label={tool.label}
+                  title={tool.label}
                   onClick={() => {
                     const next = { ...scenario.toolVersions };
                     if (present) delete next[tool.key];
                     else next[tool.key] = tool.version;
                     onChange({ toolVersions: next });
                   }}
-                  className={`rounded-full border px-2.5 py-1 text-xs transition ${
+                  className={`grid size-8 place-items-center rounded border text-lg transition ${
                     present
                       ? "border-accent-400 bg-accent-400/15 text-accent-200"
                       : "border-white/10 text-neutral-400 hover:border-white/25 hover:text-neutral-200"
                   }`}
                 >
-                  {tool.label}
+                  <span aria-hidden="true" className="nerd-font leading-none">
+                    {tool.symbol}
+                  </span>
                 </button>
               );
             })}

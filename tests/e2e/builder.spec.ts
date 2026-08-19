@@ -823,6 +823,51 @@ test.describe("builder", () => {
     await expect(page.getByLabel("Simulated terminal prompt")).toContainText("ada");
   });
 
+  test("installed tools are icon buttons named by their tooltip", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    await openEnvSection(page, "Installed tools");
+    // Scoped: a module row's description mentions Node.js too.
+    const node = page
+      .locator("[data-section='environment']")
+      .getByRole("button", { name: "Node.js", exact: true });
+    await expect(node).toHaveAttribute("title", "Node.js");
+    // A glyph, not the word.
+    await expect(node).not.toContainText("Node.js");
+    const shape = await node.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return { w: Math.round(r.width), h: Math.round(r.height), radius: getComputedStyle(el).borderRadius };
+    });
+    expect(shape.w).toBe(shape.h);
+    expect(shape.radius).not.toBe("0px");
+
+    // It still toggles the tool, which decides whether the module renders.
+    await expect(node).toHaveAttribute("aria-pressed", "true");
+    await node.click();
+    await expect(node).toHaveAttribute("aria-pressed", "false");
+  });
+
+  test("removing an entry uses the trash icon, not a cross", async ({ page }) => {
+    await page.goto("./");
+    await openEnvSection(page, "Installed tools");
+    const remove = page
+      .locator("[data-section='environment']")
+      .getByRole("button", { name: "Remove nodejs" });
+    await expect(remove.locator("svg")).toHaveCount(1);
+    await expect(remove).not.toContainText("✕");
+  });
+
+  test("the environment's description sits in its body, like the editor's", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    const card = page.locator("[data-section='environment']");
+    const summary = card.locator("> summary");
+    await expect(summary).toHaveText("Simulated environment");
+    await expect(card.locator("> p")).toContainText("which modules appear");
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {
