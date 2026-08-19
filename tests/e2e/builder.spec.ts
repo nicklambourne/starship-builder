@@ -841,6 +841,14 @@ test.describe("builder", () => {
     });
     expect(shape.w).toBe(shape.h);
     expect(shape.radius).not.toBe("0px");
+    // Big enough to make out the glyph, and painted in Node's green.
+    expect(shape.w).toBeGreaterThanOrEqual(40);
+    expect(
+      await node.locator("span").evaluate((el) => ({
+        color: getComputedStyle(el).color,
+        size: parseFloat(getComputedStyle(el).fontSize),
+      })),
+    ).toEqual({ color: "rgb(95, 160, 78)", size: 24 });
 
     // It still toggles the tool, which decides whether the module renders.
     await expect(node).toHaveAttribute("aria-pressed", "true");
