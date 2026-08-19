@@ -27,8 +27,13 @@ interface LogoProps {
 function Art() {
   return (
     <>
-      {/* Ring, near-complete, gap at the upper right. */}
-      <path d="M 53.25 26.31 A 22 22 0 1 1 43 12.95" />
+      {/*
+        Ring, near-complete, gap at the upper right. The ends are set from the
+        rocket rather than round numbers: its upper flank crosses the circle at
+        296.1° and its lower flank at 322.5°, so the ring stops 4° clear of the
+        first and resumes 18° after the second.
+      */}
+      <path d="M 52.74 24.66 A 22 22 0 1 1 40.28 11.62" />
       {/* Exhaust, branching off the ring at the lower left. */}
       <path d="M 12.95 43 C 21.5 45.5, 27 39.5, 31 34 C 33.5 30.5, 36 26.5, 38.6 22.6" />
       <path d="M 17.5 36.5 C 22 36.5, 26 33.5, 29.5 29.5" opacity="0.75" />
