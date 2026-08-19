@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!--
+    Favicon variant of the mark.
+
+    Deliberately not the full logo: the faint exhaust strokes and the Gaussian
+    bloom turn to mush at 16px, and some browsers rasterise favicons without
+    running filters at all. The glow is faked with a wide translucent stroke
+    instead, the tube is thicker, and the two lightest exhaust lines are gone.
+    A dark rounded tile keeps the orange readable on a light browser tab.
+  -->
+  <rect width="64" height="64" rx="14" fill="#12100e"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(32 32) scale(0.86) translate(-32 -32)">
+    <g stroke="#ff5f1f" stroke-width="8" opacity="0.35">
+      <path d="M 53.25 26.31 A 22 22 0 1 1 43 12.95"/>
+      <path d="M 12.95 43 C 21.5 45.5, 27 39.5, 31 34 C 33.5 30.5, 36 26.5, 38.6 22.6"/>
+      <g transform="translate(44 17) rotate(45)">
+        <path d="M 0 -11 C 4.5 -5.5, 5.5 1.5, 4.5 7 L -4.5 7 C -5.5 1.5, -4.5 -5.5, 0 -11 Z"/>
+        <path d="M -4.6 2 L -9 9.5 L -4.6 7"/>
+        <path d="M 4.6 2 L 9 9.5 L 4.6 7"/>
+      </g>
+    </g>
+    <g stroke="#ff8a2b" stroke-width="4">
+      <path d="M 53.25 26.31 A 22 22 0 1 1 43 12.95"/>
+      <path d="M 12.95 43 C 21.5 45.5, 27 39.5, 31 34 C 33.5 30.5, 36 26.5, 38.6 22.6"/>
+      <g transform="translate(44 17) rotate(45)">
+        <path d="M 0 -11 C 4.5 -5.5, 5.5 1.5, 4.5 7 L -4.5 7 C -5.5 1.5, -4.5 -5.5, 0 -11 Z"/>
+        <path d="M -4.6 2 L -9 9.5 L -4.6 7"/>
+        <path d="M 4.6 2 L 9 9.5 L 4.6 7"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -18,6 +18,7 @@ import { SiteFooter } from "./SiteFooter";
 import { SettingsForm, type OptionDescriptor } from "./SettingsForm";
 import { TomlPane } from "./TomlPane";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Logo } from "@/components/ui/Logo";
 import { Toggle } from "@/components/ui/Toggle";
 import {
   ChevronIcon,
@@ -340,7 +341,10 @@ export function Builder() {
         }}
       />
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-white/10 px-4 py-3">
-        <h1 className="text-lg font-semibold tracking-tight">🚀 Starship Builder</h1>
+        <h1 className="flex items-center gap-2 text-lg font-semibold tracking-tight">
+          <Logo size={30} />
+          Starship Builder
+        </h1>
 
         <div className="flex flex-wrap items-center gap-2">
           <button
