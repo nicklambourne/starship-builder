@@ -9,7 +9,7 @@
  * together, which is the whole point of a live configurator.
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { EnvironmentPanel } from "./EnvironmentPanel";
 import { Explainer } from "./Explainer";
@@ -45,6 +45,7 @@ import { rowStyleReaches } from "@/lib/config/styleReach";
 import { MODULE_META, optionKind } from "@/lib/config/meta";
 import { PRESETS } from "@/lib/config/presets";
 import { decodeShare, encodeShare } from "@/lib/config/share";
+import { loadSession, saveSession } from "@/lib/config/session";
 import { parseConfig, serialiseConfig } from "@/lib/config/toml";
 import { MODULE_DEFAULTS } from "@/lib/config/rescue";
 import { TERMINAL_FONTS } from "@/lib/fonts";
@@ -104,12 +105,17 @@ export function Builder() {
     setAppTheme,
     adoptSystemTheme,
     loadShared,
+    restoreSession,
+    appThemeIsExplicit,
     undo,
     redo,
     reset,
     past,
     future,
   } = useBuilderStore();
+
+  // Guards the save effect until the restore has run.
+  const [sessionReady, setSessionReady] = useState(false);
 
   /*
    * A config arriving in the URL fragment. The share button has always
@@ -122,9 +128,104 @@ export function Builder() {
   useEffect(() => {
     const shared = decodeShare(window.location.hash);
     if (shared) loadShared(shared);
-    // Once only: later hash changes are this component writing its own.
+
+    /*
+     * Then the rest of the session. A link's config outranks a stored one —
+     * following a share should show that prompt, not the last one edited on
+     * this machine — but the environment, font and colour scheme are this
+     * visitor's own either way, so they are restored regardless.
+     */
+    const session = loadSession();
+    if (session) restoreSession(session, { config: !shared });
+    setSessionReady(true);
+
+    /*
+     * Arriving at a different fragment without a reload — pasting a share
+     * link into the address bar of a tab already showing the builder, or
+     * following one from another page on the site — is a same-document
+     * navigation, so the effect above never runs again. The app's own share
+     * button uses replaceState, which does not raise this event.
+     */
+    const onHashChange = () => {
+      const next = decodeShare(window.location.hash);
+      if (next) loadShared(next);
+    };
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /*
+   * What would be saved right now. Kept in a ref as well as in the debounce
+   * below, so the page can be left mid-debounce without losing the last edit.
+   */
+  const sessionSnapshot = useRef({
+    config,
+    scenario,
+    themeId,
+    fontId,
+    // Only a deliberate choice is worth restoring; otherwise the operating
+    // system keeps deciding, which is what someone who never touched the
+    // toggle expects.
+    appTheme: appThemeIsExplicit ? appTheme : undefined,
+  });
+  sessionSnapshot.current = {
+    config,
+    scenario,
+    themeId,
+    fontId,
+    appTheme: appThemeIsExplicit ? appTheme : undefined,
+  };
+
+  /*
+   * Save on every change, once the restore above has run — writing before it
+   * would overwrite the stored session with the defaults it is about to
+   * replace. Debounced, because typing in the TOML pane changes the config on
+   * every keystroke.
+   */
+  useEffect(() => {
+    if (!sessionReady) return;
+    const timer = window.setTimeout(() => {
+      saveSession(sessionSnapshot.current);
+      /*
+       * Keep the fragment honest. Sharing used to stamp it once, so every
+       * later edit left the address bar describing a config that no longer
+       * existed — anyone who copied it by hand, or reloaded, got the older
+       * prompt back. replaceState rather than pushState: this is the same
+       * page, not a new entry in the visitor's back button.
+       */
+      window.history.replaceState(null, "", `#${encodeShare(config)}`);
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [
+    sessionReady,
+    config,
+    scenario,
+    themeId,
+    fontId,
+    appTheme,
+    appThemeIsExplicit,
+  ]);
+
+  /*
+   * Reloading or closing within that quarter second would otherwise lose the
+   * last edit — which is exactly when someone is most likely to do it.
+   * `pagehide` is the one event that fires reliably on mobile, where tabs are
+   * discarded rather than closed.
+   */
+  useEffect(() => {
+    if (!sessionReady) return;
+    const flush = () => saveSession(sessionSnapshot.current);
+    const onHidden = () => {
+      if (document.visibilityState === "hidden") flush();
+    };
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", onHidden);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      document.removeEventListener("visibilitychange", onHidden);
+    };
+  }, [sessionReady]);
 
   /*
    * Follow the operating system's colour scheme, and keep following it if it
@@ -335,10 +436,13 @@ export function Builder() {
   }, [config, format, defaultsByModule]);
 
   const share = useCallback(async () => {
+    // The fragment is kept current by the effect above, but a share can beat
+    // its debounce, so it is written here too rather than copying a URL that
+    // is a quarter second out of date.
     const fragment = encodeShare(config);
     const url = `${window.location.origin}${window.location.pathname}#${fragment}`;
-    await navigator.clipboard.writeText(url);
     window.history.replaceState(null, "", `#${fragment}`);
+    await navigator.clipboard.writeText(url);
     setShareCopied(true);
     window.setTimeout(() => setShareCopied(false), 1500);
   }, [config]);

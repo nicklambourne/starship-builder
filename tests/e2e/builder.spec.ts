@@ -967,6 +967,68 @@ test.describe("builder", () => {
     await expect(page.getByLabel("Simulated terminal prompt")).toContainText("you");
   });
 
+  test("the session survives a reload", async ({ page }) => {
+    await page.goto("./");
+    // Something from each of the three things that used to be lost.
+    await openEnvSection(page, "Session");
+    await page.locator("[data-section='environment']").getByLabel("Username").fill("ada");
+    await page.getByLabel("Terminal font").selectOption({ index: 1 });
+    await page.getByLabel("Terminal color scheme").selectOption({ index: 2 });
+    const font = await page.getByLabel("Terminal font").inputValue();
+    const scheme = await page.getByLabel("Terminal color scheme").inputValue();
+    await expect(page.getByLabel("Simulated terminal prompt")).toContainText("ada");
+
+    await page.reload();
+
+    await expect(page.getByLabel("Simulated terminal prompt")).toContainText("ada");
+    await expect(page.getByLabel("Terminal font")).toHaveValue(font);
+    await expect(page.getByLabel("Terminal color scheme")).toHaveValue(scheme);
+  });
+
+  test("a shared link's config beats the stored one", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto("./");
+    await openToml(page);
+    await page
+      .getByLabel("starship.toml")
+      .fill('format = "$directory"\n\n[directory]\nstyle = "bold magenta"\n');
+    await page.getByRole("button", { name: /Copy a share link/ }).click();
+    const shared = await page.evaluate(() => navigator.clipboard.readText());
+
+    // Leave a different config in storage, then follow the link somewhere new.
+    await page.getByLabel("starship.toml").fill('format = "$username"\n');
+    await expect(page.getByLabel("starship.toml")).toHaveValue(/username/);
+    await page.waitForTimeout(400);
+
+    const fresh = await context.newPage();
+    await fresh.goto(shared);
+    await openToml(fresh);
+    await expect(fresh.getByLabel("starship.toml")).toHaveValue(/bold magenta/);
+    await fresh.close();
+  });
+
+  test("the address bar keeps up with the config", async ({ page }) => {
+    await page.goto("./");
+    await openToml(page);
+    await page.getByLabel("starship.toml").fill('format = "$directory"\n');
+    await expect
+      .poll(() => page.evaluate(() => window.location.hash.length))
+      .toBeGreaterThan(1);
+    const first = await page.evaluate(() => window.location.hash);
+
+    // Editing again must move it on, or the URL describes a prompt that is
+    // no longer on screen.
+    await page.getByLabel("starship.toml").fill('format = "$username"\n');
+    await expect
+      .poll(() => page.evaluate(() => window.location.hash))
+      .not.toBe(first);
+
+    // And what it describes is what a reload shows.
+    await page.reload();
+    await openToml(page);
+    await expect(page.getByLabel("starship.toml")).toHaveValue(/\$username/);
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {

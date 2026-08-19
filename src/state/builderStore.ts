@@ -64,6 +64,20 @@ export interface BuilderState {
    * never saw.
    */
   loadShared(config: StarshipConfig): void;
+  /**
+   * Puts back a session from local storage. `config` is skipped when a shared
+   * link supplied one, which outranks it.
+   */
+  restoreSession(
+    session: {
+      config: StarshipConfig;
+      scenario: Scenario;
+      themeId: string;
+      fontId: string;
+      appTheme?: "dark" | "light";
+    },
+    options: { config: boolean },
+  ): void;
   updateModuleOption(module: string, key: string, value: unknown): void;
   resetModuleOption(module: string, key: string): void;
   setModuleDisabled(module: string, disabled: boolean): void;
@@ -152,6 +166,23 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
 
   loadShared(config) {
     set({ config, past: [], future: [] });
+  },
+
+  restoreSession(session, options) {
+    set({
+      ...(options.config ? { config: session.config } : {}),
+      scenario: session.scenario,
+      themeId: session.themeId,
+      fontId: session.fontId,
+      // A restored session is where this visitor was, not an edit they can
+      // undo their way out of.
+      past: [],
+      future: [],
+      ...(session.appTheme
+        ? { appTheme: session.appTheme, appThemeIsExplicit: true }
+        : {}),
+    });
+    if (session.appTheme) applyAppTheme(session.appTheme);
   },
 
   updateModuleOption(module, key, value) {
