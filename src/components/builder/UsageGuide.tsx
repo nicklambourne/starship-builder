@@ -8,14 +8,15 @@
  * starship. Both steps are short, easy to get subtly wrong, and documented
  * somewhere other than here.
  *
- * The shell whose line is highlighted follows the simulated environment, so
- * the instructions match the prompt being previewed rather than making the
- * reader pick twice.
+ * It lives inside the starship.toml card, next to the file it is talking
+ * about. The shell whose line is highlighted follows the simulated
+ * environment, so the instructions match the prompt being previewed rather
+ * than making the reader pick twice.
  */
 
 import { useState } from "react";
 
-import { CheckIcon, ChevronIcon } from "@/components/ui/icons";
+import { CheckIcon } from "@/components/ui/icons";
 import type { Scenario } from "@/lib/scenarios/types";
 
 interface UsageGuideProps {
@@ -101,16 +102,15 @@ export function UsageGuide({ shell, className }: UsageGuideProps) {
   const current = INIT_LINES.find((entry) => entry.shell === shell);
 
   return (
-    <details data-section="usage" className={className}>
-      <summary className="section-summary flex items-center gap-3">
+    <section data-section="usage" className={className}>
+      <h3 className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="text-sm font-semibold text-neutral-100">
           Using your config
         </span>
         <span className="text-xs text-neutral-500">
           where the file goes and how to switch starship on
         </span>
-        <ChevronIcon className="section-chevron text-neutral-500" />
-      </summary>
+      </h3>
 
       <ol className="mt-4 flex flex-col gap-5">
         <Step n={1} title="Install starship, if you have not already">
@@ -193,6 +193,6 @@ export function UsageGuide({ shell, className }: UsageGuideProps) {
           </p>
         </Step>
       </ol>
-    </details>
+    </section>
   );
 }
