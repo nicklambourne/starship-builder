@@ -940,6 +940,33 @@ test.describe("builder", () => {
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   });
 
+  test("a shared link opens on the config it carries", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto("./");
+    await openToml(page);
+    await page
+      .getByLabel("starship.toml")
+      .fill('format = "$directory"\n\n[directory]\nstyle = "bold magenta"\n');
+    await expect(page.getByLabel("Simulated terminal prompt")).toBeVisible();
+
+    await page.getByRole("button", { name: /Copy a share link/ }).click();
+    const url = await page.evaluate(() => navigator.clipboard.readText());
+    expect(url).toContain("#");
+
+    // The whole point: opening it somewhere else reproduces the prompt.
+    const fresh = await context.newPage();
+    await fresh.goto(url);
+    await openToml(fresh);
+    await expect(fresh.getByLabel("starship.toml")).toHaveValue(/bold magenta/);
+    await fresh.close();
+  });
+
+  test("a broken fragment is ignored rather than fatal", async ({ page }) => {
+    await page.goto("./#not-a-real-payload");
+    // Falls back to the default prompt instead of an empty or crashed page.
+    await expect(page.getByLabel("Simulated terminal prompt")).toContainText("you");
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {

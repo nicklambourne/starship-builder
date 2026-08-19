@@ -44,7 +44,7 @@ import { inactiveReason } from "@/lib/config/inactiveReason";
 import { rowStyleReaches } from "@/lib/config/styleReach";
 import { MODULE_META, optionKind } from "@/lib/config/meta";
 import { PRESETS } from "@/lib/config/presets";
-import { encodeShare } from "@/lib/config/share";
+import { decodeShare, encodeShare } from "@/lib/config/share";
 import { parseConfig, serialiseConfig } from "@/lib/config/toml";
 import { MODULE_DEFAULTS } from "@/lib/config/rescue";
 import { TERMINAL_FONTS } from "@/lib/fonts";
@@ -103,12 +103,28 @@ export function Builder() {
     appTheme,
     setAppTheme,
     adoptSystemTheme,
+    loadShared,
     undo,
     redo,
     reset,
     past,
     future,
   } = useBuilderStore();
+
+  /*
+   * A config arriving in the URL fragment. The share button has always
+   * written one; nothing ever read it back, so every link anyone shared
+   * opened on the default prompt.
+   *
+   * Read after mount rather than during render: the fragment is not part of
+   * the prerendered HTML, and reading it during render would disagree with it.
+   */
+  useEffect(() => {
+    const shared = decodeShare(window.location.hash);
+    if (shared) loadShared(shared);
+    // Once only: later hash changes are this component writing its own.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /*
    * Follow the operating system's colour scheme, and keep following it if it
