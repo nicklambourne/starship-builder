@@ -4,6 +4,11 @@ name: Parity
 # every PR touching the engine, on main, and weekly against whatever starship
 # has released since — upstream drift is the failure mode this exists to catch,
 # and it does not announce itself.
+#
+# Two versions, deliberately: pull requests compare against a pinned release so
+# an upstream release cannot fail a PR that never touched the engine, while the
+# weekly run takes the newest one so that drift shows up on its own schedule
+# rather than in someone else's review.
 on:
   pull_request:
     paths:
@@ -30,12 +35,24 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install starship
+        env:
+          # Pull requests and pushes compare against a pinned release, so a
+          # starship release cannot redden a PR that has nothing to do with
+          # it. The scheduled run below tracks the newest release instead —
+          # that is where upstream drift is supposed to surface, on a branch
+          # nobody is waiting on.
+          PINNED: "1.25.1"
         run: |
           set -euo pipefail
-          # Scheduled runs deliberately track the newest release so upstream
-          # changes surface here rather than in someone's shell.
-          curl -fsSL https://starship.rs/install.sh \
-            | sh -s -- --yes --bin-dir /usr/local/bin
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tracking the latest starship release"
+            curl -fsSL https://starship.rs/install.sh \
+              | sh -s -- --yes --bin-dir /usr/local/bin
+          else
+            echo "pinned to starship v$PINNED"
+            curl -fsSL https://starship.rs/install.sh \
+              | sh -s -- --yes --bin-dir /usr/local/bin --version "v$PINNED"
+          fi
           starship --version
 
       - name: Configure git for fixtures
