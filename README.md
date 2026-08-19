@@ -7,6 +7,11 @@ simulated terminal re-render your prompt instantly — then export the
 
 **Live:** https://nicklambourne.github.io/starship-prompt-builder/
 
+Configure the [Starship](https://starship.rs) prompt visually: edit any of its
+102 modules, their styles and their format strings against a live preview of a
+simulated shell, then export the `starship.toml` that reproduces it. Everything
+runs in the browser — no account, no upload, no backend.
+
 > **Status: early days.** The scaffold and project plan are in place; the
 > rendering engine is next. See [PLAN.md](PLAN.md) for the full roadmap.
 
