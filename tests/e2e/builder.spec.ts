@@ -568,6 +568,41 @@ test.describe("builder", () => {
     }
   });
 
+  test("palette swatches show their colour, not their name", async ({ page }) => {
+    await page.goto("./");
+    // The default preset defines a palette, so its entries appear as swatches.
+    await page.getByRole("button", { name: /^Change the style of/ }).first().click();
+
+    const swatches = page.getByRole("button", { name: /palette colour/ });
+    await expect(swatches.first()).toBeVisible();
+
+    const state = await swatches.evaluateAll((els) => ({
+      total: els.length,
+      coloured: els.filter((el) => (el as HTMLElement).style.backgroundColor).length,
+      lettered: els.filter((el) => (el.textContent ?? "").trim().length > 0).length,
+    }));
+    expect(state.total).toBeGreaterThan(0);
+    expect(state.coloured).toBe(state.total);
+    expect(state.lettered).toBe(0);
+  });
+
+  test("input fields are set in a readable size", async ({ page }) => {
+    await page.goto("./");
+    await page.getByRole("button", { name: /^\$os/ }).first().click();
+
+    const small = await page.evaluate(() => {
+      const fields = [
+        ...document.querySelectorAll(
+          "[data-section='format'] input, [data-section='format'] textarea",
+        ),
+      ].filter((el) => !["checkbox", "color"].includes((el as HTMLInputElement).type));
+      return fields
+        .filter((el) => Number.parseFloat(getComputedStyle(el).fontSize) < 16)
+        .map((el) => el.getAttribute("aria-label") ?? el.id ?? "?");
+    });
+    expect(small).toEqual([]);
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {

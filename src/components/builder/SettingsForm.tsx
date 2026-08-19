@@ -140,6 +140,7 @@ export function SettingsForm({
                 onChange={(next) => onChange(option.key, next)}
                 palette={palette}
                 paletteNames={paletteNames}
+                theme={theme}
               />
             ) : option.kind === "number" ? (
               <input
@@ -147,14 +148,14 @@ export function SettingsForm({
                 type="number"
                 value={typeof value === "number" ? value : 0}
                 onChange={(e) => onChange(option.key, Number(e.target.value))}
-                className="w-32 rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
+                className="w-32 rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-base text-neutral-100 focus:border-accent-400 focus:outline-none"
               />
             ) : option.kind === "enum" ? (
               <select
                 id={controlId}
                 value={typeof value === "string" ? value : ""}
                 onChange={(e) => onChange(option.key, e.target.value)}
-                className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
+                className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-base text-neutral-100 focus:border-accent-400 focus:outline-none"
               >
                 {(option.enumValues ?? []).map((v) => (
                   <option key={v} value={v}>
@@ -210,7 +211,7 @@ export function SettingsForm({
                   }
                 }}
                 style={{ fontFamily: fontStack }}
-                className="w-full resize-y rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-xs text-neutral-100 focus:border-accent-400 focus:outline-none"
+                className="w-full resize-y rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-base text-neutral-100 focus:border-accent-400 focus:outline-none"
               />
             )}
           </Row>

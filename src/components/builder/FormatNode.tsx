@@ -263,7 +263,7 @@ export function FormatNode({
               onChange={(next) => cb.onTextChange(path, next)}
               fontStack={cb.fontStack}
               ariaLabel={`Text content of ${label}`}
-              className="w-full rounded border border-white/10 bg-neutral-950 px-1.5 py-0.5 text-xs text-neutral-100 focus:border-accent-400 focus:outline-none"
+              className="w-full rounded border border-white/10 bg-neutral-950 px-1.5 py-0.5 text-base text-neutral-100 focus:border-accent-400 focus:outline-none"
             />
           </div>
         ) : null}

@@ -61,7 +61,7 @@ export function MapEditor({
             onChange={(event) => rename(key, event.target.value)}
             spellCheck={false}
             style={{ fontFamily: fontStack }}
-            className="w-2/5 shrink-0 rounded border border-white/10 bg-neutral-950 px-2 py-1 text-xs text-neutral-100 focus:border-accent-400 focus:outline-none"
+            className="w-2/5 shrink-0 rounded border border-white/10 bg-neutral-950 px-2 py-1 text-base text-neutral-100 focus:border-accent-400 focus:outline-none"
           />
           <SymbolInput
             value={entry}
@@ -69,7 +69,7 @@ export function MapEditor({
             fontStack={fontStack}
             ariaLabel={`${label} value for ${key || "new entry"}`}
             placeholder={valuePlaceholder}
-            className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1 text-xs text-neutral-100 focus:border-accent-400 focus:outline-none"
+            className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1 text-base text-neutral-100 focus:border-accent-400 focus:outline-none"
           />
           <button
             type="button"
