@@ -508,6 +508,66 @@ test.describe("builder", () => {
     await expect(favicon).toHaveAttribute("href", /icon\..*svg/);
   });
 
+  test("map options edit as rows with the glyph picker, not raw JSON", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    await page.getByRole("button", { name: /^\$os/ }).first().click();
+
+    // os.symbols used to fall through to a JSON textarea, which rendered its
+    // Nerd Font glyphs as tofu and offered no way to insert one.
+    const values = page.locator("input[aria-label^='symbols value for']");
+    await expect(values.first()).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /^Insert a symbol into symbols value/ }).first(),
+    ).toBeVisible();
+
+    const font = await values.first().evaluate((el) => getComputedStyle(el).fontFamily);
+    expect(font).toMatch(/Nerd Font/i);
+  });
+
+  test("every text field in the format editor uses the terminal font", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    await page.getByRole("button", { name: /^\$os/ }).first().click();
+
+    const offenders = await page.evaluate(() => {
+      const fields = [
+        ...document.querySelectorAll(
+          "[data-section='format'] input, [data-section='format'] textarea",
+        ),
+      ].filter(
+        (el) =>
+          !["checkbox", "number", "color", "search"].includes(
+            (el as HTMLInputElement).type,
+          ),
+      );
+      return fields
+        .filter((el) => !/Nerd Font/i.test(getComputedStyle(el).fontFamily))
+        .map((el) => el.getAttribute("aria-label") ?? el.id ?? "?");
+    });
+    expect(offenders).toEqual([]);
+  });
+
+  test("style modifiers are icon buttons that keep their names", async ({ page }) => {
+    await page.goto("./");
+    await page.getByRole("button", { name: /^Change the style of/ }).first().click();
+
+    for (const name of ["bold", "italic", "underline", "strikethrough", "dimmed"]) {
+      const button = page.getByRole("button", { name, exact: true }).first();
+      await expect(button).toBeVisible();
+      // The word is gone: what is left is a single styled letter (B/I/U/S) or
+      // a drawn icon. The name survives only as the accessible label.
+      const mark = await button.evaluate((el) => ({
+        text: el.textContent?.trim() ?? "",
+        svg: !!el.querySelector("svg"),
+      }));
+      expect(mark.text.length <= 1 || mark.svg).toBe(true);
+      expect(mark.text.toLowerCase()).not.toBe(name);
+    }
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {
