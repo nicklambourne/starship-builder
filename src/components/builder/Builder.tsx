@@ -46,6 +46,7 @@ import { MODULE_META, optionKind } from "@/lib/config/meta";
 import { PRESETS } from "@/lib/config/presets";
 import { encodeShare } from "@/lib/config/share";
 import { parseConfig, serialiseConfig } from "@/lib/config/toml";
+import { MODULE_DEFAULTS } from "@/lib/config/rescue";
 import { TERMINAL_FONTS } from "@/lib/fonts";
 import { NAMED_COLORS } from "@/lib/engine/types";
 import { getTheme } from "@/lib/terminalThemes";
@@ -285,11 +286,9 @@ export function Builder() {
     ],
   );
 
-  const defaultsByModule = useMemo(() => {
-    const out: Record<string, Record<string, unknown>> = {};
-    for (const definition of ALL_MODULES) out[definition.name] = definition.defaults;
-    return out;
-  }, []);
+  // Shared with the error boundary, which needs the same map to hand back a
+  // config after a crash.
+  const defaultsByModule = MODULE_DEFAULTS;
 
   const downloadConfig = useCallback(() => {
     const text = serialiseConfig(
