@@ -17,6 +17,7 @@ import { PreviewPane } from "./PreviewPane";
 import { SiteFooter } from "./SiteFooter";
 import { SettingsForm, type OptionDescriptor } from "./SettingsForm";
 import { TomlPane } from "./TomlPane";
+import { UsageGuide } from "./UsageGuide";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Logo } from "@/components/ui/Logo";
 import { Toggle } from "@/components/ui/Toggle";
@@ -559,7 +560,6 @@ export function Builder() {
                 starship.toml
               </span>
               <span className="text-xs text-neutral-500">view or paste a config</span>
-              <ChevronIcon className="section-chevron text-neutral-500" />
               <span
                 role="button"
                 tabIndex={0}
@@ -574,11 +574,14 @@ export function Builder() {
                     downloadConfig();
                   }
                 }}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded bg-emerald-600 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+                className="ml-auto inline-flex cursor-pointer items-center gap-1.5 rounded bg-emerald-600 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
               >
                 <DownloadIcon />
                 Download config
               </span>
+              {/* After the download: the button is the point of this bar, the
+                  chevron only says the card opens. */}
+              <ChevronIcon className="section-chevron text-neutral-500" />
             </summary>
             <div className="mt-3">
               <TomlPane
@@ -588,6 +591,8 @@ export function Builder() {
               />
             </div>
           </details>
+
+          <UsageGuide shell={scenario.shell} className={CARD} />
         </div>
       </div>
 

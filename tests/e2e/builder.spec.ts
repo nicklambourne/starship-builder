@@ -603,6 +603,41 @@ test.describe("builder", () => {
     expect(small).toEqual([]);
   });
 
+  test("the toml card's chevron follows its download button", async ({ page }) => {
+    await page.goto("./");
+    const summary = page.locator("[data-section='toml'] summary");
+    const boxes = await summary.evaluate((el) => {
+      const download = el.querySelector("[aria-label='Download config']")!;
+      const chevron = el.querySelector(".section-chevron")!;
+      return {
+        downloadRight: download.getBoundingClientRect().right,
+        chevronLeft: chevron.getBoundingClientRect().left,
+      };
+    });
+    expect(boxes.chevronLeft).toBeGreaterThanOrEqual(boxes.downloadRight);
+  });
+
+  test("the usage guide explains what to do with the file", async ({ page }) => {
+    await page.goto("./");
+    const guide = page.locator("[data-section='usage']");
+    await expect(guide).not.toHaveAttribute("open", "");
+
+    await guide.locator("summary").first().click();
+    await expect(guide.getByText("Put the file where starship looks for it")).toBeVisible();
+
+    // The init line follows the shell chosen in the simulated environment.
+    await expect(guide.getByText(/set to Zsh in the simulated/)).toBeVisible();
+    await openEnvSection(page, "Session");
+    // "Shell" also matches SHLVL and the Nix-shell switch, so pick the one
+    // select that offers shells.
+    await page
+      .locator("select")
+      .filter({ has: page.locator('option[value="fish"]') })
+      .selectOption("fish");
+    await expect(guide.getByText(/set to Fish in the simulated/)).toBeVisible();
+    await expect(guide.getByText("~/.config/fish/config.fish")).toBeVisible();
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {
