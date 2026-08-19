@@ -21,6 +21,16 @@ import { DEFAULT_THEME_ID } from "@/lib/terminalThemes";
 
 const HISTORY_LIMIT = 100;
 
+/**
+ * The reversed neutral ramp keys off the document element, so the whole
+ * interface flips from one attribute.
+ */
+function applyAppTheme(theme: "dark" | "light") {
+  if (typeof document !== "undefined") {
+    document.documentElement.dataset.theme = theme;
+  }
+}
+
 export interface BuilderState {
   config: StarshipConfig;
   /**
@@ -36,6 +46,11 @@ export interface BuilderState {
   fontId: string;
   /** Light or dark chrome for the app itself, distinct from the terminal's. */
   appTheme: "dark" | "light";
+  /**
+   * False until someone works the toggle. While it is false the operating
+   * system's preference wins, including when it changes mid-session.
+   */
+  appThemeIsExplicit: boolean;
   /** Module currently open in the settings pane; null means the root options. */
   selectedModule: string | null;
 
@@ -52,6 +67,8 @@ export interface BuilderState {
   setTheme(id: string): void;
   setFont(id: string): void;
   setAppTheme(theme: "dark" | "light"): void;
+  /** Follows the OS preference, unless the toggle has been used. */
+  adoptSystemTheme(theme: "dark" | "light"): void;
   undo(): void;
   redo(): void;
   reset(): void;
@@ -109,6 +126,7 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
   // place that decides which font people see first.
   fontId: TERMINAL_FONTS[0].id,
   appTheme: "dark",
+  appThemeIsExplicit: false,
   selectedModule: null,
   past: [],
   future: [],
@@ -162,12 +180,16 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
   },
 
   setAppTheme(theme) {
+    set({ appTheme: theme, appThemeIsExplicit: true });
+    applyAppTheme(theme);
+  },
+
+  adoptSystemTheme(theme) {
+    // A deliberate choice outranks the operating system for the rest of the
+    // session; without one, the interface simply follows it.
+    if (get().appThemeIsExplicit) return;
     set({ appTheme: theme });
-    // The reversed neutral ramp keys off the document element, so the whole
-    // interface flips from one attribute.
-    if (typeof document !== "undefined") {
-      document.documentElement.dataset.theme = theme;
-    }
+    applyAppTheme(theme);
   },
 
   undo() {
