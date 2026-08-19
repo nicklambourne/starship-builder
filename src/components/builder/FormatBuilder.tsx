@@ -59,6 +59,7 @@ interface FormatBuilderProps {
   modules?: {
     isEnabled(name: string): boolean;
     inactiveNote(name: string): string | null;
+    styleReaches(name: string): boolean;
     setEnabled(name: string, enabled: boolean): void;
     renderSettings(name: string): React.ReactNode;
   };
@@ -210,6 +211,7 @@ export function FormatBuilder({
       ),
     isModuleEnabled: (name) => modules?.isEnabled(name) ?? true,
     inactiveNote: (name) => modules?.inactiveNote(name) ?? null,
+    styleReaches: (name) => modules?.styleReaches(name) ?? true,
     onToggleModule: (name, enabled) => modules?.setEnabled(name, enabled),
     isGroupEnabled: (group) =>
       collectModuleNames(group.items).some((name) => modules?.isEnabled(name) ?? true),

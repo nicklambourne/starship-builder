@@ -37,6 +37,11 @@ const ROW_BUTTON =
   "grid size-7 shrink-0 place-items-center rounded border border-white/15 text-neutral-400 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-400";
 const GROUP_BUTTON = `${ROW_BUTTON} hover:border-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-200`;
 const NEUTRAL_BUTTON = `${ROW_BUTTON} hover:border-accent-400 hover:bg-white/5 hover:text-neutral-100`;
+
+/** Why a row's style control is dead for this module. */
+function inertStyleReason(label: string): string {
+  return `A style set here cannot reach ${label} — its whole format sits inside its own style group, and starship replaces the surrounding style rather than inheriting it. Open the row and set the module's style option instead.`;
+}
 const DANGER_BUTTON = `${ROW_BUTTON} hover:border-red-400 hover:bg-red-400/10 hover:text-red-300`;
 
 export interface FormatNodeCallbacks {
@@ -55,6 +60,8 @@ export interface FormatNodeCallbacks {
   isModuleEnabled(name: string): boolean;
   /** Enabled, but rendering nothing right now — and why. */
   inactiveNote(name: string): string | null;
+  /** False when a style set on the row cannot reach this module's output. */
+  styleReaches(name: string): boolean;
   onToggleModule(name: string, enabled: boolean): void;
   isGroupEnabled(item: Extract<FormatItem, { kind: "group" }>): boolean;
   onToggleGroup(item: Extract<FormatItem, { kind: "group" }>, enabled: boolean): void;
@@ -135,6 +142,13 @@ export function FormatNode({
   // like a module rather than editing in the row, where the field crowded the
   // controls and the symbol picker had nowhere to sit.
   const canExpand = isModule || isGroup || isText;
+  /*
+   * A row style only paints what a module emits unstyled. `$os` is
+   * `[$symbol]($style)` end to end, so nothing set here ever shows — offering
+   * a live control would be a lie.
+   */
+  const styleIsInert =
+    isModule && !cb.styleReaches((item as Extract<FormatItem, { kind: "module" }>).name);
   const moduleNote = isModule
     ? cb.inactiveNote((item as Extract<FormatItem, { kind: "module" }>).name)
     : null;
@@ -295,15 +309,45 @@ export function FormatNode({
           * does that job instead.
           */}
         {item.kind !== "raw" && !(isGroup && item.items.length === 1) ? (
-          <button
-            type="button"
-            aria-label={`Change the style of ${label}`}
-            aria-expanded={styling}
-            onClick={() => cb.onStyleToggle(path)}
-            className={NEUTRAL_BUTTON}
+          /*
+           * The reason sits on a wrapper, not the button: a disabled button
+           * takes no pointer events, so its own `title` may never appear —
+           * and with the control disabled, the style panel that used to
+           * explain this can no longer be opened.
+           */
+          <span
+            className="inline-flex"
+            title={styleIsInert ? inertStyleReason(label) : undefined}
           >
-            <StyleSwatch style={item.style} theme={cb.theme} palette={cb.palette} />
-          </button>
+            <button
+              type="button"
+              aria-label={
+                styleIsInert
+                  ? `Style of ${label} — no effect. ${inertStyleReason(label)}`
+                  : `Change the style of ${label}`
+              }
+              aria-expanded={styleIsInert ? undefined : styling}
+              disabled={styleIsInert}
+              onClick={() => cb.onStyleToggle(path)}
+              className={`${NEUTRAL_BUTTON} ${
+                styleIsInert
+                  ? "cursor-not-allowed opacity-45 hover:border-white/10 hover:bg-transparent hover:text-neutral-300"
+                  : ""
+              }`}
+            >
+              <span className="relative inline-grid place-items-center">
+                <StyleSwatch style={item.style} theme={cb.theme} palette={cb.palette} />
+                {styleIsInert ? (
+                  // Struck through: the control stays where the eye expects
+                  // it, and says plainly that it does nothing here.
+                  <span
+                    aria-hidden="true"
+                    className="absolute h-px w-7 rotate-45 rounded bg-neutral-200"
+                  />
+                ) : null}
+              </span>
+            </button>
+          </span>
         ) : null}
 
         {canExpand ? (

@@ -539,6 +539,53 @@ test.describe("builder", () => {
     await expect(page.getByLabel("Simulated terminal prompt")).toContainText("|");
   });
 
+  test("a style control that cannot reach its module is struck out", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    // $os is `[$symbol]($style)` end to end: verified against real starship,
+    // a style set on the row never appears, not even as a background.
+    const osRow = page
+      .locator("li")
+      .filter({ has: page.getByRole("button", { name: /^Reorder \$os\b/ }) })
+      .first();
+    const dead = osRow.getByRole("button", { name: /^Style of \$os — no effect/ });
+    await expect(dead).toBeDisabled();
+    await expect(osRow.locator("span[title*='cannot reach']")).toHaveCount(1);
+
+    // Under starship's own defaults $directory ends in a space outside its
+    // style group, so there the control does something and stays live.
+    await useStructuredDefault(page);
+    await expect(
+      page.getByRole("button", { name: "Change the style of $directory" }),
+    ).toBeEnabled();
+    // $os is fully wrapped in its defaults too, so it stays struck.
+    await expect(
+      page.getByRole("button", { name: /^Style of \$os — no effect/ }),
+    ).toBeDisabled();
+  });
+
+  test("the strike follows the module's format, not a fixed list", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    await openToml(page);
+    // Give $os something outside its style group and the control comes back.
+    await page
+      .getByLabel("starship.toml")
+      .fill('format = "$os"\n\n[os]\ndisabled = false\nformat = "x[$symbol]($style)"\n');
+    await expect(
+      page.getByRole("button", { name: "Change the style of $os" }),
+    ).toBeEnabled();
+
+    await page
+      .getByLabel("starship.toml")
+      .fill('format = "$os"\n\n[os]\ndisabled = false\nformat = "[$symbol]($style)"\n');
+    await expect(
+      page.getByRole("button", { name: /^Style of \$os — no effect/ }),
+    ).toBeDisabled();
+  });
+
   test("modules carry a collapse indicator", async ({ page }) => {
     await page.goto("./");
     const chevron = page

@@ -1,0 +1,42 @@
+import { describe, expect, it } from "vitest";
+
+import { rowStyleReaches } from "@/lib/config/styleReach";
+import { ALL_MODULES } from "@/lib/engine/modules";
+
+describe("rowStyleReaches", () => {
+  it("is false when the whole format sits inside a style group", () => {
+    expect(rowStyleReaches("[$symbol]($style)")).toBe(false);
+  });
+
+  it("is true for the literal a language module puts in front", () => {
+    expect(rowStyleReaches("via [$symbol($version )]($style)")).toBe(true);
+  });
+
+  it("is true for a trailing space, which is what $directory leaves", () => {
+    expect(rowStyleReaches("[$path]($style)[$read_only]($read_only_style) ")).toBe(true);
+  });
+
+  it("is true for a bare variable, which carries no style of its own", () => {
+    expect(rowStyleReaches("$symbol")).toBe(true);
+  });
+
+  it("counts an empty style as blocking, because starship replaces rather than inherits", () => {
+    expect(rowStyleReaches("[$symbol]()")).toBe(false);
+  });
+
+  it("assumes reachable when the format cannot be parsed", () => {
+    expect(rowStyleReaches("[$symbol](")).toBe(true);
+  });
+
+  it("names exactly the modules whose default format blocks it", () => {
+    const blocked = ALL_MODULES.filter((definition) => {
+      const format = definition.defaults.format;
+      return typeof format === "string" && !rowStyleReaches(format);
+    }).map((definition) => definition.name);
+
+    // Checked against real starship 1.25.1: with `format = "[$os](bold red)"`
+    // and `[os] style = "bold blue"`, the glyph comes out bold blue and the
+    // red never appears — not even as a background.
+    expect(blocked.sort()).toEqual(["custom", "fill", "nats", "os", "sudo"]);
+  });
+});
