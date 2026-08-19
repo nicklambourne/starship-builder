@@ -9,10 +9,15 @@
  * control shows is exactly what the engine will render. A raw text field stays
  * available because the token space is larger than the controls cover
  * (`prev_fg`, palette names, 256-colour indices).
+ *
+ * The modifiers are icon buttons: eight text labels in a row cost more width
+ * than the colour pickers below them and read as a wall of words. Each keeps
+ * its name as label and tooltip, so nothing hinges on recognising the mark.
  */
 
 import { useId, useMemo, useState } from "react";
 
+import { MODIFIER_ICONS } from "@/components/ui/modifierIcons";
 import { NAMED_COLORS, type Color } from "@/lib/engine/types";
 import { STYLE_MODIFIERS } from "@/lib/engine/types";
 import { type Palette, parseStyleString } from "@/lib/engine/styleString";
@@ -189,13 +194,15 @@ export function StyleStringBuilder({
                 else next.add(modifier);
                 update({ modifiers: next });
               }}
-              className={`rounded-full border px-2.5 py-1 text-xs transition ${
+              aria-label={modifier}
+              title={modifier}
+              className={`grid size-7 place-items-center rounded border transition ${
                 active
                   ? "border-accent-400 bg-accent-400/15 text-accent-200"
                   : "border-white/10 text-neutral-400 hover:border-white/25 hover:text-neutral-200"
               }`}
             >
-              {modifier}
+              {MODIFIER_ICONS[modifier]}
             </button>
           );
         })}

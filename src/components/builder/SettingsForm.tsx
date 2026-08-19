@@ -14,6 +14,7 @@ import { useId } from "react";
 
 import { FormatBuilder } from "./FormatBuilder";
 import { StyleStringBuilder } from "./StyleStringBuilder";
+import { MapEditor } from "@/components/ui/MapEditor";
 import { SymbolInput } from "@/components/ui/SymbolInput";
 import { Toggle } from "@/components/ui/Toggle";
 import type { Palette } from "@/lib/engine/styleString";
@@ -41,6 +42,16 @@ interface SettingsFormProps {
   theme: TerminalTheme;
   /** Terminal font stack: module symbols are Nerd Font glyphs. */
   fontStack: string;
+}
+
+/**
+ * Whether a value is a plain object of strings, and so editable as a map.
+ * `directory.substitutions` is an array despite looking map-like, and arrays
+ * of objects have no sensible row form, so both stay on the JSON fallback.
+ */
+function isStringMap(value: unknown): value is Record<string, string> {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+  return Object.values(value).every((entry) => typeof entry === "string");
 }
 
 function Row({
@@ -152,21 +163,21 @@ export function SettingsForm({
                 ))}
               </select>
             ) : option.kind === "array" ? (
-              <input
+              <SymbolInput
                 id={controlId}
                 value={Array.isArray(value) ? value.join(", ") : ""}
-                onChange={(e) =>
+                onChange={(next) =>
                   onChange(
                     option.key,
-                    e.target.value
+                    next
                       .split(",")
                       .map((s) => s.trim())
                       .filter(Boolean),
                   )
                 }
-                spellCheck={false}
+                fontStack={fontStack}
+                ariaLabel={option.key}
                 placeholder="comma, separated, values"
-                className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
               />
             ) : option.kind === "string" ? (
               // Plain strings include every module's `symbol`, so they get the
@@ -177,6 +188,13 @@ export function SettingsForm({
                 onChange={(next) => onChange(option.key, next)}
                 fontStack={fontStack}
                 ariaLabel={option.key}
+              />
+            ) : isStringMap(value) ? (
+              <MapEditor
+                value={value as Record<string, string>}
+                onChange={(next) => onChange(option.key, next)}
+                fontStack={fontStack}
+                label={option.key}
               />
             ) : (
               <textarea
@@ -191,7 +209,8 @@ export function SettingsForm({
                     // Keep the keystroke; invalid JSON simply is not committed.
                   }
                 }}
-                className="w-full resize-y rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-xs text-neutral-100 focus:border-accent-400 focus:outline-none"
+                style={{ fontFamily: fontStack }}
+                className="w-full resize-y rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-xs text-neutral-100 focus:border-accent-400 focus:outline-none"
               />
             )}
           </Row>
