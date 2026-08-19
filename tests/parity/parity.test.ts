@@ -19,6 +19,7 @@ import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 
 import { PARITY_CASES } from "./fixtures";
+import { SWEEP_CASES, UNSWEEPABLE } from "./sweep";
 import { segmentsToAnsi } from "@/lib/engine/ansi";
 import { ALL_MODULES } from "@/lib/engine/modules";
 import { PROMPT_ORDER } from "@/lib/engine/promptOrder";
@@ -58,7 +59,19 @@ describe("parity with real starship", () => {
 
   const maybe = version ? it : it.skip;
 
-  for (const testCase of PARITY_CASES) {
+  it("says which modules no fixture can reach", () => {
+    // Printed rather than asserted: the value is the list staying visible, so
+    // a module that becomes testable is noticed.
+    const names = Object.keys(UNSWEEPABLE).sort();
+    console.info(
+      `parity sweep covers ${SWEEP_CASES.length} modules; ${names.length} cannot be ` +
+        `reached deterministically:\n` +
+        names.map((name) => `  ${name}: ${UNSWEEPABLE[name]}`).join("\n"),
+    );
+    expect(names.length).toBeGreaterThan(0);
+  });
+
+  for (const testCase of [...PARITY_CASES, ...SWEEP_CASES]) {
     maybe(`matches starship for ${testCase.id}`, () => {
       const root = mkdtempSync(join(tmpdir(), `starship-parity-${testCase.id}-`));
       roots.push(root);
@@ -103,6 +116,7 @@ describe("parity with real starship", () => {
           STARSHIP_CACHE: join(root, "cache"),
           TERM: "xterm-256color",
           HOME: root,
+          ...testCase.env,
         },
       });
 
@@ -119,6 +133,17 @@ describe("parity with real starship", () => {
       const expected =
         (rendered.leadingNewline ? "\n" : "") +
         rendered.lines.map((line) => segmentsToAnsi(line)).join("\n");
+
+      /*
+       * A case where both sides render nothing agrees perfectly and proves
+       * nothing — and a module that stops appearing is exactly the drift this
+       * suite exists to catch. Cases that are meant to print something say so.
+       */
+      if (testCase.expectsOutput !== false) {
+        expect(`${testCase.id} rendered: ${actual.length > 0}`).toBe(
+          `${testCase.id} rendered: true`,
+        );
+      }
 
       expect(printable(actual)).toBe(printable(expected));
     });
