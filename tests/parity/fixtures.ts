@@ -21,6 +21,17 @@ export interface ParityCase {
   scenario: Scenario;
   /** Shell commands run inside the fixture directory to build its state. */
   setup: string[];
+  /**
+   * Extra environment for the real binary. Several modules read the
+   * environment rather than the filesystem, and the engine reads the same
+   * values from `scenario.env`, so a case that sets one must set both.
+   */
+  env?: Record<string, string>;
+  /**
+   * False for a case whose whole point is that nothing is printed. Everything
+   * else must print something, or it agrees vacuously.
+   */
+  expectsOutput?: boolean;
 }
 
 const BASE: Omit<Scenario, "id" | "label" | "description"> = {

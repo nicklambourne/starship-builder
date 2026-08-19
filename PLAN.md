@@ -299,6 +299,14 @@ back to a raw TOML value editor, so the full config surface is always reachable.
 
 ## 8. Testing & fidelity
 
+The parity harness runs two sets of cases: hand-written fixtures for the
+formatter's hard parts (conditionals, escapes, nested groups, palettes), and a
+generated sweep with one case per module — 41 of them — pinning each module's
+defaults against the real binary. Modules that depend on hardware, the clock,
+the network or an installed toolchain cannot have a deterministic fixture;
+they are listed with reasons in `tests/parity/sweep.ts` and printed by the
+suite rather than quietly omitted.
+
 Per the repo owner's standing rules: verification means real exit codes, tests
 that fail without the fix, and looking at the actual UI — not just green suites.
 
