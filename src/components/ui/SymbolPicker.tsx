@@ -77,7 +77,7 @@ export function SymbolPicker({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search symbols — try python, branch, arrow…"
-          className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
+          className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
         />
         <button
           type="button"
@@ -99,7 +99,7 @@ export function SymbolPicker({
               onClick={() => setCategory(name)}
               className={`rounded-full border px-2 py-0.5 text-xs transition ${
                 category === name
-                  ? "border-sky-400 bg-sky-400/15 text-sky-200"
+                  ? "border-accent-400 bg-accent-400/15 text-accent-200"
                   : "border-white/10 text-neutral-400 hover:border-white/25 hover:text-neutral-200"
               }`}
             >
@@ -125,7 +125,7 @@ export function SymbolPicker({
                 title={`${glyph.name} · U+${glyph.code.toUpperCase()}`}
                 onClick={() => onPick(glyph.char)}
                 style={{ fontFamily: fontStack }}
-                className="grid aspect-square place-items-center rounded border border-white/10 text-lg text-neutral-100 transition hover:border-sky-400 hover:bg-sky-400/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-400"
+                className="grid aspect-square place-items-center rounded border border-white/10 text-lg text-neutral-100 transition hover:border-accent-400 hover:bg-accent-400/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-400"
               >
                 {glyph.char}
               </button>

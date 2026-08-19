@@ -124,7 +124,7 @@ if (UNDOCUMENTED.length > 0) {
   );
 }
 
-const LINK = "text-sky-300 underline underline-offset-2 hover:text-sky-200";
+const LINK = "text-accent-300 underline underline-offset-2 hover:text-accent-200";
 const CARD = "rounded-xl border border-white/10 bg-neutral-900/40 p-4";
 const H2 = "text-base font-semibold text-neutral-100";
 

@@ -46,21 +46,92 @@
   --color-neutral-50: #09090b;
 
   /*
-   * The accent tints are chosen for dark surfaces — sky-200 on white is
-   * barely legible — so the light shades of each ramp are darkened to match.
-   * Only the tints used as *text* move; the mid shades stay put because they
-   * are borders, focus rings and filled buttons, which read on either theme.
+   * The remaining tints are chosen for dark surfaces, so the light shades are
+   * darkened to match. Measured on white, the defaults were nowhere near
+   * legible — the "not showing" warnings sat at 1.44:1 in amber-300, and
+   * emerald-400 at 1.92:1 — so every shade used as text or as a border that
+   * carries meaning is remapped to clear 3:1. Filled buttons keep their own
+   * shades, since white-on-emerald-600 and white-on-red-600 already pass.
+   * The interface accent has its own ramp above.
    */
-  --color-sky-200: #075985;
-  --color-sky-300: #0369a1;
   --color-emerald-200: #065f46;
   --color-emerald-300: #047857;
   --color-amber-200: #92400e;
+  --color-amber-300: #a16207;
+  --color-amber-400: #92400e;
+  --color-amber-500: #b45309;
+  --color-emerald-400: #047857;
   --color-red-300: #b91c1c;
+  --color-red-400: #b91c1c;
 }
 
 body {
   @apply bg-neutral-950 text-neutral-100 antialiased;
+}
+
+/*
+ * Accent scale.
+ *
+ * The interface accent is the logo's orange rather than a stock blue, so the
+ * mark and the controls belong to the same palette. It is a named `accent`
+ * ramp — not a redefinition of Tailwind's `sky` — so `text-accent-200` says
+ * what it means and nobody writing `sky` later gets a surprise.
+ *
+ * Both ramps are measured: every stop clears 3:1 against its own theme's
+ * background (WCAG 1.4.11 for non-text), and accent-500 carries a white
+ * switch knob at 3.24:1 dark / 5.19:1 light.
+ *
+ * Green and red are deliberately left alone. They mean "succeeded" and
+ * "destroys something", which is information the brand colour should not
+ * swallow.
+ */
+@theme {
+  --color-accent-200: #ffb066;
+  --color-accent-300: #ff9d4d;
+  --color-accent-400: #ff7a1a;
+  --color-accent-500: #f2610a;
+  --color-accent-600: #d24f06;
+}
+
+:root[data-theme="light"] {
+  --color-accent-200: #803706;
+  --color-accent-300: #9a4409;
+  --color-accent-400: #b2500e;
+  --color-accent-500: #b2500e;
+  --color-accent-600: #803706;
+}
+
+/*
+ * Logo palette.
+ *
+ * The neon ramp runs bright-to-pale for a dark background, where a hot pale
+ * centre is what makes it read as a lit tube. On white that same ramp is
+ * nearly invisible — measured against #fff the pale core is 1.18:1 and the
+ * tube 2.02:1, well under the 3:1 that WCAG 1.4.11 asks of a graphical
+ * object. (A logo is formally exempt; that is not a reason to ship one nobody
+ * can see.)
+ *
+ * The light ramp is the same hue at 24° stepped down in value until every
+ * stop clears 3:1 on white, while staying monotonic so the falloff still
+ * reads as a lit centre: 8.51 / 5.19 / 3.98 / 3.05 to one.
+ */
+:root {
+  --logo-bloom: #ff5f1f;
+  --logo-tube-a: #ff5f1f;
+  --logo-tube-b: #ffa13c;
+  --logo-inner: #ffb066;
+  --logo-core: #ffe9c9;
+  --logo-bloom-opacity: 0.55;
+}
+
+:root[data-theme="light"] {
+  --logo-bloom: #b2500e;
+  --logo-tube-a: #803706;
+  --logo-tube-b: #b2500e;
+  --logo-inner: #ce5f15;
+  --logo-core: #e97223;
+  /* A bloom that reads as light on black reads as dirt on white. */
+  --logo-bloom-opacity: 0.28;
 }
 
 /*
