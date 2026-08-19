@@ -68,19 +68,28 @@ export const COMMON_TOOLS: {
   label: string;
   version: string;
   symbol: string;
+  /** The project's own colour, for the dark interface. */
+  color: string;
+  /**
+   * The same colour on a light surface. Seven of the twelve brand colours
+   * read on both and repeat here; the rest are the brand hue moved in
+   * lightness until it clears 3:1 — Bun's cream and Deno's mint are
+   * invisible on white, and .NET's purple is nearly invisible on black.
+   */
+  lightColor: string;
 }[] = [
-  { key: "nodejs", label: "Node.js", version: "22.19.0", symbol: "\ue718" },
-  { key: "python", label: "Python", version: "3.13.1", symbol: "\ue235" },
-  { key: "rust", label: "Rust", version: "1.84.0", symbol: "\u{f1617}" },
-  { key: "golang", label: "Go", version: "1.24.0", symbol: "\ue627" },
-  { key: "java", label: "Java", version: "21.0.5", symbol: "\ue738" },
-  { key: "ruby", label: "Ruby", version: "3.4.1", symbol: "\ue791" },
-  { key: "php", label: "PHP", version: "8.4.2", symbol: "\ue608" },
-  { key: "dotnet", label: ".NET", version: "9.0.101", symbol: "\ue77f" },
-  { key: "deno", label: "Deno", version: "2.1.4", symbol: "\ue7c0" },
-  { key: "bun", label: "Bun", version: "1.1.42", symbol: "\ue76f" },
-  { key: "terraform", label: "Terraform", version: "1.10.3", symbol: "\ue69a" },
-  { key: "docker", label: "Docker", version: "27.4.0", symbol: "\uf308" },
+  { key: "nodejs", label: "Node.js", version: "22.19.0", symbol: "\ue718", color: "#5fa04e", lightColor: "#5fa04e" },
+  { key: "python", label: "Python", version: "3.13.1", symbol: "\ue235", color: "#3776ab", lightColor: "#3776ab" },
+  { key: "rust", label: "Rust", version: "1.84.0", symbol: "\u{f1617}", color: "#ce422b", lightColor: "#ce422b" },
+  { key: "golang", label: "Go", version: "1.24.0", symbol: "\ue627", color: "#00add8", lightColor: "#00a1c9" },
+  { key: "java", label: "Java", version: "21.0.5", symbol: "\ue738", color: "#f89820", lightColor: "#d97c07" },
+  { key: "ruby", label: "Ruby", version: "3.4.1", symbol: "\ue791", color: "#cc342d", lightColor: "#cc342d" },
+  { key: "php", label: "PHP", version: "8.4.2", symbol: "\ue608", color: "#777bb4", lightColor: "#777bb4" },
+  { key: "dotnet", label: ".NET", version: "9.0.101", symbol: "\ue77f", color: "#5f3cd7", lightColor: "#512bd4" },
+  { key: "deno", label: "Deno", version: "2.1.4", symbol: "\ue7c0", color: "#70ffaf", lightColor: "#00a84a" },
+  { key: "bun", label: "Bun", version: "1.1.42", symbol: "\ue76f", color: "#fbf0df", lightColor: "#cc8619" },
+  { key: "terraform", label: "Terraform", version: "1.10.3", symbol: "\ue69a", color: "#7b42bc", lightColor: "#7b42bc" },
+  { key: "docker", label: "Docker", version: "27.4.0", symbol: "\uf308", color: "#2496ed", lightColor: "#2496ed" },
 ];
 
 function Section({
@@ -567,13 +576,29 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
                     else next[tool.key] = tool.version;
                     onChange({ toolVersions: next });
                   }}
-                  className={`grid size-8 place-items-center rounded border text-lg transition ${
+                  className={`grid size-11 place-items-center rounded-lg border text-2xl transition ${
                     present
-                      ? "border-accent-400 bg-accent-400/15 text-accent-200"
-                      : "border-white/10 text-neutral-400 hover:border-white/25 hover:text-neutral-200"
+                      ? "border-accent-400 bg-accent-400/15"
+                      : "border-white/10 hover:border-white/25"
                   }`}
                 >
-                  <span aria-hidden="true" className="nerd-font leading-none">
+                  {/*
+                    The glyph carries the project's colour, so the pressed
+                    state is not read from it: the accent border and fill say
+                    installed, along with `aria-pressed`. Nothing is dimmed —
+                    every colour here is picked to clear 3:1 on the surface,
+                    and fading the absent ones threw that away.
+                  */}
+                  <span
+                    aria-hidden="true"
+                    className="tool-icon nerd-font leading-none"
+                    style={
+                      {
+                        "--tool-color": tool.color,
+                        "--tool-color-light": tool.lightColor,
+                      } as React.CSSProperties
+                    }
+                  >
                     {tool.symbol}
                   </span>
                 </button>

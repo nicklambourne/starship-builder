@@ -167,6 +167,18 @@ details[open] > .section-summary .section-chevron {
  *
  * The stack is set on the builder root from the selected terminal font.
  */
+/*
+ * A tool button's glyph is its project's colour. Two are supplied because a
+ * few brand colours are unreadable on one of the backgrounds; the light theme
+ * picks the second, in the same way the neutral ramp is reversed above.
+ */
+.tool-icon {
+  color: var(--tool-color);
+}
+:root[data-theme="light"] .tool-icon {
+  color: var(--tool-color-light);
+}
+
 .nerd-font {
   font-family: var(--nerd-font-stack, ui-monospace, monospace);
 }
