@@ -13,9 +13,10 @@
  * field — so no config is silently rewritten.
  */
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { FormatNode, type FormatNodeCallbacks } from "./FormatNode";
+import { usePointerDrag } from "./usePointerDrag";
 import { StyleStringBuilder } from "./StyleStringBuilder";
 import {
   type FormatItem,
@@ -159,21 +160,36 @@ export function FormatBuilder({
     return next;
   };
 
+  // The list as it stands right now, for handlers that outlive their render.
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
+
+  /*
+   * One drag implementation for mouse, pen and touch. The native HTML5 API
+   * this replaced never fired on a phone, which left the handles inert there
+   * and reordering reachable only from a keyboard.
+   */
+  const startPointerDrag = usePointerDrag({
+    onDragStart: (path) => {
+      setDragging(path);
+      setDropTarget(null);
+    },
+    onDragOver: (path, position) => setDropTarget({ path, position }),
+    onDrop: (from, to, position) => {
+      // Read through a ref for the same reason `from` is passed in: this
+      // closure is as old as the drag.
+      commit(moveTo(itemsRef.current, from, to, position));
+      setDragging(null);
+      setDropTarget(null);
+    },
+    onCancel: () => setDropTarget(null),
+  });
+
   const callbacks: FormatNodeCallbacks = {
     theme,
     fontStack,
     palette,
-    onDragStart: setDragging,
-    onDragEnd: () => {
-      setDragging(null);
-      setDropTarget(null);
-    },
-    onDragOverNode: (path, position) => setDropTarget({ path, position }),
-    onDropNode: (path, position) => {
-      if (dragging) commit(moveTo(items, dragging, path, position));
-      setDragging(null);
-      setDropTarget(null);
-    },
+    onHandlePointerDown: startPointerDrag,
     onNudge: (path, direction) => commit(nudge(items, path, direction)),
     onGroup: (path) =>
       commit(

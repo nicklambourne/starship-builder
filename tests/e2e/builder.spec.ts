@@ -1029,6 +1029,59 @@ test.describe("builder", () => {
     await expect(page.getByLabel("starship.toml")).toHaveValue(/\$username/);
   });
 
+  test("a finger can reorder the prompt", async ({ page, context }, info) => {
+    // The point of the pointer-event rewrite: HTML5 drag-and-drop never fires
+    // on touch, so on a phone the handles did nothing at all.
+    test.skip(info.project.name !== "mobile", "touch input only");
+
+    await page.goto("./");
+    await useStructuredDefault(page);
+    await openToml(page);
+    const toml = page.getByLabel("starship.toml");
+    const firstTwo = /format = "\$(\w+)\$(\w+)/;
+    const before = (await toml.inputValue()).match(firstTwo);
+    expect(before).not.toBeNull();
+
+    const handle = page.getByRole("button", { name: /^Reorder \$\w+\./ }).nth(0);
+    await handle.scrollIntoViewIfNeeded();
+    const from = (await handle.boundingBox())!;
+    const to = (await page
+      .locator("[data-format-scope='root-format'] [data-format-row='2']")
+      .boundingBox())!;
+
+    const cdp = await context.newCDPSession(page);
+    const touch = (
+      type: "touchStart" | "touchMove" | "touchEnd",
+      x: number,
+      y: number,
+    ) =>
+      cdp.send("Input.dispatchTouchEvent", {
+        type,
+        touchPoints: type === "touchEnd" ? [] : [{ x, y }],
+      });
+
+    const startX = from.x + from.width / 2;
+    const startY = from.y + from.height / 2;
+    await touch("touchStart", startX, startY);
+    for (let step = 1; step <= 6; step += 1) {
+      const t = step / 6;
+      await touch(
+        "touchMove",
+        startX + (to.x + 40 - startX) * t,
+        startY + (to.y + 3 - startY) * t,
+      );
+    }
+    // The row it will land on says so while the finger is still down.
+    await expect(
+      page.locator("[data-format-row='2'] span.bg-accent-400"),
+    ).toBeVisible();
+    await touch("touchEnd", to.x + 40, to.y + 3);
+
+    await expect
+      .poll(async () => (await toml.inputValue()).match(firstTwo)?.[1])
+      .toBe(before![2]);
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {
