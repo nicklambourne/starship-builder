@@ -13,211 +13,746 @@
  * Do NOT rewrite these as root-relative `/fonts/...` URLs: those are emitted
  * verbatim and 404 under the base path.
  *
- * Only the faces a user actually selects are downloaded, so the ~28.5 MB total
- * is a repository/deploy cost, not a page-load cost (~2.3 MB for the default,
- * and only ~1.2 MB before the first bold glyph is drawn).
+ * Only the faces a user actually selects are downloaded, and each face is
+ * split three ways by `unicode-range` so a visit fetches what it draws rather
+ * than the whole patched font: letters and punctuation, then the icons this
+ * app uses unprompted, and only then — if someone inserts a rare glyph from
+ * the picker — the original 12,000-glyph file. Opening the site with the
+ * default font costs ~360 KB instead of ~2.3 MB.
+ *
+ * The three faces of a weight overlap in the private-use area, where the
+ * later declaration wins, so the order below is deliberate: full, then icons,
+ * then text. Regenerate the subsets with `pnpm build:fonts`.
  */
 
 /* Hack Nerd Font Mono — MIT (+ Bitstream Vera for inherited outlines) — default */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "Hack Nerd Font Mono";
   src: url("../assets/fonts/HackNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "Hack Nerd Font Mono";
+  src: url("../assets/fonts/HackNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "Hack Nerd Font Mono";
+  src: url("../assets/fonts/HackNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "Hack Nerd Font Mono";
   src: url("../assets/fonts/HackNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "Hack Nerd Font Mono";
+  src: url("../assets/fonts/HackNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "Hack Nerd Font Mono";
+  src: url("../assets/fonts/HackNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }
 
 /* JetBrainsMono Nerd Font Mono — SIL OFL 1.1 */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "JetBrainsMono Nerd Font Mono";
   src: url("../assets/fonts/JetBrainsMonoNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "JetBrainsMono Nerd Font Mono";
+  src: url("../assets/fonts/JetBrainsMonoNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "JetBrainsMono Nerd Font Mono";
+  src: url("../assets/fonts/JetBrainsMonoNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "JetBrainsMono Nerd Font Mono";
   src: url("../assets/fonts/JetBrainsMonoNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "JetBrainsMono Nerd Font Mono";
+  src: url("../assets/fonts/JetBrainsMonoNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "JetBrainsMono Nerd Font Mono";
+  src: url("../assets/fonts/JetBrainsMonoNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }
 
 /* FiraCode Nerd Font Mono — SIL OFL 1.1 */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "FiraCode Nerd Font Mono";
   src: url("../assets/fonts/FiraCodeNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "FiraCode Nerd Font Mono";
+  src: url("../assets/fonts/FiraCodeNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "FiraCode Nerd Font Mono";
+  src: url("../assets/fonts/FiraCodeNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "FiraCode Nerd Font Mono";
   src: url("../assets/fonts/FiraCodeNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "FiraCode Nerd Font Mono";
+  src: url("../assets/fonts/FiraCodeNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "FiraCode Nerd Font Mono";
+  src: url("../assets/fonts/FiraCodeNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }
 
 /* CaskaydiaCove Nerd Font Mono (Cascadia Code) — SIL OFL 1.1 */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "CaskaydiaCove Nerd Font Mono";
   src: url("../assets/fonts/CaskaydiaCoveNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "CaskaydiaCove Nerd Font Mono";
+  src: url("../assets/fonts/CaskaydiaCoveNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "CaskaydiaCove Nerd Font Mono";
+  src: url("../assets/fonts/CaskaydiaCoveNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "CaskaydiaCove Nerd Font Mono";
   src: url("../assets/fonts/CaskaydiaCoveNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "CaskaydiaCove Nerd Font Mono";
+  src: url("../assets/fonts/CaskaydiaCoveNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "CaskaydiaCove Nerd Font Mono";
+  src: url("../assets/fonts/CaskaydiaCoveNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }
 
 /* SauceCodePro Nerd Font Mono (Source Code Pro) — SIL OFL 1.1 */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "SauceCodePro Nerd Font Mono";
   src: url("../assets/fonts/SauceCodeProNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "SauceCodePro Nerd Font Mono";
+  src: url("../assets/fonts/SauceCodeProNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "SauceCodePro Nerd Font Mono";
+  src: url("../assets/fonts/SauceCodeProNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "SauceCodePro Nerd Font Mono";
   src: url("../assets/fonts/SauceCodeProNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "SauceCodePro Nerd Font Mono";
+  src: url("../assets/fonts/SauceCodeProNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "SauceCodePro Nerd Font Mono";
+  src: url("../assets/fonts/SauceCodeProNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }
 
 /* IosevkaTerm Nerd Font Mono — SIL OFL 1.1 */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "IosevkaTerm Nerd Font Mono";
   src: url("../assets/fonts/IosevkaTermNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "IosevkaTerm Nerd Font Mono";
+  src: url("../assets/fonts/IosevkaTermNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "IosevkaTerm Nerd Font Mono";
+  src: url("../assets/fonts/IosevkaTermNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "IosevkaTerm Nerd Font Mono";
   src: url("../assets/fonts/IosevkaTermNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "IosevkaTerm Nerd Font Mono";
+  src: url("../assets/fonts/IosevkaTermNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "IosevkaTerm Nerd Font Mono";
+  src: url("../assets/fonts/IosevkaTermNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }
 
 /* BlexMono Nerd Font Mono (IBM Plex Mono) — SIL OFL 1.1 */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "BlexMono Nerd Font Mono";
   src: url("../assets/fonts/BlexMonoNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("../assets/fonts/BlexMonoNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("../assets/fonts/BlexMonoNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "BlexMono Nerd Font Mono";
   src: url("../assets/fonts/BlexMonoNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("../assets/fonts/BlexMonoNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "BlexMono Nerd Font Mono";
+  src: url("../assets/fonts/BlexMonoNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }
 
 /* RobotoMono Nerd Font Mono — Apache 2.0 (upstream now SIL OFL 1.1) */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "RobotoMono Nerd Font Mono";
   src: url("../assets/fonts/RobotoMonoNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "RobotoMono Nerd Font Mono";
+  src: url("../assets/fonts/RobotoMonoNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "RobotoMono Nerd Font Mono";
+  src: url("../assets/fonts/RobotoMonoNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "RobotoMono Nerd Font Mono";
   src: url("../assets/fonts/RobotoMonoNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "RobotoMono Nerd Font Mono";
+  src: url("../assets/fonts/RobotoMonoNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "RobotoMono Nerd Font Mono";
+  src: url("../assets/fonts/RobotoMonoNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }
 
 /* DejaVuSansM Nerd Font Mono (DejaVu Sans Mono) — Bitstream Vera (+ Arev) */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "DejaVuSansM Nerd Font Mono";
   src: url("../assets/fonts/DejaVuSansMNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "DejaVuSansM Nerd Font Mono";
+  src: url("../assets/fonts/DejaVuSansMNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "DejaVuSansM Nerd Font Mono";
+  src: url("../assets/fonts/DejaVuSansMNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "DejaVuSansM Nerd Font Mono";
   src: url("../assets/fonts/DejaVuSansMNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "DejaVuSansM Nerd Font Mono";
+  src: url("../assets/fonts/DejaVuSansMNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "DejaVuSansM Nerd Font Mono";
+  src: url("../assets/fonts/DejaVuSansMNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }
 
 /* Inconsolata Nerd Font Mono — SIL OFL 1.1 */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "Inconsolata Nerd Font Mono";
   src: url("../assets/fonts/InconsolataNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "Inconsolata Nerd Font Mono";
+  src: url("../assets/fonts/InconsolataNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "Inconsolata Nerd Font Mono";
+  src: url("../assets/fonts/InconsolataNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "Inconsolata Nerd Font Mono";
   src: url("../assets/fonts/InconsolataNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "Inconsolata Nerd Font Mono";
+  src: url("../assets/fonts/InconsolataNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "Inconsolata Nerd Font Mono";
+  src: url("../assets/fonts/InconsolataNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }
 
 /* SpaceMono Nerd Font Mono — SIL OFL 1.1 */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "SpaceMono Nerd Font Mono";
   src: url("../assets/fonts/SpaceMonoNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "SpaceMono Nerd Font Mono";
+  src: url("../assets/fonts/SpaceMonoNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "SpaceMono Nerd Font Mono";
+  src: url("../assets/fonts/SpaceMonoNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "SpaceMono Nerd Font Mono";
   src: url("../assets/fonts/SpaceMonoNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "SpaceMono Nerd Font Mono";
+  src: url("../assets/fonts/SpaceMonoNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "SpaceMono Nerd Font Mono";
+  src: url("../assets/fonts/SpaceMonoNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }
 
 /* NotoSansM Nerd Font Mono (Noto Sans Mono) — SIL OFL 1.1 */
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "NotoSansM Nerd Font Mono";
   src: url("../assets/fonts/NotoSansMNerdFontMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
 }
 
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "NotoSansM Nerd Font Mono";
+  src: url("../assets/fonts/NotoSansMNerdFontMono-Regular.icons.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "NotoSansM Nerd Font Mono";
+  src: url("../assets/fonts/NotoSansMNerdFontMono-Regular.text.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
+}
+
+/* the long tail: only fetched if a rare glyph is drawn */
 @font-face {
   font-family: "NotoSansM Nerd Font Mono";
   src: url("../assets/fonts/NotoSansMNerdFontMono-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+E000-F8FF, U+F0000-10FFFF;
+}
+
+/* the icons this app draws unprompted */
+@font-face {
+  font-family: "NotoSansM Nerd Font Mono";
+  src: url("../assets/fonts/NotoSansMNerdFontMono-Bold.icons.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+E0A0-E0D4, U+E5FA-E6B7, U+E0A0, U+E0B0, U+E0B4, U+E0B6, U+E235, U+E256, U+E275, U+E28E, U+E299, U+E5FE, U+E606, U+E608, U+E613, U+E61D-E620, U+E624, U+E627, U+E62C-E62D, U+E62F-E630, U+E634, U+E64C, U+E660, U+E666, U+E674, U+E677, U+E67A, U+E67E, U+E69A, U+E6A1, U+E6A9, U+E6AC, U+E6AF, U+E70E-E70F, U+E715, U+E718, U+E737-E738, U+E754-E755, U+E76F, U+E777, U+E779, U+E77F, U+E791, U+E794, U+E7A8, U+E7B1, U+E7C0, U+E7DE, U+E7FB, U+E856, U+E873, U+E8A6, U+E8AA, U+E8CC, U+E8D0, U+EAA2, U+EAF4, U+EB01, U+EB29, U+EF01, U+F001, U+F005, U+F013, U+F019, U+F024, U+F03E, U+F0E0, U+F0EF, U+F10C, U+F120, U+F12A, U+F132, U+F17B, U+F186, U+F197, U+F1B2, U+F1CD, U+F22D, U+F23F, U+F270, U+F300-F304, U+F306, U+F308-F30A, U+F30C-F30E, U+F312-F315, U+F31A-F31B, U+F31D, U+F31F, U+F321-F322, U+F325-F328, U+F32A-F32B, U+F32D-F32F, U+F331, U+F337, U+F37F-F380, U+F412, U+F418, U+F432, U+F434, U+F43A, U+F467, U+F49D, U+F4B7, U+F0018, U+F0035, U+F0037, U+F0079, U+F0083-F0084, U+F008E, U+F0091, U+F01A5, U+F0219, U+F0238, U+F033D-F033E, U+F035B, U+F0372, U+F03D7, U+F043F, U+F0537, U+F0548, U+F06F3, U+F075A, U+F078C, U+F07D4, U+F07E2, U+F0805, U+F08C7, U+F08DA-F08DB, U+F08E8, U+F08ED, U+F0C8B, U+F0E4D, U+F0EA1, U+F10FE, U+F111B, U+F11F6, U+F137C, U+F158A, U+F1617;
+}
+
+/* letters, digits, punctuation, box drawing */
+@font-face {
+  font-family: "NotoSansM Nerd Font Mono";
+  src: url("../assets/fonts/NotoSansMNerdFontMono-Bold.text.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-2BFF, U+FE00-FE0F, U+FFFD;
 }

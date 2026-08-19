@@ -413,7 +413,7 @@ file. The ones worth knowing:
 | Starship config surface changes upstream                    | `sync:schema` diff script; schema-driven UI absorbs new options cheaply    |
 | Format-string edge cases (escaping, nesting) are gnarly     | Grammar is small; table-driven tests seeded from starship's own docs/tests |
 | Module long tail stalls momentum                            | Registry design makes each module a ~1-file contribution; label as good-first-issue |
-| Nerd Font licensing/size                                    | JetBrainsMono NF is OFL; subset to used glyph ranges at build time         |
+| Nerd Font licensing/size                                    | Fonts split by `unicode-range` into text, used icons and the long tail (`pnpm build:fonts`); no subset carries a Reserved Font Name |
 | HeroUI v3 gaps for exotic controls (colour picker, drag)    | HeroUI for chrome; specialised bits hand-rolled or headless (dnd-kit)      |
 | GitHub Pages `basePath` foot-guns (assets, deep links)      | `basePath` set from M0; e2e runs against the exported output              |
 
