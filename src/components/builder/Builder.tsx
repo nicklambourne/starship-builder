@@ -575,18 +575,18 @@ export function Builder() {
             Its own sections stay closed — all of them open at once is a wall.
           */}
           <details open data-section="environment" className={CARD}>
-            <summary className="section-summary flex flex-wrap items-center gap-x-3 gap-y-1">
+            <summary className="section-summary flex items-center gap-3">
               <span className="text-sm font-semibold text-neutral-100">
                 Simulated environment
               </span>
-              <span className="text-xs text-neutral-500">
-                what the shell would report — decides which modules appear
-              </span>
               <ChevronIcon className="section-chevron text-neutral-500" />
             </summary>
-            <div className="mt-3">
-              <EnvironmentPanel scenario={scenario} onChange={updateScenario} />
-            </div>
+            <p className="mb-3 mt-2 text-xs text-neutral-500">
+              What the shell would report about this machine and directory.
+              It decides which modules appear at all — a language module only
+              shows up when its tool and a matching file are both here.
+            </p>
+            <EnvironmentPanel scenario={scenario} onChange={updateScenario} />
           </details>
 
           {/*
