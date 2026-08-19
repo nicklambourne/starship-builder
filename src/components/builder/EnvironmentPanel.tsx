@@ -24,7 +24,7 @@ interface EnvironmentPanelProps {
 }
 
 const INPUT =
-  "w-full rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-100 focus:border-sky-400 focus:outline-none";
+  "w-full rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-100 focus:border-accent-400 focus:outline-none";
 const NUMBER = `${INPUT} font-mono`;
 
 const OS_TYPES: OsType[] = [
@@ -189,7 +189,7 @@ function PairEditor({
       <button
         type="button"
         onClick={() => onChange({ ...entries, "": "" })}
-        className="self-start rounded border border-white/15 px-2 py-1 text-xs text-neutral-200 transition hover:border-sky-400 hover:text-sky-200"
+        className="self-start rounded border border-white/15 px-2 py-1 text-xs text-neutral-200 transition hover:border-accent-400 hover:text-accent-200"
       >
         {addLabel}
       </button>
@@ -564,7 +564,7 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
                   }}
                   className={`rounded-full border px-2.5 py-1 text-xs transition ${
                     present
-                      ? "border-sky-400 bg-sky-400/15 text-sky-200"
+                      ? "border-accent-400 bg-accent-400/15 text-accent-200"
                       : "border-white/10 text-neutral-400 hover:border-white/25 hover:text-neutral-200"
                   }`}
                 >

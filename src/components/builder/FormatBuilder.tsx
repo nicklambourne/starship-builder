@@ -67,7 +67,7 @@ interface FormatBuilderProps {
 }
 
 const SMALL_BUTTON =
-  "rounded border border-white/15 px-2 py-1 text-xs text-neutral-200 transition hover:border-sky-400 hover:text-sky-200";
+  "rounded border border-white/15 px-2 py-1 text-xs text-neutral-200 transition hover:border-accent-400 hover:text-accent-200";
 
 export function FormatBuilder({
   value,
@@ -285,7 +285,7 @@ export function FormatBuilder({
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             placeholder="Search modules…"
-            className="w-full rounded border border-white/10 bg-neutral-950 px-2.5 py-1.5 text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
+            className="w-full rounded border border-white/10 bg-neutral-950 px-2.5 py-1.5 text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
           />
           {needle ? (
             <p className="text-xs text-neutral-500" aria-live="polite">
@@ -358,7 +358,7 @@ export function FormatBuilder({
             value={addSearch}
             onChange={(e) => setAddSearch(e.target.value)}
             placeholder={`Search ${noun}s…`}
-            className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
+            className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
           />
           <ul className="flex max-h-52 flex-col gap-0.5 overflow-y-auto">
             {candidates.map((name) => (
@@ -372,7 +372,7 @@ export function FormatBuilder({
                   }}
                   className="flex w-full flex-col rounded px-1.5 py-1 text-left transition hover:bg-white/5"
                 >
-                  <span className="font-mono text-xs text-sky-200">${name}</span>
+                  <span className="font-mono text-xs text-accent-200">${name}</span>
                   {describeModule(name) ? (
                     <span className="truncate text-xs text-neutral-500">
                       {describeModule(name)}
@@ -401,7 +401,7 @@ export function FormatBuilder({
             onChange={(e) => onChange(e.target.value)}
             aria-invalid={!parse.ok}
             className={`w-full resize-y rounded border bg-neutral-950 px-2.5 py-2 font-mono text-sm text-neutral-100 focus:outline-none ${
-              parse.ok ? "border-white/10 focus:border-sky-400" : "border-red-500/60"
+              parse.ok ? "border-white/10 focus:border-accent-400" : "border-red-500/60"
             }`}
           />
           {!parse.ok ? (

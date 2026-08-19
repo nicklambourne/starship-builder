@@ -81,7 +81,7 @@ function compose(parts: {
 }
 
 const SWATCH_BASE =
-  "size-6 rounded border border-white/20 transition hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400";
+  "size-6 rounded border border-white/20 transition hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400";
 
 function ColorPicker({
   label,
@@ -109,7 +109,7 @@ function ColorPicker({
           aria-pressed={value === ""}
           onClick={() => onChange("")}
           className={`${SWATCH_BASE} grid place-items-center bg-neutral-800 text-[10px] text-neutral-400 ${
-            value === "" ? "ring-2 ring-sky-400" : ""
+            value === "" ? "ring-2 ring-accent-400" : ""
           }`}
         >
           ⊘
@@ -122,7 +122,7 @@ function ColorPicker({
             aria-pressed={value === name}
             title={name}
             onClick={() => onChange(name)}
-            className={`${SWATCH_BASE} ${value === name ? "ring-2 ring-sky-400" : ""}`}
+            className={`${SWATCH_BASE} ${value === name ? "ring-2 ring-accent-400" : ""}`}
             style={{ backgroundColor: `var(--ansi-${name})` }}
           />
         ))}
@@ -135,7 +135,7 @@ function ColorPicker({
             title={`palette: ${name}`}
             onClick={() => onChange(name)}
             className={`${SWATCH_BASE} grid place-items-center bg-neutral-700 text-[9px] text-neutral-200 ${
-              value === name ? "ring-2 ring-sky-400" : ""
+              value === name ? "ring-2 ring-accent-400" : ""
             }`}
           >
             {name.slice(0, 2)}
@@ -191,7 +191,7 @@ export function StyleStringBuilder({
               }}
               className={`rounded-full border px-2.5 py-1 text-xs transition ${
                 active
-                  ? "border-sky-400 bg-sky-400/15 text-sky-200"
+                  ? "border-accent-400 bg-accent-400/15 text-accent-200"
                   : "border-white/10 text-neutral-400 hover:border-white/25 hover:text-neutral-200"
               }`}
             >
@@ -241,7 +241,7 @@ export function StyleStringBuilder({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             spellCheck={false}
-            className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
+            className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
             placeholder="bold fg:#af8700 bg:blue"
           />
           <p className="text-xs text-neutral-500">

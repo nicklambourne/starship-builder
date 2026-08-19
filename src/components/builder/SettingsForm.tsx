@@ -136,14 +136,14 @@ export function SettingsForm({
                 type="number"
                 value={typeof value === "number" ? value : 0}
                 onChange={(e) => onChange(option.key, Number(e.target.value))}
-                className="w-32 rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
+                className="w-32 rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
               />
             ) : option.kind === "enum" ? (
               <select
                 id={controlId}
                 value={typeof value === "string" ? value : ""}
                 onChange={(e) => onChange(option.key, e.target.value)}
-                className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
+                className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
               >
                 {(option.enumValues ?? []).map((v) => (
                   <option key={v} value={v}>
@@ -166,7 +166,7 @@ export function SettingsForm({
                 }
                 spellCheck={false}
                 placeholder="comma, separated, values"
-                className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
+                className="w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
               />
             ) : option.kind === "string" ? (
               // Plain strings include every module's `symbol`, so they get the
@@ -191,7 +191,7 @@ export function SettingsForm({
                     // Keep the keystroke; invalid JSON simply is not committed.
                   }
                 }}
-                className="w-full resize-y rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-xs text-neutral-100 focus:border-sky-400 focus:outline-none"
+                className="w-full resize-y rounded border border-white/10 bg-neutral-950 px-2 py-1.5 font-mono text-xs text-neutral-100 focus:border-accent-400 focus:outline-none"
               />
             )}
           </Row>

@@ -7,7 +7,7 @@
 
 import Link from "next/link";
 
-const LINK = "text-sky-300 underline underline-offset-2 hover:text-sky-200";
+const LINK = "text-accent-300 underline underline-offset-2 hover:text-accent-200";
 
 export function SiteFooter() {
   return (

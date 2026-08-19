@@ -37,8 +37,8 @@ export function Toggle({
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={`relative shrink-0 rounded-full transition-colors ${track} ${
-        checked ? "bg-sky-500" : "bg-neutral-700"
-      } ${disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer"} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400`}
+        checked ? "bg-accent-500" : "bg-neutral-700"
+      } ${disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer"} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400`}
     >
       <span
         className={`toggle-knob absolute top-0.5 rounded-full transition-all ${knob} ${

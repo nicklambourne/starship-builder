@@ -5,12 +5,12 @@
  * on every visit after that; open by default because an explanation hidden
  * behind a click explains nothing to the person who needed it.
  *
- * Accent text uses `sky-300`/`sky-200` rather than `sky-400`: only the tints
+ * Accent text uses `accent-300`/`accent-200` rather than `accent-400`: only the tints
  * the light theme darkens in `globals.css` stay legible once the neutral ramp
  * is reversed.
  */
 
-const LINK = "text-sky-300 underline underline-offset-2 hover:text-sky-200";
+const LINK = "text-accent-300 underline underline-offset-2 hover:text-accent-200";
 
 export function Explainer() {
   return (

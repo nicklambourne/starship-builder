@@ -60,7 +60,7 @@ export function SymbolInput({
           style={{ fontFamily: fontStack }}
           className={
             className ??
-            "w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-100 focus:border-sky-400 focus:outline-none"
+            "w-full rounded border border-white/10 bg-neutral-950 px-2 py-1.5 text-sm text-neutral-100 focus:border-accent-400 focus:outline-none"
           }
         />
         <button
@@ -70,7 +70,7 @@ export function SymbolInput({
           aria-expanded={picking}
           aria-label={`Insert a symbol into ${ariaLabel}`}
           title="Insert a Nerd Font symbol"
-          className="shrink-0 rounded border border-white/15 px-1.5 py-1 text-xs text-neutral-300 transition hover:border-sky-400 hover:text-sky-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-400"
+          className="shrink-0 rounded border border-white/15 px-1.5 py-1 text-xs text-neutral-300 transition hover:border-accent-400 hover:text-accent-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-400"
         >
           <span style={{ fontFamily: fontStack }} aria-hidden="true">
             &#xf0e7;

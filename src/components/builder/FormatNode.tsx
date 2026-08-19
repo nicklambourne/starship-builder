@@ -34,9 +34,9 @@ import type { TerminalTheme } from "@/lib/terminalThemes";
  * being smaller than the rest read as an accident rather than a hierarchy.
  */
 const ROW_BUTTON =
-  "grid size-7 shrink-0 place-items-center rounded border border-white/15 text-neutral-400 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-400";
+  "grid size-7 shrink-0 place-items-center rounded border border-white/15 text-neutral-400 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-400";
 const GROUP_BUTTON = `${ROW_BUTTON} hover:border-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-200`;
-const NEUTRAL_BUTTON = `${ROW_BUTTON} hover:border-sky-400 hover:bg-white/5 hover:text-neutral-100`;
+const NEUTRAL_BUTTON = `${ROW_BUTTON} hover:border-accent-400 hover:bg-white/5 hover:text-neutral-100`;
 const DANGER_BUTTON = `${ROW_BUTTON} hover:border-red-400 hover:bg-red-400/10 hover:text-red-300`;
 
 export interface FormatNodeCallbacks {
@@ -75,7 +75,7 @@ export interface FormatNodeCallbacks {
 }
 
 const TONE: Record<FormatItem["kind"], string> = {
-  module: "text-sky-200",
+  module: "text-accent-200",
   text: "text-neutral-400",
   group: "text-emerald-200",
   raw: "text-amber-200",
@@ -150,7 +150,7 @@ export function FormatNode({
         cb.onDropNode(path, positionWithin(event));
       }}
       className={`relative rounded border bg-neutral-900/60 transition ${
-        dragging ? "border-sky-400/40 opacity-40" : "border-white/10"
+        dragging ? "border-accent-400/40 opacity-40" : "border-white/10"
       } ${dropPosition === "into" ? "ring-2 ring-emerald-400/70" : ""} ${
         enabled ? "" : "opacity-55"
       }`}
@@ -158,13 +158,13 @@ export function FormatNode({
       {dropPosition === "before" ? (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute -top-0.5 left-0 right-0 h-0.5 rounded bg-sky-400"
+          className="pointer-events-none absolute -top-0.5 left-0 right-0 h-0.5 rounded bg-accent-400"
         />
       ) : null}
       {dropPosition === "after" ? (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute -bottom-0.5 left-0 right-0 h-0.5 rounded bg-sky-400"
+          className="pointer-events-none absolute -bottom-0.5 left-0 right-0 h-0.5 rounded bg-accent-400"
         />
       ) : null}
 
@@ -182,7 +182,7 @@ export function FormatNode({
           onDragEnd={cb.onDragEnd}
           onKeyDown={handleKeyDown}
           aria-label={`Reorder ${label}. Press the arrow keys to move it, or drag it onto another piece to group them.`}
-          className="shrink-0 cursor-grab rounded px-1 py-0.5 text-neutral-600 transition hover:bg-white/10 hover:text-neutral-200 active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-sky-400"
+          className="shrink-0 cursor-grab rounded px-1 py-0.5 text-neutral-600 transition hover:bg-white/10 hover:text-neutral-200 active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-400"
         >
           <svg width="10" height="16" viewBox="0 0 10 16" aria-hidden="true" fill="currentColor">
             <circle cx="2.5" cy="3" r="1.3" />
@@ -263,7 +263,7 @@ export function FormatNode({
               onChange={(next) => cb.onTextChange(path, next)}
               fontStack={cb.fontStack}
               ariaLabel={`Text content of ${label}`}
-              className="w-full rounded border border-white/10 bg-neutral-950 px-1.5 py-0.5 text-xs text-neutral-100 focus:border-sky-400 focus:outline-none"
+              className="w-full rounded border border-white/10 bg-neutral-950 px-1.5 py-0.5 text-xs text-neutral-100 focus:border-accent-400 focus:outline-none"
             />
           </div>
         ) : null}

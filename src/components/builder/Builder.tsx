@@ -78,7 +78,7 @@ const ROOT_OPTIONS: OptionDescriptor[] = [
 
 const CARD = "rounded-xl border border-white/10 bg-neutral-900/40 p-4";
 const ICON_BUTTON =
-  "grid size-9 place-items-center rounded border border-white/10 text-neutral-300 transition enabled:hover:border-sky-400 enabled:hover:text-sky-200 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400";
+  "grid size-9 place-items-center rounded border border-white/10 text-neutral-300 transition enabled:hover:border-accent-400 enabled:hover:text-accent-200 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400";
 
 export function Builder() {
   const {
@@ -435,7 +435,7 @@ export function Builder() {
                     loadPreset(event.target.value);
                     event.target.value = "";
                   }}
-                  className="rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-200 focus:border-sky-400 focus:outline-none"
+                  className="rounded border border-white/10 bg-neutral-950 px-2 py-1 text-sm text-neutral-200 focus:border-accent-400 focus:outline-none"
                 >
                   <option value="" disabled>
                     a preset…

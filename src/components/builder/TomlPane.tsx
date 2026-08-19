@@ -80,14 +80,14 @@ export function TomlPane({ config, onConfigChange, defaults }: TomlPaneProps) {
           <button
             type="button"
             onClick={copy}
-            className="rounded border border-white/10 px-2.5 py-1 text-xs text-neutral-300 transition hover:border-sky-400 hover:text-sky-200"
+            className="rounded border border-white/10 px-2.5 py-1 text-xs text-neutral-300 transition hover:border-accent-400 hover:text-accent-200"
           >
             {copied ? "Copied" : "Copy"}
           </button>
           <button
             type="button"
             onClick={download}
-            className="rounded border border-white/10 px-2.5 py-1 text-xs text-neutral-300 transition hover:border-sky-400 hover:text-sky-200"
+            className="rounded border border-white/10 px-2.5 py-1 text-xs text-neutral-300 transition hover:border-accent-400 hover:text-accent-200"
           >
             Download
           </button>
@@ -104,7 +104,7 @@ export function TomlPane({ config, onConfigChange, defaults }: TomlPaneProps) {
         spellCheck={false}
         aria-invalid={error !== null}
         className={`min-h-64 flex-1 resize-y rounded border bg-neutral-950 p-3 font-mono text-xs leading-relaxed text-neutral-200 focus:outline-none ${
-          error ? "border-red-500/60" : "border-white/10 focus:border-sky-400"
+          error ? "border-red-500/60" : "border-white/10 focus:border-accent-400"
         }`}
       />
 
