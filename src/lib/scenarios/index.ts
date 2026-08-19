@@ -43,7 +43,7 @@ export const SCENARIOS: Scenario[] = [
     label: "Dirty git repo",
     description:
       "A feature branch with staged, modified and untracked files, two commits ahead.",
-    path: "/Users/you/code/starship-builder/src/lib",
+    path: "/Users/you/code/app/src",
     files: ["engine", "scenarios", "fonts.ts"],
     git: {
       branch: "feat/live-preview",
@@ -58,7 +58,7 @@ export const SCENARIOS: Scenario[] = [
       untracked: 2,
       conflicted: 0,
       stashed: 1,
-      root: "/Users/you/code/starship-builder",
+      root: "/Users/you/code/app",
       hasRemote: true,
       remoteBranch: "feat/live-preview",
       remoteName: "origin",

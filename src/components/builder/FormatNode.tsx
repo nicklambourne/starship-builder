@@ -18,7 +18,7 @@ import type { DragEvent, KeyboardEvent, ReactNode } from "react";
 import { StyleSwatch } from "@/components/ui/StyleSwatch";
 import { Toggle } from "@/components/ui/Toggle";
 import { SymbolInput } from "@/components/ui/SymbolInput";
-import { ChevronIcon, GroupIcon, TrashIcon, WarningIcon } from "@/components/ui/icons";
+import { ChevronIcon, EyeOffIcon, GroupIcon, TrashIcon } from "@/components/ui/icons";
 import {
   type DropPosition,
   type FormatItem,
@@ -224,23 +224,29 @@ export function FormatNode({
             aria-expanded={expanded}
             className="flex min-w-0 flex-1 flex-col text-left"
           >
-            <span className={`truncate font-mono text-sm ${TONE[item.kind]}`}>
-              {label}
+            <span className="flex min-w-0 items-center gap-1.5">
+              <span className={`truncate font-mono text-sm ${TONE[item.kind]}`}>
+                {label}
+              </span>
+              {isModule && enabled && moduleNote ? (
+                /*
+                 * A module can be on and still print nothing, which reads as a
+                 * bug unless it is said out loud. The reason is a sentence and
+                 * the row is narrow, so the row carries the state and the
+                 * tooltip carries the explanation.
+                 */
+                <span
+                  title={moduleNote}
+                  className="inline-flex shrink-0 items-center gap-1 rounded-full border border-amber-300/30 bg-amber-300/10 px-1.5 py-0.5 text-[11px] font-medium text-amber-300/90"
+                >
+                  <EyeOffIcon className="size-3 shrink-0" />
+                  Not visible
+                </span>
+              ) : null}
             </span>
             {isModule ? (
               <span className="truncate text-xs text-neutral-500">
                 {describeModule((item as Extract<FormatItem, { kind: "module" }>).name)}
-              </span>
-            ) : null}
-            {isModule && enabled && moduleNote ? (
-              // The note is usually longer than the row, so the full text
-              // lives in the tooltip.
-              <span
-                title={moduleNote}
-                className="flex min-w-0 items-center gap-1 text-xs text-amber-300/80"
-              >
-                <WarningIcon className="shrink-0" />
-                <span className="truncate">Not showing — {moduleNote}</span>
               </span>
             ) : null}
           </button>
@@ -290,7 +296,12 @@ export function FormatNode({
           </button>
         )}
 
-        {item.kind !== "raw" ? (
+        {/*
+          * A group of one cannot carry a style — the format string writes it
+          * exactly like a styled module — so the member's own style button
+          * does that job instead.
+          */}
+        {item.kind !== "raw" && !(isGroup && item.items.length === 1) ? (
           <button
             type="button"
             aria-label={`Change the style of ${label}`}

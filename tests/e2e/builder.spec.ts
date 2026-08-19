@@ -405,18 +405,45 @@ test.describe("builder", () => {
     // hostname is on but invisible in a local session — starship gates it on
     // SSH. Say so rather than looking like a bug.
     await useStructuredDefault(page);
-    await expect(
-      page.getByText(/Not showing — starship only shows the hostname over SSH/),
-    ).toBeVisible();
+    // Several modules are invisible in the default environment, so scope to
+    // the hostname row.
+    const pill = page
+      .locator("li", { has: page.getByText("$hostname", { exact: true }) })
+      .last()
+      .getByText("Not visible", { exact: true });
+    await expect(pill).toBeVisible();
+    // The row says the state; the reason lives in the tooltip.
+    await expect(pill).toHaveAttribute(
+      "title",
+      /starship only shows the hostname over SSH/,
+    );
+    // It sits beside the module name, not under it.
+    expect(
+      await pill.evaluate((el) => {
+        const name = el.previousElementSibling!.getBoundingClientRect();
+        const box = el.getBoundingClientRect();
+        return box.left >= name.right - 1 && box.top < name.bottom;
+      }),
+    ).toBe(true);
     await expect(terminal).not.toContainText("laptop");
 
     await openEnvSection(page, "Session");
     await page.getByRole("switch", { name: "Connected over SSH" }).click();
 
     await expect(terminal).toContainText("laptop");
-    await expect(
-      page.getByText(/Not showing — starship only shows the hostname over SSH/),
-    ).toHaveCount(0);
+    await expect(pill).toHaveCount(0);
+  });
+
+  test("the group button makes a group that survives", async ({ page }) => {
+    await page.goto("./");
+    await useStructuredDefault(page);
+    // A new group holds one item, and a group of one used to dissolve on the
+    // round trip through the format string — the button looked dead.
+    const groups = page.getByRole("switch", { name: /^Enable everything in / });
+    const before = await groups.count();
+    await page.getByRole("button", { name: "Put $directory in a group" }).click();
+    await expect(groups).toHaveCount(before + 1);
+    await expect(page.getByLabel("starship.toml")).toHaveValue(/\[\$directory\]\(\)/);
   });
 
   test("the preset picker starts the prompt format section", async ({ page }) => {
