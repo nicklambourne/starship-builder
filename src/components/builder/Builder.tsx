@@ -42,6 +42,7 @@ import { collectVariables, tryParseFormatString } from "@/lib/engine/formatStrin
 import { resolvePalette } from "@/lib/engine/styleString";
 import { structuredFormatString } from "@/lib/config/defaultFormat";
 import { inactiveReason } from "@/lib/config/inactiveReason";
+import { describeVariable } from "@/lib/config/variables";
 import { rowStyleReaches } from "@/lib/config/styleReach";
 import { MODULE_META, optionKind } from "@/lib/config/meta";
 import { PRESETS } from "@/lib/config/presets";
@@ -403,6 +404,7 @@ export function Builder() {
         onChange={(key, value) => updateModuleOption(name, key, value)}
         onReset={(key) => resetModuleOption(name, key)}
         formatVariables={variablesFor(name)}
+        describeVariable={(variable) => describeVariable(name, variable)}
         palette={palette}
         paletteNames={paletteNames}
         theme={theme}

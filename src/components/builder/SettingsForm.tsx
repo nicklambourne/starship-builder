@@ -36,6 +36,8 @@ interface SettingsFormProps {
   onReset(key: string): void;
   /** Variables valid inside this module's format strings. */
   formatVariables?: string[];
+  /** One line about a variable, shown beside it in the format editor. */
+  describeVariable?(name: string): string | undefined;
   palette?: Palette;
   paletteNames?: string[];
   /** Nested format editors show style swatches, which are theme-coloured. */
@@ -105,6 +107,7 @@ export function SettingsForm({
   onChange,
   onReset,
   formatVariables,
+  describeVariable,
   palette,
   paletteNames,
   theme,
@@ -141,6 +144,7 @@ export function SettingsForm({
                 value={typeof value === "string" ? value : ""}
                 onChange={(next) => onChange(option.key, next)}
                 vocabulary={formatVariables ?? []}
+                describe={describeVariable}
                 palette={palette}
                 paletteNames={paletteNames}
                 noun="variable"
