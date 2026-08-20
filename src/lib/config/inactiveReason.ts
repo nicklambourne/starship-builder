@@ -48,7 +48,7 @@ export function inactiveReason(
     case "git_status":
     case "git_metrics":
       if (!scenario.git) {
-        return "Not inside a git repository — turn one on under Git repository.";
+        return "Not inside a git repository — turn one on under Version control.";
       }
       return GENERIC;
 

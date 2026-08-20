@@ -13,11 +13,10 @@ export const git_metrics: ModuleDefinition = {
   evaluate(options, ctx) {
     if (!ctx.scenario.git) return null;
 
-    // `git diff --shortstat` has no scenario equivalent — the mocked repository
-    // records file-level counts, not line-level ones — so both counters read
-    // zero, which `only_nonzero_diffs` (on by default) hides.
-    const added = "0";
-    const deleted = "0";
+    // Stands in for `git diff --shortstat`, which counts lines rather than the
+    // files the rest of the mocked repository records.
+    const added = String(ctx.scenario.git.addedLines ?? 0);
+    const deleted = String(ctx.scenario.git.deletedLines ?? 0);
     const onlyNonzero = optBool(options, "only_nonzero_diffs", true);
 
     return {

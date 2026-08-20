@@ -281,7 +281,7 @@ test.describe("builder", () => {
     const terminal = page.getByLabel("Simulated terminal prompt");
     await expect(terminal).toContainText("feat/live-preview");
 
-    await openEnvSection(page, "Git repository");
+    await openEnvSection(page, "Version control");
 
     // Renaming the branch in the simulator must reach the rendered prompt.
     await page.getByLabel("Git branch").fill("release/2.0");
@@ -306,6 +306,35 @@ test.describe("builder", () => {
       .filter({ hasText: /^❯$/ })
       .last();
     await expect(arrow).toHaveCSS("color", /rgb\(2[0-9]{2}, 1[0-9]{2}, 1[0-9]{2}\)/);
+  });
+
+  test("the controls for otherwise-invisible modules are on screen", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    const terminal = page.getByLabel("Simulated terminal prompt");
+
+    // conda has no other source: nothing in the directory, the shell or the
+    // environment variables reveals it, so without this field the module can
+    // be enabled and still never appear.
+    await openEnvSection(page, "Cloud & orchestration");
+    await page.getByLabel("Conda environment").fill("science");
+    await expect(terminal).toContainText("science");
+    for (const label of ["Azure subscription", "Docker context", "NATS context"]) {
+      await expect(page.getByLabel(label)).toBeVisible();
+    }
+
+    // The rest are only in the default prompt once the format includes them,
+    // so this checks the controls exist; the unit suite covers what they do.
+    await openEnvSection(page, "Version control");
+    await expect(page.getByRole("switch", { name: "Detached HEAD" })).toBeVisible();
+    await expect(
+      page.getByRole("switch", { name: "Inside a Mercurial repository" }),
+    ).toBeVisible();
+    await expect(page.getByLabel("Lines added")).toBeVisible();
+
+    await openEnvSection(page, "System");
+    await expect(page.getByLabel("Network namespace")).toBeVisible();
   });
 
   test("installed tools can be simulated", async ({ page }) => {
@@ -362,7 +391,7 @@ test.describe("builder", () => {
     await page.goto("./");
 
     // Make a change worth protecting.
-    await openEnvSection(page, "Git repository");
+    await openEnvSection(page, "Version control");
     await page.getByLabel("Git branch").fill("release/2.0");
     const terminal = page.getByLabel("Simulated terminal prompt");
     await expect(terminal).toContainText("release/2.0");
