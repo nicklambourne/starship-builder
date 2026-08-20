@@ -44,8 +44,9 @@ export function Explainer() {
           prompt re-renders instantly against a simulated shell environment, and
           you export the exact{" "}
           <code className="text-neutral-300">starship.toml</code> that
-          reproduces it. Everything runs in your browser; nothing is sent
-          anywhere.
+          reproduces it. The editing happens entirely in your browser: your
+          config is never uploaded, and the only thing this site reports is
+          anonymous page analytics.
         </p>
 
         <p className="text-neutral-500">

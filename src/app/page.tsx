@@ -17,7 +17,8 @@ export default function Home() {
             <a href="https://starship.rs">Starship cross-shell prompt</a>. Edit
             any of its modules, styles and format strings against a live
             preview of a simulated shell, then export the file that reproduces
-            it. Everything runs in the browser; nothing is uploaded.
+            it. The editing happens in the browser; your config is never
+            uploaded.
           </p>
           <p>
             It needs JavaScript to render the prompt. The source is at{" "}

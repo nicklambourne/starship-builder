@@ -92,6 +92,32 @@ test.describe("discoverability", () => {
     expect(sitemapBody).toContain("licences");
   });
 
+  test("analytics stay off anywhere but the deployed host", async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name === "mobile", "one platform is enough");
+
+    const analytics: string[] = [];
+    page.on("request", (request) => {
+      if (/googletagmanager|google-analytics|analytics\.google/.test(request.url())) {
+        analytics.push(request.url());
+      }
+    });
+
+    await page.goto("./");
+    // Interaction is one of the two things that would fetch the library.
+    await page.getByLabel("Simulated terminal prompt").click();
+    await page.waitForTimeout(1500);
+
+    // The suite runs against 127.0.0.1, so nothing here is a real visit and
+    // none of it should reach the property.
+    expect(analytics).toEqual([]);
+    expect(await page.evaluate(() => typeof window.gtag)).toBe("undefined");
+    expect(await page.evaluate(() => Boolean(document.getElementById("ga-gtag")))).toBe(
+      false,
+    );
+  });
+
   test("there is something to read without JavaScript", async ({
     browser,
   }, info) => {
