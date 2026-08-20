@@ -10,11 +10,11 @@
  * Provenance, per-font licence reasoning and the fonts deliberately excluded
  * are documented in `public/fonts/README.md` and `THIRD_PARTY.md`. Verbatim
  * licence texts ship alongside the fonts in `public/fonts/licences/`, served
- * at `/starship-prompt-builder/fonts/licences/<file>`.
+ * at `/fonts/licences/<file>`.
  *
  * `licenceUrl` intentionally points at the upstream canonical licence rather
  * than the bundled copy: it is an absolute URL, so it is safe to render as a
- * plain link without worrying about the site's `/starship-prompt-builder` base path.
+ * plain link without worrying about where the site is served from.
  */
 
 export interface TerminalFont {

@@ -9,7 +9,7 @@ import type { MetadataRoute } from "next";
  */
 export const dynamic = "force-static";
 
-const SITE = "https://nicklambourne.github.io/starship-prompt-builder";
+const SITE = "https://starship.ndl.au";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

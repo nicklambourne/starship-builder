@@ -12,7 +12,7 @@
  * behind each grant (and the two families excluded on licence grounds) lives in
  * `THIRD_PARTY.md` and `public/fonts/README.md`.
  *
- * Links to the bundled texts use `next/link` so the `/starship-prompt-builder` base
+ * Links to the bundled texts use `next/link` so any base
  * path is applied by the router; `target="_blank"` keeps the router from
  * intercepting the click, since these are static files and not routes.
  */

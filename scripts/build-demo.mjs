@@ -19,7 +19,7 @@ import { join } from "node:path";
 import { chromium } from "@playwright/test";
 
 const PORT = process.env.PORT ?? 4321;
-const URL = `http://127.0.0.1:${PORT}/starship-prompt-builder/`;
+const URL = `http://127.0.0.1:${PORT}/`;
 const OUT = "docs/images/demo.gif";
 
 const work = await mkdtemp(join(tmpdir(), "spb-demo-"));

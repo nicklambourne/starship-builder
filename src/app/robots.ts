@@ -12,6 +12,6 @@ export const dynamic = "force-static";
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: { userAgent: "*", allow: "/" },
-    sitemap: "https://nicklambourne.github.io/starship-prompt-builder/sitemap.xml",
+    sitemap: "https://starship.ndl.au/sitemap.xml",
   };
 }

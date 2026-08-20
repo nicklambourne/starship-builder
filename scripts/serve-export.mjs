@@ -2,7 +2,8 @@
  * Serves the static export under the same base path GitHub Pages uses.
  *
  * `next build` writes `out/`, but the deployed site lives at
- * `/starship-prompt-builder/`. Serving `out/` at the root would let base-path bugs
+ * the same paths the deployed site uses. Serving them any other way would let
+ * path bugs
  * (absolute asset URLs, in particular) pass locally and fail in production, so
  * this mounts the export at the real prefix.
  */
@@ -12,7 +13,7 @@ import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 
 const PORT = Number(process.env.PORT ?? 4321);
-const BASE = "/starship-prompt-builder";
+const BASE = "";
 const ROOT = new URL("../out/", import.meta.url).pathname;
 
 const TYPES = {

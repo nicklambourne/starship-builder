@@ -1,7 +1,7 @@
 /**
  * Site footer: attribution, the licences page, and the disclaimer.
  *
- * The licences link goes through `next/link` so the `/starship-prompt-builder` base
+ * The licences link goes through `next/link` so any base
  * path is applied by the router rather than hard-coded here.
  */
 

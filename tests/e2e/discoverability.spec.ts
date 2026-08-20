@@ -8,7 +8,7 @@
 
 import { expect, test } from "@playwright/test";
 
-const SITE = "https://nicklambourne.github.io/starship-prompt-builder";
+const SITE = "https://starship.ndl.au";
 
 test.describe("discoverability", () => {
   test("the page describes itself to crawlers", async ({ page }, info) => {

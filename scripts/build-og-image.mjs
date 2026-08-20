@@ -17,7 +17,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 
 const PORT = process.env.PORT ?? 4321;
-const URL = `http://127.0.0.1:${PORT}/starship-prompt-builder/`;
+const URL = `http://127.0.0.1:${PORT}/`;
 const OUT = "public/og.png";
 
 const browser = await chromium.launch();
@@ -85,7 +85,7 @@ await page.evaluate(() => {
   const footer = document.createElement("div");
   footer.style.cssText =
     "font:400 22px ui-monospace,monospace;color:#ff7a1a;letter-spacing:0.3px";
-  footer.textContent = "nicklambourne.github.io/starship-prompt-builder";
+  footer.textContent = "starship.ndl.au";
   card.append(footer);
 
   document.body.append(card);
