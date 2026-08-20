@@ -493,7 +493,15 @@ export function Builder() {
       />
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-white/10 px-4 py-3">
         <h1 className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-          <Logo size={30} />
+          {/*
+            Bigger than the line it sits on. The margin is exactly -7px so the
+            mark's *layout* height stays 30px — what it was before — while it
+            draws at 44: on desktop the bar's height comes from the 36px icon
+            buttons, but on a phone the header wraps and this heading sets the
+            first row, so anything taller than 30 moved the bar. Its viewBox
+            carries glow bleed, so the ink is 40px of the 44.
+          */}
+          <Logo size={44} className="-my-[7px]" />
           Starship Prompt Builder
         </h1>
 
