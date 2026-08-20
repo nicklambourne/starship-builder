@@ -7,19 +7,22 @@
     running filters at all. The glow is faked with a wide translucent stroke
     instead, the tube is thicker, and the two lightest exhaust lines are gone.
     A dark rounded tile keeps the orange readable on a light browser tab.
+
+    Geometry tracks the component: the wider ring gaps at the exhaust, and the
+    shortened tail whose glow used to reach the edge of the tile.
   -->
   <rect width="64" height="64" rx="14" fill="#12100e"/>
   <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(32 32) scale(0.86) translate(-32 -32)">
     <g stroke="#ff5f1f" stroke-width="10" opacity="0.35">
-      <path d="M 51.86 22.53 A 22 22 0 0 1 15.65 46.72 M 11.08 38.8 A 22 22 0 0 1 37.36 10.66"/>
-      <path d="M 0.6 37.6 C 3.2 39.2, 4.4 40.5, 12.95 43 C 21.5 45.5, 27 39.5, 31 34 C 33.5 30.5, 36 26.5, 38.6 22.6"/>
+      <path d="M 51.86 22.53 A 22 22 0 0 1 16.78 47.88 M 10.63 37.24 A 22 22 0 0 1 37.36 10.66"/>
+      <path d="M 2.42 38.77 C 4.26 39.93, 6.54 41.12, 12.95 43 C 21.5 45.5, 27 39.5, 31 34 C 33.5 30.5, 36 26.5, 38.6 22.6"/>
       <g transform="translate(44 17) rotate(45)">
         <path d="M 0 -11 C 3.4 -6.8, 4.9 -2.4, 5 2 L 9.2 9.6 L 4.5 7 L -4.5 7 L -9.2 9.6 L -5 2 C -4.9 -2.4, -3.4 -6.8, 0 -11 Z"/>
       </g>
     </g>
     <g stroke="#ff8a2b" stroke-width="5.4">
-      <path d="M 51.86 22.53 A 22 22 0 0 1 15.65 46.72 M 11.08 38.8 A 22 22 0 0 1 37.36 10.66"/>
-      <path d="M 0.6 37.6 C 3.2 39.2, 4.4 40.5, 12.95 43 C 21.5 45.5, 27 39.5, 31 34 C 33.5 30.5, 36 26.5, 38.6 22.6"/>
+      <path d="M 51.86 22.53 A 22 22 0 0 1 16.78 47.88 M 10.63 37.24 A 22 22 0 0 1 37.36 10.66"/>
+      <path d="M 2.42 38.77 C 4.26 39.93, 6.54 41.12, 12.95 43 C 21.5 45.5, 27 39.5, 31 34 C 33.5 30.5, 36 26.5, 38.6 22.6"/>
       <g transform="translate(44 17) rotate(45)">
         <path d="M 0 -11 C 3.4 -6.8, 4.9 -2.4, 5 2 L 9.2 9.6 L 4.5 7 L -4.5 7 L -9.2 9.6 L -5 2 C -4.9 -2.4, -3.4 -6.8, 0 -11 Z"/>
       </g>

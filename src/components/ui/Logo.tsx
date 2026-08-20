@@ -36,22 +36,31 @@ function Art() {
         Ring, near-complete, gap at the upper right. The ends are set from the
         rocket rather than round numbers: its upper flank crosses the circle at
         296.1° and its lower flank at 322.5°, and the exhaust crosses at 150°.
-        All four ends leave the same 6.8° of visible space.
 
         The arcs are not simply "crossing angle ± a constant": the ends are
-        measured to the INK, not the path. A 4-unit tube is ±5.19° wide at
+        measured to the INK, not the path. A 4-unit tube is ±5.2° wide at
         r=22, so the exhaust — a bare centreline — needs that width added on
         both sides, where the rocket silhouette already carries its own. Using
         one constant for both would leave the exhaust's gaps visibly tighter.
+
+        The exhaust's two gaps clear 11° of visible space rather than the
+        rocket's 6.8°: the exhaust is a thin line where the rocket is a solid
+        silhouette, and matching the numbers made the ring look welded to it.
       */}
-      <path d="M 51.86 22.53 A 22 22 0 0 1 15.65 46.72 M 11.08 38.8 A 22 22 0 0 1 37.36 10.66" />
+      <path d="M 51.86 22.53 A 22 22 0 0 1 16.78 47.88 M 10.63 37.24 A 22 22 0 0 1 37.36 10.66" />
       {/*
         A single exhaust line. It starts outside the ring and pierces it, so
         the plume reads as trailing away from the mark rather than being
         contained by it. The tail extends along the curve's own tangent —
         pulling it the other way folds it into a hook.
+
+        The tail used to start at x=0.6, which put the far end of a 6.8-unit
+        bloom stroke outside the viewBox: the glow was sliced off square, and
+        at any size above about 40px you could see the cut. The curve is
+        trimmed (split at t=0.25, so the shape is unchanged, just shorter) and
+        the viewBox carries bleed on every side for the glow to fall off into.
       */}
-      <path d="M 0.6 37.6 C 3.2 39.2, 4.4 40.5, 12.95 43 C 21.5 45.5, 27 39.5, 31 34 C 33.5 30.5, 36 26.5, 38.6 22.6" />
+      <path d="M 2.42 38.77 C 4.26 39.93, 6.54 41.12, 12.95 43 C 21.5 45.5, 27 39.5, 31 34 C 33.5 30.5, 36 26.5, 38.6 22.6" />
       {/*
         Rocket, drawn upright then rotated onto its flight path. Body and fins
         are one closed silhouette rather than a body with two fins laid over
@@ -78,7 +87,13 @@ export function Logo({ size = 28, title, className }: LogoProps) {
     <svg
       width={size}
       height={size}
-      viewBox="0 0 64 64"
+      /*
+        The art occupies 0–64; the box runs -6..64 by -3..67 so a blurred
+        6.8-unit stroke at the edge of the drawing has somewhere to fade out.
+        Still square, so the mark keeps its proportions — it simply sits a
+        little smaller inside the same box.
+      */
+      viewBox="-6 -3 70 70"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role={title ? "img" : "presentation"}
