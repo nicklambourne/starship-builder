@@ -14,7 +14,7 @@
  */
 
 import { useId } from "react";
-import { TrashIcon } from "@/components/ui/icons";
+import { ChevronIcon, TrashIcon } from "@/components/ui/icons";
 
 import { Toggle } from "@/components/ui/Toggle";
 import type { GitState, OsType, Scenario } from "@/lib/scenarios/types";
@@ -103,11 +103,19 @@ function Section({
 }) {
   return (
     <details className="rounded border border-white/10 bg-neutral-900/40">
-      <summary className="cursor-pointer px-3 py-2 text-sm text-neutral-200">
+      {/*
+        Same collapse affordance as a prompt-format row: the chevron on the
+        right, rotating when open, and the browser's own ▶ marker suppressed
+        by `section-summary` — two indicators for one state, in two different
+        places, was one too many. The whole header still toggles, because it
+        is still a <summary>.
+      */}
+      <summary className="section-summary flex items-center gap-2 px-3 py-2 text-sm text-neutral-200">
         {title}
         {hint ? (
-          <span className="ml-2 text-xs text-neutral-500">{hint}</span>
+          <span className="text-xs text-neutral-500">{hint}</span>
         ) : null}
+        <ChevronIcon className="section-chevron text-neutral-500" />
       </summary>
       <div className="flex flex-col gap-2 border-t border-white/10 p-3">
         {children}

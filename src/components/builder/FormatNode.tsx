@@ -332,6 +332,20 @@ export function FormatNode({
           </span>
         ) : null}
 
+        <button
+          type="button"
+          aria-label={`Remove ${label} from the prompt`}
+          title={
+            isModule
+              ? "Remove from the prompt. To keep it but hide it, use the switch."
+              : "Remove from the prompt"
+          }
+          onClick={() => cb.onRemove(path)}
+          className={DANGER_BUTTON}
+        >
+          <TrashIcon />
+        </button>
+
         {canExpand ? (
           <button
             type="button"
@@ -352,20 +366,6 @@ export function FormatNode({
             />
           </button>
         ) : null}
-
-        <button
-          type="button"
-          aria-label={`Remove ${label} from the prompt`}
-          title={
-            isModule
-              ? "Remove from the prompt. To keep it but hide it, use the switch."
-              : "Remove from the prompt"
-          }
-          onClick={() => cb.onRemove(path)}
-          className={DANGER_BUTTON}
-        >
-          <TrashIcon />
-        </button>
       </div>
 
       {styling && item.kind !== "raw" ? (

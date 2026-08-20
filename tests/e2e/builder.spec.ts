@@ -1118,6 +1118,51 @@ test.describe("builder", () => {
     await expect(page.getByLabel("starship.toml")).toHaveValue(/palette = "mine"/);
   });
 
+  test("the collapse control ends a prompt-format row", async ({ page }) => {
+    await page.goto("./");
+    const row = page
+      .locator("li")
+      .filter({ has: page.getByRole("button", { name: /^Reorder \$os/ }) })
+      .first();
+
+    const labels = await row.evaluate((el) =>
+      [...el.querySelectorAll(":scope > div > button")].map(
+        (button) => button.getAttribute("aria-label") ?? "",
+      ),
+    );
+    // The chevron is last, after the trash — same place the environment
+    // sections put theirs.
+    expect(labels.at(-1)).toMatch(/^(Expand|Collapse) \$os/);
+    expect(labels.at(-2)).toMatch(/^Remove \$os/);
+  });
+
+  test("environment sections collapse the same way rows do", async ({ page }) => {
+    await page.goto("./");
+    const section = page
+      .locator("[data-section='environment'] details")
+      .filter({ hasText: "Directory" })
+      .first();
+
+    // One indicator, on the right, and not the browser's own triangle.
+    await expect(section.locator("> summary svg.section-chevron")).toHaveCount(1);
+    expect(
+      await section.evaluate(
+        (el) => getComputedStyle(el.querySelector("summary")!).listStyleType,
+      ),
+    ).toBe("none");
+
+    // The whole header still toggles, and the chevron turns with it.
+    await expect(section).not.toHaveAttribute("open", "");
+    await section.locator("> summary").click();
+    await expect(section).toHaveAttribute("open", "");
+    expect(
+      await section.evaluate(
+        (el) =>
+          getComputedStyle(el.querySelector("summary svg.section-chevron")!).transform,
+      ),
+    ).not.toBe("none");
+  });
+
   test("there is no scenario picker; the environment panel covers it", async ({
     page,
   }) => {
