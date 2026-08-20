@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+
+import { Analytics } from "@/components/Analytics";
+import { ANALYTICS_HOST, GA_MEASUREMENT_ID, analyticsStub } from "@/lib/analytics";
 import "./globals.css";
 
 /**
@@ -123,8 +126,24 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
         />
+        {/*
+          The analytics stub, inline so `gtag` exists before anything wants it.
+          It sends nothing by itself — the library that does the sending is
+          loaded later, once the page is interactive. Absent entirely when the
+          build has no measurement ID.
+        */}
+        {GA_MEASUREMENT_ID ? (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: analyticsStub(GA_MEASUREMENT_ID, ANALYTICS_HOST),
+            }}
+          />
+        ) : null}
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

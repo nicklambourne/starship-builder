@@ -49,7 +49,7 @@ it.
 - **Presets and palettes.** All 12 official presets, and a palette editor for
   naming your own colours.
 - **Shareable links.** The config compresses into the URL fragment, so a link
-  reproduces a prompt exactly. Nothing is sent anywhere.
+  reproduces a prompt exactly. The config itself is never uploaded.
 
 <div align="center">
 
@@ -104,6 +104,14 @@ Yes please — particularly module fidelity. Each starship module is a single
 file with a small contract, and [CONTRIBUTING.md](CONTRIBUTING.md) walks
 through adding or correcting one, including how to prove it against the real
 binary.
+
+## Analytics
+
+The deployed site reports anonymous page views to Google Analytics. Two things
+keep that narrow: the measurement ID comes from `NEXT_PUBLIC_GA_MEASUREMENT_ID`
+at build time, so a fork or a local build reports nowhere, and reporting is
+gated on the hostname, so only `starship.ndl.au` counts. Nothing about your
+config is sent — it never leaves the browser.
 
 ## Licence
 
