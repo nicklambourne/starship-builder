@@ -4,6 +4,19 @@ Starship Prompt Builder is [MIT licensed](LICENSE). It redistributes the third-p
 work listed below. Nothing here is affiliated with or endorsed by the projects
 named.
 
+## Icons
+
+The installed-tool switches in the simulated environment carry brand marks
+vendored from [Simple Icons](https://simpleicons.org) (v15,
+[CC0 1.0](https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md)),
+copied into [`src/components/ui/toolIcons.tsx`](src/components/ui/toolIcons.tsx)
+as single paths rather than fetched from its CDN — this site talks to nothing
+at runtime.
+
+The icon files are CC0; the marks themselves remain the trademarks of their
+owners, and are used here only to identify the tools they belong to. The
+Simple Icons slug for each is recorded beside its path.
+
 ## Bundled fonts
 
 The terminal preview self-hosts twelve [Nerd Fonts](https://www.nerdfonts.com)
