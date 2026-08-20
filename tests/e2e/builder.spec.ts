@@ -337,6 +337,18 @@ test.describe("builder", () => {
     await expect(page.getByLabel("Network namespace")).toBeVisible();
   });
 
+  test("a module's format editor explains its variables", async ({ page }) => {
+    await page.goto("./");
+    await page.getByRole("button", { name: "Expand $git_branch" }).click();
+
+    // The list of what can go in this module's format is variables, not
+    // modules, and each one carries starship's own description.
+    await page.getByRole("button", { name: "+ Add variable" }).first().click();
+    // The innermost match: the outer row contains the list that contains it.
+    const entry = page.getByRole("listitem").filter({ hasText: "$remote_name" }).last();
+    await expect(entry).toContainText("The remote name. (e.g. origin)");
+  });
+
   test("installed tools can be simulated", async ({ page }) => {
     await page.goto("./");
     await openEnvSection(page, "Installed tools");

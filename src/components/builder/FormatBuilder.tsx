@@ -48,6 +48,12 @@ interface FormatBuilderProps {
   value: string;
   onChange(next: string): void;
   vocabulary: string[];
+  /**
+   * One line about an entry in the vocabulary. Defaults to the module
+   * descriptions, which is right for the root format; a module's own format
+   * holds variables instead, and describes them from starship's docs.
+   */
+  describe?(name: string): string | undefined;
   palette?: Palette;
   paletteNames?: string[];
   noun?: string;
@@ -75,6 +81,7 @@ export function FormatBuilder({
   value,
   onChange,
   vocabulary,
+  describe = describeModule,
   palette,
   paletteNames,
   noun = "module",
@@ -146,7 +153,7 @@ export function FormatBuilder({
     if (item.kind === "module") {
       return (
         item.name.toLowerCase().includes(needle) ||
-        (describeModule(item.name)?.toLowerCase().includes(needle) ?? false)
+        (describe(item.name)?.toLowerCase().includes(needle) ?? false)
       );
     }
     if (item.kind === "group") return item.items.some(matches);
@@ -392,9 +399,9 @@ export function FormatBuilder({
                   className="flex w-full flex-col rounded px-1.5 py-1 text-left transition hover:bg-white/5"
                 >
                   <span className="font-mono text-xs text-accent-200">${name}</span>
-                  {describeModule(name) ? (
+                  {describe(name) ? (
                     <span className="truncate text-xs text-neutral-500">
-                      {describeModule(name)}
+                      {describe(name)}
                     </span>
                   ) : null}
                 </button>

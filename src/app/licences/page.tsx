@@ -270,9 +270,11 @@ export default function LicencesPage() {
         <section className="flex flex-col gap-3">
           <h2 className={H2}>Starship</h2>
           <p className="text-sm text-neutral-400">
-            Starship&rsquo;s configuration JSON Schema and its official preset
-            TOMLs are vendored into this site to drive the module list and the
-            preset picker. Starship is © the Starship contributors and{" "}
+            Starship&rsquo;s configuration JSON Schema, its official preset
+            TOMLs and its configuration reference are vendored into this site
+            to drive the module list, the preset picker and the explanations of
+            what each module and each format variable does. Starship is © the
+            Starship contributors and{" "}
             <External href="https://github.com/starship/starship/blob/master/LICENSE">
               ISC licensed
             </External>

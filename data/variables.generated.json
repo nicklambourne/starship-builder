@@ -1,0 +1,1437 @@
+{
+  "aws": {
+    "duration": {
+      "description": "The temporary credentials validity duration",
+      "example": "2h27m20s"
+    },
+    "profile": {
+      "description": "The current AWS profile",
+      "example": "astronauts"
+    },
+    "region": {
+      "description": "The current AWS region",
+      "example": "ap-northeast-1"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "buf": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of buf",
+      "example": "v1.0.0"
+    }
+  },
+  "bun": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of bun",
+      "example": "v0.1.4"
+    }
+  },
+  "c": {
+    "name": {
+      "description": "The name of the compiler",
+      "example": "clang"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of the compiler",
+      "example": "13.0.0"
+    }
+  },
+  "character": {
+    "symbol": {
+      "description": "A mirror of either success_symbol, error_symbol, vimcmd_symbol or vimcmd_replace_one_symbol etc."
+    }
+  },
+  "cmake": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of cmake",
+      "example": "v3.17.3"
+    }
+  },
+  "cobol-gnucobol": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of cobol",
+      "example": "v3.1.2.0"
+    }
+  },
+  "command-duration": {
+    "duration": {
+      "description": "The time it took to execute the command",
+      "example": "16m40s"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    }
+  },
+  "conda": {
+    "environment": {
+      "description": "The current conda environment",
+      "example": "astronauts"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "container": {
+    "name": {
+      "description": "The name of the container",
+      "example": "fedora-toolbox:35"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "cpp": {
+    "name": {
+      "description": "The name of the compiler",
+      "example": "clang++"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of the compiler",
+      "example": "13.0.0"
+    }
+  },
+  "crystal": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of crystal",
+      "example": "v0.32.1"
+    }
+  },
+  "custom-commands": {
+    "output": {
+      "description": "The output of command run in shell"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "daml": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of daml",
+      "example": "v2.2.0"
+    }
+  },
+  "dart": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of dart",
+      "example": "v2.8.4"
+    }
+  },
+  "deno": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of deno",
+      "example": "v1.8.3"
+    }
+  },
+  "directory": {
+    "before_root_path": {
+      "description": "The path before git root directory path",
+      "example": "'/path/to/home/'"
+    },
+    "path": {
+      "description": "The current directory path",
+      "example": "'D:/Projects'"
+    },
+    "repo_root": {
+      "description": "The git root directory name",
+      "example": "'git_repo'"
+    },
+    "repo_root_style": {
+      "description": "Style for git root directory name",
+      "example": "'underline white'"
+    },
+    "style": {
+      "description": "Mirrors the value of option style",
+      "example": "'black bold dimmed'"
+    }
+  },
+  "direnv": {
+    "allowed": {
+      "description": "Whether the current rc file is allowed.",
+      "example": "denied"
+    },
+    "loaded": {
+      "description": "Whether the current rc file is loaded.",
+      "example": "loaded"
+    },
+    "rc_path": {
+      "description": "The current rc file path.",
+      "example": "/home/test/.envrc"
+    },
+    "style": {
+      "description": "Mirrors the value of option style.",
+      "example": "red bold"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol."
+    }
+  },
+  "docker-context": {
+    "context": {
+      "description": "The current docker context",
+      "example": "test_context"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "dotnet": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "tfm": {
+      "description": "The Target Framework Moniker that the current project is targeting",
+      "example": "netstandard2.0"
+    },
+    "version": {
+      "description": "The version of dotnet sdk",
+      "example": "v3.1.201"
+    }
+  },
+  "elixir": {
+    "otp_version": {
+      "description": "The otp version of elixir"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of elixir",
+      "example": "v1.10"
+    }
+  },
+  "elm": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of elm",
+      "example": "v0.19.1"
+    }
+  },
+  "environment-variable": {
+    "env_value": {
+      "description": "The environment value of option variable",
+      "example": "Windows NT (if _variable_ would be $OS)"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "erlang": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of erlang",
+      "example": "v22.1.3"
+    }
+  },
+  "fennel": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of fennel",
+      "example": "v1.2.1"
+    }
+  },
+  "fortran": {
+    "name": {
+      "description": "The name of the compiler",
+      "example": "gfortran"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of the Fortran compiler",
+      "example": "14.2.0"
+    }
+  },
+  "fossil-branch": {
+    "branch": {
+      "description": "The active Fossil branch",
+      "example": "trunk"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "fossil-metrics": {
+    "added": {
+      "description": "The current number of added lines",
+      "example": "1"
+    },
+    "added_style": {
+      "description": "Mirrors the value of option added_style"
+    },
+    "deleted": {
+      "description": "The current number of deleted lines",
+      "example": "2"
+    },
+    "deleted_style": {
+      "description": "Mirrors the value of option deleted_style"
+    }
+  },
+  "git-branch": {
+    "branch": {
+      "description": "The current branch name, falls back to HEAD if there's no current branch (e.g. git detached HEAD).",
+      "example": "master"
+    },
+    "remote_branch": {
+      "description": "The name of the branch tracked on remote_name.",
+      "example": "master"
+    },
+    "remote_name": {
+      "description": "The remote name.",
+      "example": "origin"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "git-commit": {
+    "hash": {
+      "description": "The current git commit hash",
+      "example": "b703eb3"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "tag": {
+      "description": "The tag name if showing tag info is enabled.",
+      "example": "v1.0.0"
+    }
+  },
+  "git-metrics": {
+    "added": {
+      "description": "The current number of added lines",
+      "example": "1"
+    },
+    "added_style": {
+      "description": "Mirrors the value of option added_style"
+    },
+    "deleted": {
+      "description": "The current number of deleted lines",
+      "example": "2"
+    },
+    "deleted_style": {
+      "description": "Mirrors the value of option deleted_style"
+    }
+  },
+  "git-state": {
+    "progress_current": {
+      "description": "The current operation progress",
+      "example": "1"
+    },
+    "progress_total": {
+      "description": "The total operation progress",
+      "example": "2"
+    },
+    "state": {
+      "description": "The current state of the repo",
+      "example": "REBASING"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    }
+  },
+  "git-status": {
+    "ahead_behind": {
+      "description": "Displays diverged, ahead, behind or up_to_date format string based on the current status of the repo."
+    },
+    "ahead_count": {
+      "description": "Number of commits ahead of the tracking branch"
+    },
+    "all_status": {
+      "description": "Shortcut for $conflicted$stashed$deleted$renamed$modified$typechanged$staged$untracked."
+    },
+    "behind_count": {
+      "description": "Number of commits behind the tracking branch"
+    },
+    "conflicted": {
+      "description": "Displays conflicted when this branch has merge conflicts."
+    },
+    "count": {
+      "description": "Show the number of files"
+    },
+    "deleted": {
+      "description": "Displays deleted when a file's deletion has been added to the staging area."
+    },
+    "index_added": {
+      "description": "Displays index_added when a new file has been added to the staging area."
+    },
+    "index_deleted": {
+      "description": "Displays index_deleted when a file has been deleted from the staging area."
+    },
+    "index_modified": {
+      "description": "Displays index_modified when a file has been modified in the staging area."
+    },
+    "index_typechanged": {
+      "description": "Displays index_typechanged when a file's type has been changed in the staging area."
+    },
+    "modified": {
+      "description": "Displays modified when there are file modifications in the working directory."
+    },
+    "renamed": {
+      "description": "Displays renamed when a renamed file has been added to the staging area."
+    },
+    "staged": {
+      "description": "Displays staged when a new file has been added to the staging area."
+    },
+    "stashed": {
+      "description": "Displays stashed when a stash exists for the local repository."
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "typechanged": {
+      "description": "Displays typechanged when a file's type has been changed in the staging area."
+    },
+    "untracked": {
+      "description": "Displays untracked when there are untracked files in the working directory."
+    },
+    "worktree_added": {
+      "description": "Displays worktree_added when a new file has been added in the working directory."
+    },
+    "worktree_deleted": {
+      "description": "Displays worktree_deleted when a file's been deleted in the working directory."
+    },
+    "worktree_modified": {
+      "description": "Displays worktree_modified when a file's been modified in the working directory."
+    },
+    "worktree_typechanged": {
+      "description": "Displays worktree_typechanged when a file's type has been changed in the working directory."
+    }
+  },
+  "gleam": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of gleam",
+      "example": "v1.0.0"
+    }
+  },
+  "go": {
+    "mod_version": {
+      "description": "go version requirement as set in the go directive of go.mod. Will only show if the version requirement does not match the go version.",
+      "example": "1.16"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of go",
+      "example": "v1.12.1"
+    }
+  },
+  "google-cloud-gcloud": {
+    "account": {
+      "description": "The current GCP profile",
+      "example": "foo"
+    },
+    "active": {
+      "description": "The active config name written in ~/.config/gcloud/active_config",
+      "example": "default"
+    },
+    "domain": {
+      "description": "The current GCP profile domain",
+      "example": "example.com"
+    },
+    "project": {
+      "description": "The current GCP project"
+    },
+    "region": {
+      "description": "The current GCP region",
+      "example": "us-central1"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "gradle": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of gradle",
+      "example": "v7.5.1"
+    }
+  },
+  "guix-shell": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "haskell": {
+    "ghc_version": {
+      "description": "Currently installed GHC version",
+      "example": "9.2.1"
+    },
+    "snapshot": {
+      "description": "Currently selected Stack snapshot",
+      "example": "lts-18.12"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "ghc_version or snapshot depending on whether the current project is a Stack project"
+    }
+  },
+  "haxe": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of haxe",
+      "example": "v4.2.5"
+    }
+  },
+  "helm": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of helm",
+      "example": "v3.1.1"
+    }
+  },
+  "hostname": {
+    "hostname": {
+      "description": "The hostname of the computer",
+      "example": "computer"
+    },
+    "ssh_symbol": {
+      "description": "The symbol to represent when connected to SSH session",
+      "example": "'🌏 '"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    }
+  },
+  "java": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of java",
+      "example": "v14"
+    }
+  },
+  "jobs": {
+    "number": {
+      "description": "The number of jobs",
+      "example": "1"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "julia": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of julia",
+      "example": "v1.4.0"
+    }
+  },
+  "kotlin": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of kotlin",
+      "example": "v1.4.21"
+    }
+  },
+  "kubernetes": {
+    "cluster": {
+      "description": "If set, the current kubernetes cluster",
+      "example": "starship-cluster"
+    },
+    "context": {
+      "description": "The current kubernetes context name",
+      "example": "starship-context"
+    },
+    "namespace": {
+      "description": "If set, the current kubernetes namespace",
+      "example": "starship-namespace"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "user": {
+      "description": "If set, the current kubernetes user",
+      "example": "starship-user"
+    }
+  },
+  "local-ip": {
+    "localipv4": {
+      "description": "Contains the primary IPv4 address",
+      "example": "192.168.1.13"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    }
+  },
+  "lua": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of lua",
+      "example": "v5.4.0"
+    }
+  },
+  "maven": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of maven",
+      "example": "v3.2.0"
+    }
+  },
+  "memory-usage": {
+    "ram": {
+      "description": "The usage/total RAM of the current system memory.",
+      "example": "31GiB/65GiB"
+    },
+    "ram_pct": {
+      "description": "The percentage of the current system memory.",
+      "example": "48%"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "swap": {
+      "description": "The swap memory size of the current system swap memory file.",
+      "example": "1GiB/4GiB"
+    },
+    "swap_pct": {
+      "description": "The swap memory percentage of the current system swap memory file.",
+      "example": "77%"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol",
+      "example": "🐏"
+    }
+  },
+  "mercurial-branch": {
+    "branch": {
+      "description": "The active mercurial branch",
+      "example": "master"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "topic": {
+      "description": "The active mercurial topic",
+      "example": "feature"
+    }
+  },
+  "mercurial-state": {
+    "progress_current": {
+      "description": "The current operation progress",
+      "example": "1"
+    },
+    "progress_total": {
+      "description": "The total operation progress",
+      "example": "2"
+    },
+    "state": {
+      "description": "The current state of the repo",
+      "example": "REBASING"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    }
+  },
+  "meson": {
+    "project": {
+      "description": "The current Meson project name",
+      "example": "starship"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol",
+      "example": "🐏"
+    }
+  },
+  "mise": {
+    "health": {
+      "description": "The health of _mise_",
+      "example": "healthy"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "mojo": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of mojo",
+      "example": "24.4.0"
+    }
+  },
+  "nats": {
+    "name": {
+      "description": "The name of the NATS context",
+      "example": "localhost"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "network-namespace": {
+    "name": {
+      "description": "The name of the current network namespace",
+      "example": "my-netns"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "nim": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of nimc",
+      "example": "v1.2.0"
+    }
+  },
+  "nix-shell": {
+    "level": {
+      "description": "The depth level of the nix-shell (Only when using Lix)",
+      "example": "1"
+    },
+    "name": {
+      "description": "The name of the nix-shell",
+      "example": "lorri"
+    },
+    "state": {
+      "description": "The state of the nix-shell",
+      "example": "pure"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "node-js": {
+    "engines_version": {
+      "description": "node version requirement as set in the engines property of package.json. Will only show if the version requirement does not match the node version.",
+      "example": ">=12.0.0"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of node",
+      "example": "v13.12.0"
+    }
+  },
+  "ocaml": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "switch_indicator": {
+      "description": "Mirrors the value of indicator for currently active OPAM switch"
+    },
+    "switch_name": {
+      "description": "The active OPAM switch",
+      "example": "my-project"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of ocaml",
+      "example": "v4.10.0"
+    }
+  },
+  "odin": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of odin",
+      "example": "dev-2024-03"
+    }
+  },
+  "open-policy-agent": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of opa",
+      "example": "v0.44.0"
+    }
+  },
+  "openstack": {
+    "cloud": {
+      "description": "The current OpenStack cloud",
+      "example": "corp"
+    },
+    "project": {
+      "description": "The current OpenStack project",
+      "example": "dev"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "os": {
+    "codename": {
+      "description": "The current operating system codename, if applicable"
+    },
+    "edition": {
+      "description": "The current operating system edition, if applicable"
+    },
+    "name": {
+      "description": "The current operating system name",
+      "example": "Arch Linux"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "The current operating system symbol from advanced option symbols",
+      "example": "🎗️"
+    },
+    "type": {
+      "description": "The current operating system type",
+      "example": "Arch"
+    },
+    "version": {
+      "description": "The current operating system version, if applicable"
+    }
+  },
+  "package-version": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of your package",
+      "example": "v1.0.0"
+    }
+  },
+  "perl": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of perl",
+      "example": "v5.26.1"
+    }
+  },
+  "php": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of php",
+      "example": "v7.3.8"
+    }
+  },
+  "pixi": {
+    "environment": {
+      "description": "The current pixi environment",
+      "example": "py311"
+    },
+    "project_name": {
+      "description": "The current pixi project name",
+      "example": "my-project"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of pixi",
+      "example": "v0.33.0"
+    }
+  },
+  "pulumi": {
+    "stack": {
+      "description": "The current Pulumi stack",
+      "example": "dev"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "username": {
+      "description": "The current Pulumi username",
+      "example": "alice"
+    },
+    "version": {
+      "description": "The version of pulumi",
+      "example": "v0.12.24"
+    }
+  },
+  "purescript": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of purescript",
+      "example": "0.13.5"
+    }
+  },
+  "python": {
+    "pyenv_prefix": {
+      "description": "Mirrors the value of option pyenv_prefix",
+      "example": "'pyenv '"
+    },
+    "style": {
+      "description": "Mirrors the value of option style",
+      "example": "'yellow bold'"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol",
+      "example": "'🐍 '"
+    },
+    "version": {
+      "description": "The version of python",
+      "example": "'v3.8.1'"
+    },
+    "virtualenv": {
+      "description": "The current virtualenv name or the parent if matches generic_venv_names",
+      "example": "'venv'"
+    }
+  },
+  "quarto": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of quarto",
+      "example": "1.4.549"
+    }
+  },
+  "r": {
+    "style": {
+      "description": "Mirrors the value of option style",
+      "example": "'blue bold'"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of R",
+      "example": "v4.0.5"
+    }
+  },
+  "raku": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of raku",
+      "example": "v6.d"
+    },
+    "vm_version": {
+      "description": "The version of VM raku is built on",
+      "example": "moar"
+    }
+  },
+  "red": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of red",
+      "example": "v2.5.1"
+    }
+  },
+  "ruby": {
+    "gemset": {
+      "description": "Optional, gets the current RVM gemset name.",
+      "example": "test"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of ruby",
+      "example": "v2.5.1"
+    }
+  },
+  "rust": {
+    "numver": {
+      "description": "The numeric component of the rustc version",
+      "example": "1.51.0"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "toolchain": {
+      "description": "The toolchain version",
+      "example": "beta"
+    },
+    "version": {
+      "description": "The version of rustc",
+      "example": "v1.43.0-nightly"
+    }
+  },
+  "scala": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of scala",
+      "example": "2.13.5"
+    }
+  },
+  "shell": {
+    "indicator": {
+      "description": "Mirrors the value of indicator for currently used shell."
+    },
+    "style": {
+      "description": "Mirrors the value of option style."
+    }
+  },
+  "shlvl": {
+    "shlvl": {
+      "description": "The current value of SHLVL",
+      "example": "3"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "singularity": {
+    "env": {
+      "description": "The current Singularity image",
+      "example": "centos.img"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "solidity": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of solidity",
+      "example": "v0.8.1"
+    }
+  },
+  "spack": {
+    "environment": {
+      "description": "The current spack environment",
+      "example": "astronauts"
+    },
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "status": {
+    "common_meaning": {
+      "description": "Meaning of the code if not a signal",
+      "example": "ERROR"
+    },
+    "hex_status": {
+      "description": "The exit code of the last command in hex",
+      "example": "0x7F"
+    },
+    "int": {
+      "description": "The exit code of the last command",
+      "example": "127"
+    },
+    "maybe_int": {
+      "description": "Contains the exit code number when no meaning has been found",
+      "example": "7"
+    },
+    "pipestatus": {
+      "description": "Rendering of in pipeline programs' exit codes, this is only available in pipestatus_format"
+    },
+    "signal_name": {
+      "description": "Name of the signal corresponding to the exit code, only if signalled",
+      "example": "KILL"
+    },
+    "signal_number": {
+      "description": "Signal number corresponding to the exit code, only if signalled",
+      "example": "9"
+    },
+    "status": {
+      "description": "The exit code of the last command",
+      "example": "127"
+    },
+    "style": {
+      "description": "Mirrors the value of option success_style on program success and failure_style otherwise"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "sudo": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "swift": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of swift",
+      "example": "v5.2.4"
+    }
+  },
+  "terraform": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of terraform",
+      "example": "v0.12.24"
+    },
+    "workspace": {
+      "description": "The current Terraform workspace",
+      "example": "default"
+    }
+  },
+  "time": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "time": {
+      "description": "The current time.",
+      "example": "13:08:10"
+    }
+  },
+  "typst": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "typst_version": {
+      "description": "The current Typst version",
+      "example": "default"
+    },
+    "version": {
+      "description": "The version of typst, alias for typst_version",
+      "example": "v0.9.0"
+    }
+  },
+  "username": {
+    "style": {
+      "description": "Mirrors the value of option style_root when root is logged in and style_user otherwise.",
+      "example": "'red bold'"
+    },
+    "user": {
+      "description": "The currently logged-in user ID.",
+      "example": "'matchai'"
+    }
+  },
+  "v": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of v",
+      "example": "v0.2"
+    }
+  },
+  "vagrant": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of Vagrant",
+      "example": "Vagrant 2.2.10"
+    }
+  },
+  "vcsh": {
+    "repo": {
+      "description": "The active repository name",
+      "example": "dotfiles if in a VCSH repo named dotfiles"
+    },
+    "style": {
+      "description": "Mirrors the value of option style",
+      "example": "black bold dimmed"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    }
+  },
+  "xmake": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of xmake",
+      "example": "v2.9.5"
+    }
+  },
+  "zig": {
+    "style": {
+      "description": "Mirrors the value of option style"
+    },
+    "symbol": {
+      "description": "Mirrors the value of option symbol"
+    },
+    "version": {
+      "description": "The version of zig",
+      "example": "v0.6.0"
+    }
+  }
+}
