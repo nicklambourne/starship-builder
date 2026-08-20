@@ -18,6 +18,7 @@ import { ChevronIcon, TrashIcon } from "@/components/ui/icons";
 import { TOOL_ICONS, ToolIcon } from "@/components/ui/toolIcons";
 
 import { Toggle } from "@/components/ui/Toggle";
+import { VERSIONED_MODULE_NAMES } from "@/lib/engine/modules/language";
 import type { GitState, OsType, Scenario } from "@/lib/scenarios/types";
 
 interface EnvironmentPanelProps {
@@ -68,6 +69,9 @@ const SHELLS: Scenario["shell"][] = [
   "xonsh",
   "cmd",
 ];
+
+/** Every module a tool version can be set for, for the editor's suggestions. */
+const TOOL_VERSION_KEYS = [...VERSIONED_MODULE_NAMES].sort();
 
 /** Tools offered as one-click version toggles, keyed by module name. */
 /*
@@ -175,15 +179,19 @@ function PairEditor({
   keyPlaceholder,
   valuePlaceholder,
   addLabel,
+  keyOptions,
 }: {
   entries: Record<string, string>;
   onChange(next: Record<string, string>): void;
   keyPlaceholder: string;
   valuePlaceholder: string;
   addLabel: string;
+  /** Suggested keys, offered as a datalist. Free text is still accepted. */
+  keyOptions?: readonly string[];
 }) {
   const id = useId();
   const rows = Object.entries(entries);
+  const listId = `${id}-keys`;
 
   const setKey = (oldKey: string, newKey: string) => {
     const next: Record<string, string> = {};
@@ -194,12 +202,20 @@ function PairEditor({
 
   return (
     <div className="flex flex-col gap-1.5">
+      {keyOptions ? (
+        <datalist id={listId}>
+          {keyOptions.map((option) => (
+            <option key={option} value={option} />
+          ))}
+        </datalist>
+      ) : null}
       {rows.map(([key, value], index) => (
         <div key={`${id}-${index}`} className="flex items-center gap-1.5">
           <input
             aria-label={`${keyPlaceholder} ${index + 1}`}
             value={key}
             placeholder={keyPlaceholder}
+            list={keyOptions ? listId : undefined}
             onChange={(e) => setKey(key, e.target.value)}
             spellCheck={false}
             className={`${INPUT} font-mono`}
@@ -691,6 +707,9 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
             keyPlaceholder="module"
             valuePlaceholder="version"
             addLabel="+ Add a tool"
+            // The key is a module name, not a command name — `golang`, not
+            // `go` — so guessing it is a coin toss without the list.
+            keyOptions={TOOL_VERSION_KEYS}
           />
         </Section>
 
