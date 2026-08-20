@@ -44,6 +44,17 @@ const OS_TYPES: OsType[] = [
   "Unknown",
 ];
 
+const HG_STATES: NonNullable<Scenario["hgState"]>[] = [
+  "merge",
+  "rebase",
+  "update",
+  "bisect",
+  "shelve",
+  "graft",
+  "transplant",
+  "histedit",
+];
+
 const SHELLS: Scenario["shell"][] = [
   "zsh",
   "bash",
@@ -234,6 +245,17 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
   // namespace has nothing to attach to until one is set.
   const hasKubeContext = Boolean(scenario.kubernetes?.context);
 
+  // Mercurial is detected from the directory listing, the way starship finds a
+  // `.hg` next to the cwd — so the switch edits the files rather than a field.
+  const inHgRepo = scenario.files.includes(".hg");
+  const toggleHgRepo = (on: boolean) => {
+    const files = scenario.files.filter((f) => f !== ".hg");
+    onChange({
+      files: on ? [...files, ".hg"] : files,
+      hgState: on ? scenario.hgState : undefined,
+    });
+  };
+
   const setGit = (patch: Partial<GitState>) => {
     if (!git) return;
     onChange({ git: { ...git, ...patch } });
@@ -367,8 +389,8 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
         </Section>
 
         <Section
-          title="Git repository"
-          hint={git ? (git.branch ?? "detached") : "not a repo"}
+          title="Version control"
+          hint={git ? (git.branch ?? "detached") : inHgRepo ? "hg" : "not a repo"}
         >
           <p className="text-xs text-neutral-500">
             starship prints{" "}
@@ -431,20 +453,53 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
                     ["ahead", "Ahead"],
                     ["behind", "Behind"],
                     ["renamed", "Renamed"],
+                    // git_metrics counts lines rather than files.
+                    ["addedLines", "Lines added"],
+                    ["deletedLines", "Lines deleted"],
                   ] as const
                 ).map(([key, label]) => (
                   <Field key={key} label={label}>
                     <input
                       type="number"
                       min={0}
-                      value={git[key]}
+                      value={git[key] ?? 0}
                       onChange={(e) => setGit({ [key]: Number(e.target.value) })}
                       className={NUMBER}
                     />
                   </Field>
                 ))}
               </div>
+              <SwitchRow
+                label="Detached HEAD"
+                checked={git.detached}
+                onChange={(on) => setGit({ detached: on })}
+              />
             </>
+          ) : null}
+          <SwitchRow
+            label="Inside a Mercurial repository"
+            checked={inHgRepo}
+            onChange={toggleHgRepo}
+          />
+          {inHgRepo ? (
+            <Field label="Mercurial operation in progress">
+              <select
+                value={scenario.hgState ?? ""}
+                onChange={(e) =>
+                  onChange({
+                    hgState: (e.target.value || undefined) as Scenario["hgState"],
+                  })
+                }
+                className={INPUT}
+              >
+                <option value="">none</option>
+                {HG_STATES.map((state) => (
+                  <option key={state} value={state}>
+                    {state}
+                  </option>
+                ))}
+              </select>
+            </Field>
           ) : null}
         </Section>
 
@@ -499,6 +554,18 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
                   </option>
                 ))}
               </select>
+            </Field>
+            <Field label="Network namespace">
+              <input
+                value={scenario.netns?.name ?? ""}
+                placeholder="none"
+                onChange={(e) =>
+                  onChange({
+                    netns: e.target.value ? { name: e.target.value } : undefined,
+                  })
+                }
+                className={INPUT}
+              />
             </Field>
             <Field label="Terminal width (columns)">
               <input
@@ -720,6 +787,60 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
                 </p>
               )}
             </div>
+            <Field label="Azure subscription">
+              <input
+                value={scenario.azure?.subscription ?? ""}
+                placeholder="none"
+                onChange={(e) =>
+                  onChange({
+                    azure: e.target.value
+                      ? { ...scenario.azure, subscription: e.target.value }
+                      : undefined,
+                  })
+                }
+                className={INPUT}
+              />
+            </Field>
+            <Field label="Docker context">
+              <input
+                value={scenario.docker?.context ?? ""}
+                placeholder="none"
+                onChange={(e) =>
+                  onChange({
+                    docker: e.target.value
+                      ? { context: e.target.value }
+                      : undefined,
+                  })
+                }
+                className={INPUT}
+              />
+            </Field>
+            <Field label="Conda environment">
+              <input
+                value={scenario.conda?.environment ?? ""}
+                placeholder="none"
+                onChange={(e) =>
+                  onChange({
+                    conda: e.target.value
+                      ? { environment: e.target.value }
+                      : undefined,
+                  })
+                }
+                className={INPUT}
+              />
+            </Field>
+            <Field label="NATS context">
+              <input
+                value={scenario.nats?.name ?? ""}
+                placeholder="none"
+                onChange={(e) =>
+                  onChange({
+                    nats: e.target.value ? { name: e.target.value } : undefined,
+                  })
+                }
+                className={INPUT}
+              />
+            </Field>
             <Field label="Terraform workspace">
               <input
                 value={scenario.terraform?.workspace ?? ""}

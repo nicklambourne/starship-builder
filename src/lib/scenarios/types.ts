@@ -25,6 +25,13 @@ export interface GitState {
   untracked: number;
   conflicted: number;
   stashed: number;
+  /**
+   * Line counts from `git diff --shortstat`, which `git_metrics` reports.
+   * Optional because every other consumer works from the file-level counts
+   * above; absent reads as zero, which is what an unmodified tree gives.
+   */
+  addedLines?: number;
+  deletedLines?: number;
   /** Absolute path of the repository root, for `truncate_to_repo`. */
   root: string;
   /** Whether the remote tracking branch exists. */
