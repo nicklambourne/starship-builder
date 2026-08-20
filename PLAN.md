@@ -4,7 +4,7 @@ A live, in-browser configurator for the [Starship](https://starship.rs) cross-sh
 prompt. Point, click, and preview your prompt in a simulated terminal — then export
 a `starship.toml` that reproduces exactly what you saw.
 
-- **Live site:** https://nicklambourne.github.io/starship-prompt-builder/
+- **Live site:** https://starship.ndl.au/
 - **Repo:** https://github.com/nicklambourne/starship-prompt-builder
 - **Status:** M0–M4 complete. All 102 starship modules implemented, the parity
   harness is green against real starship, and the builder is live. M5 (polish,

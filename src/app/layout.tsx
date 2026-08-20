@@ -10,7 +10,7 @@ import "./globals.css";
  * a chat client can resolve those. It is the deployed origin plus the Pages
  * base path.
  */
-const SITE = "https://nicklambourne.github.io/starship-prompt-builder";
+const SITE = "https://starship.ndl.au";
 
 const DESCRIPTION =
   "Configure the Starship prompt visually. Edit every module, style and " +

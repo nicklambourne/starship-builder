@@ -9,7 +9,7 @@ their format strings against a live preview of a simulated shell — then export
 the config that reproduces it. Everything runs in your browser: no account, no
 upload, no backend.
 
-### [→ Open the builder](https://nicklambourne.github.io/starship-prompt-builder/)
+### [→ Open the builder](https://starship.ndl.au/)
 
 ![The builder: a simulated prompt above the module editor](docs/images/demo.gif)
 

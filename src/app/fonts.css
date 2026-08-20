@@ -9,7 +9,7 @@
  * Paths are relative to THIS file, which resolves to `public/fonts/`. The
  * bundler rewrites each url() to a content-hashed asset referenced relatively
  * from the emitted stylesheet (`url(../media/<name>.<hash>.woff2)`), so they
- * resolve correctly under the `/starship-prompt-builder` GitHub Pages base path.
+ * resolve wherever the site is served from.
  * Do NOT rewrite these as root-relative `/fonts/...` URLs: those are emitted
  * verbatim and 404 under the base path.
  *

@@ -13,7 +13,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 
 const PORT = process.env.PORT ?? 4321;
-const URL = `http://127.0.0.1:${PORT}/starship-prompt-builder/`;
+const URL = `http://127.0.0.1:${PORT}/`;
 const OUT = "docs/images";
 
 /** Settles the page: fonts swap in late, and a half-drawn prompt looks broken. */
