@@ -607,6 +607,35 @@ test.describe("builder", () => {
     ).toHaveAttribute("aria-expanded", "true");
   });
 
+  test("the logo outgrows the header bar without moving it", async ({
+    page,
+  }, info) => {
+    await page.goto("./");
+    const measured = await page.evaluate(() => {
+      const header = document.querySelector("header")!;
+      const logo = header.querySelector("svg")!;
+      const bar = header.getBoundingClientRect();
+      const mark = logo.getBoundingClientRect();
+      return {
+        header: Math.round(bar.height),
+        mark: Math.round(mark.width),
+        // Layout height, which is what the row is sized by — the mark draws
+        // larger than this and reaches into the bar's padding.
+        laidOut: Math.round(mark.height + 2 * parseFloat(getComputedStyle(logo).marginTop)),
+        clearsTop: mark.top - bar.top,
+        clearsBottom: bar.bottom - mark.bottom,
+      };
+    });
+
+    expect(measured.mark).toBeGreaterThan(measured.laidOut);
+    // The bar is 61px on desktop and 99px wrapped on a phone; both are what
+    // they were before the mark grew.
+    expect(measured.header).toBe(info.project.name === "mobile" ? 99 : 61);
+    // And it stays inside the bar rather than crossing its border.
+    expect(measured.clearsTop).toBeGreaterThan(0);
+    expect(measured.clearsBottom).toBeGreaterThan(0);
+  });
+
   test("the header carries the logo, not an emoji", async ({ page }) => {
     await page.goto("./");
     const heading = page.getByRole("heading", { level: 1 });
