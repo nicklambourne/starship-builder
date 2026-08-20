@@ -92,30 +92,32 @@ test.describe("discoverability", () => {
     expect(sitemapBody).toContain("licences");
   });
 
-  test("analytics stay off anywhere but the deployed host", async ({
-    page,
-  }, info) => {
+  test("the page ships no analytics code of its own", async ({ page }, info) => {
     test.skip(info.project.name === "mobile", "one platform is enough");
 
     const analytics: string[] = [];
     page.on("request", (request) => {
-      if (/googletagmanager|google-analytics|analytics\.google/.test(request.url())) {
+      if (/googletagmanager|google-analytics|analytics\.google|cloudflareinsights/.test(request.url())) {
         analytics.push(request.url());
       }
     });
 
     await page.goto("./");
-    // Interaction is one of the two things that would fetch the library.
     await page.getByLabel("Simulated terminal prompt").click();
     await page.waitForTimeout(1500);
 
-    // The suite runs against 127.0.0.1, so nothing here is a real visit and
-    // none of it should reach the property.
+    /*
+     * Counting happens at Cloudflare's edge, which injects its beacon into
+     * proxied responses — so the built site carries nothing, and a fork or a
+     * local build reports nowhere by construction. Nothing in this repository
+     * should ever request an analytics endpoint.
+     */
     expect(analytics).toEqual([]);
-    expect(await page.evaluate(() => typeof window.gtag)).toBe("undefined");
-    expect(await page.evaluate(() => Boolean(document.getElementById("ga-gtag")))).toBe(
-      false,
-    );
+    expect(await page.evaluate(() => "gtag" in window)).toBe(false);
+
+    const html = await page.content();
+    expect(html).not.toContain("googletagmanager");
+    expect(html).not.toContain("dataLayer");
   });
 
   test("there is something to read without JavaScript", async ({

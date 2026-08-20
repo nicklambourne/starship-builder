@@ -45,8 +45,8 @@ export function Explainer() {
           you export the exact{" "}
           <code className="text-neutral-300">starship.toml</code> that
           reproduces it. The editing happens entirely in your browser: your
-          config is never uploaded, and the only thing this site reports is
-          anonymous page analytics.
+          config is never uploaded, and the site itself carries no tracking
+          code — visits are counted at the edge, without cookies.
         </p>
 
         <p className="text-neutral-500">
