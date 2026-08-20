@@ -15,6 +15,7 @@
 
 import { useId } from "react";
 import { ChevronIcon, TrashIcon } from "@/components/ui/icons";
+import { TOOL_ICONS, ToolIcon } from "@/components/ui/toolIcons";
 
 import { Toggle } from "@/components/ui/Toggle";
 import type { GitState, OsType, Scenario } from "@/lib/scenarios/types";
@@ -59,15 +60,15 @@ const SHELLS: Scenario["shell"][] = [
 
 /** Tools offered as one-click version toggles, keyed by module name. */
 /*
- * Symbols come from starship's own nerd-font-symbols preset, so a tool is
- * marked with the glyph its module prints. The defaults are emoji and, for
- * .NET, the bare string ".NET" — no use as a row of icons.
+ * Marks come from the vendored Simple Icons set (components/ui/toolIcons),
+ * not from starship's own symbols: those are emoji by default, and the
+ * nerd-font-symbols preset's glyphs are monochrome silhouettes that nobody
+ * identifies a language by at this size.
  */
 export const COMMON_TOOLS: {
   key: string;
   label: string;
   version: string;
-  symbol: string;
   /** The project's own colour, for the dark interface. */
   color: string;
   /**
@@ -78,18 +79,18 @@ export const COMMON_TOOLS: {
    */
   lightColor: string;
 }[] = [
-  { key: "nodejs", label: "Node.js", version: "22.19.0", symbol: "\ue718", color: "#5fa04e", lightColor: "#5fa04e" },
-  { key: "python", label: "Python", version: "3.13.1", symbol: "\ue235", color: "#3776ab", lightColor: "#3776ab" },
-  { key: "rust", label: "Rust", version: "1.84.0", symbol: "\u{f1617}", color: "#ce422b", lightColor: "#ce422b" },
-  { key: "golang", label: "Go", version: "1.24.0", symbol: "\ue627", color: "#00add8", lightColor: "#00a1c9" },
-  { key: "java", label: "Java", version: "21.0.5", symbol: "\ue738", color: "#f89820", lightColor: "#d97c07" },
-  { key: "ruby", label: "Ruby", version: "3.4.1", symbol: "\ue791", color: "#cc342d", lightColor: "#cc342d" },
-  { key: "php", label: "PHP", version: "8.4.2", symbol: "\ue608", color: "#777bb4", lightColor: "#777bb4" },
-  { key: "dotnet", label: ".NET", version: "9.0.101", symbol: "\ue77f", color: "#5f3cd7", lightColor: "#512bd4" },
-  { key: "deno", label: "Deno", version: "2.1.4", symbol: "\ue7c0", color: "#70ffaf", lightColor: "#00a84a" },
-  { key: "bun", label: "Bun", version: "1.1.42", symbol: "\ue76f", color: "#fbf0df", lightColor: "#cc8619" },
-  { key: "terraform", label: "Terraform", version: "1.10.3", symbol: "\ue69a", color: "#7b42bc", lightColor: "#7b42bc" },
-  { key: "docker", label: "Docker", version: "27.4.0", symbol: "\uf308", color: "#2496ed", lightColor: "#2496ed" },
+  { key: "nodejs", label: "Node.js", version: "22.19.0", color: "#5fa04e", lightColor: "#5fa04e" },
+  { key: "python", label: "Python", version: "3.13.1", color: "#3776ab", lightColor: "#3776ab" },
+  { key: "rust", label: "Rust", version: "1.84.0", color: "#ce422b", lightColor: "#ce422b" },
+  { key: "golang", label: "Go", version: "1.24.0", color: "#00add8", lightColor: "#00a1c9" },
+  { key: "java", label: "Java", version: "21.0.5", color: "#f89820", lightColor: "#d97c07" },
+  { key: "ruby", label: "Ruby", version: "3.4.1", color: "#cc342d", lightColor: "#cc342d" },
+  { key: "php", label: "PHP", version: "8.4.2", color: "#777bb4", lightColor: "#777bb4" },
+  { key: "dotnet", label: ".NET", version: "9.0.101", color: "#5f3cd7", lightColor: "#512bd4" },
+  { key: "deno", label: "Deno", version: "2.1.4", color: "#70ffaf", lightColor: "#00a84a" },
+  { key: "bun", label: "Bun", version: "1.1.42", color: "#fbf0df", lightColor: "#cc8619" },
+  { key: "terraform", label: "Terraform", version: "1.10.3", color: "#7b42bc", lightColor: "#7b42bc" },
+  { key: "docker", label: "Docker", version: "27.4.0", color: "#2496ed", lightColor: "#2496ed" },
 ];
 
 function Section({
@@ -589,22 +590,21 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
                     else next[tool.key] = tool.version;
                     onChange({ toolVersions: next });
                   }}
-                  className={`grid size-11 place-items-center rounded-lg border text-2xl transition ${
+                  className={`grid size-10 place-items-center rounded-lg border transition ${
                     present
                       ? "border-accent-400 bg-accent-400/15"
                       : "border-white/10 hover:border-white/25"
                   }`}
                 >
                   {/*
-                    The glyph carries the project's colour, so the pressed
+                    The mark carries the project's colour, so the pressed
                     state is not read from it: the accent border and fill say
                     installed, along with `aria-pressed`. Nothing is dimmed —
                     every colour here is picked to clear 3:1 on the surface,
                     and fading the absent ones threw that away.
                   */}
                   <span
-                    aria-hidden="true"
-                    className="tool-icon nerd-font leading-none"
+                    className="tool-icon grid place-items-center"
                     style={
                       {
                         "--tool-color": tool.color,
@@ -612,7 +612,7 @@ export function EnvironmentPanel({ scenario, onChange }: EnvironmentPanelProps) 
                       } as React.CSSProperties
                     }
                   >
-                    {tool.symbol}
+                    <ToolIcon icon={TOOL_ICONS[tool.key]} size={26} />
                   </span>
                 </button>
               );

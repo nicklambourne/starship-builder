@@ -1,38 +1,35 @@
-import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { COMMON_TOOLS } from "./EnvironmentPanel";
+import { TOOL_ICONS } from "@/components/ui/toolIcons";
 
 /**
- * The tool buttons are marked with the glyph starship's own nerd-font-symbols
- * preset gives that module. `data/` is synced from upstream, so this pins the
- * two together rather than trusting a transcription — four of twelve were
- * wrong when they were first typed by hand.
+ * Every tool switch needs a mark, and each mark needs to be traceable to the
+ * set it came from — these are vendored, so nothing fetches them at runtime
+ * and nothing checks them but this.
+ *
+ * They replaced Nerd Font glyphs, which had their own test pinning them to
+ * starship's nerd-font-symbols preset. That tie is gone with them: these are
+ * brand marks, and starship has no opinion about those.
  */
 describe("installed-tool icons", () => {
-  const preset = readFileSync("data/presets/nerd-font-symbols.toml", "utf8");
-
-  const symbolFor = (module: string) => {
-    const table = preset.match(
-      new RegExp(String.raw`^\[${module}\]\s*\n((?:(?!^\[).*\n)*)`, "m"),
-    );
-    return table?.[1].match(/^symbol = "(.*)"\s*$/m)?.[1].trimEnd();
-  };
-
-  it("uses the preset's glyph for every tool", () => {
+  it("gives every tool a mark", () => {
     for (const tool of COMMON_TOOLS) {
-      // The button key is the scenario key; docker's module is docker_context.
-      const module = tool.key === "docker" ? "docker_context" : tool.key;
-      const expected = symbolFor(module);
-      expect(expected).toBeTruthy();
-      expect(`${tool.label}: ${tool.symbol}`).toBe(`${tool.label}: ${expected}`);
+      expect(`${tool.label}: ${Boolean(TOOL_ICONS[tool.key])}`).toBe(`${tool.label}: true`);
     }
   });
 
-  it("gives every tool exactly one glyph", () => {
-    for (const tool of COMMON_TOOLS) {
-      expect([...tool.symbol]).toHaveLength(1);
+  it("draws each one as a single path on a 24-unit grid", () => {
+    for (const [key, icon] of Object.entries(TOOL_ICONS)) {
+      // A path that does not start with a move command is not a path.
+      expect(`${key}: ${icon.path.startsWith("M")}`).toBe(`${key}: true`);
+      expect(icon.slug.length).toBeGreaterThan(0);
     }
+  });
+
+  it("ships no icons it does not use", () => {
+    const used = new Set(COMMON_TOOLS.map((tool) => tool.key));
+    expect(Object.keys(TOOL_ICONS).filter((key) => !used.has(key))).toEqual([]);
   });
 });
 

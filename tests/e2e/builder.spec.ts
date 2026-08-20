@@ -844,22 +844,28 @@ test.describe("builder", () => {
       .locator("[data-section='environment']")
       .getByRole("button", { name: "Node.js", exact: true });
     await expect(node).toHaveAttribute("title", "Node.js");
-    // A glyph, not the word.
+    // A mark, not the word.
     await expect(node).not.toContainText("Node.js");
+
     const shape = await node.evaluate((el) => {
-      const r = el.getBoundingClientRect();
-      return { w: Math.round(r.width), h: Math.round(r.height), radius: getComputedStyle(el).borderRadius };
+      const button = el.getBoundingClientRect();
+      const mark = el.querySelector("svg")!.getBoundingClientRect();
+      return {
+        width: Math.round(button.width),
+        height: Math.round(button.height),
+        radius: getComputedStyle(el).borderRadius,
+        markWidth: Math.round(mark.width),
+        // The mark is a vendored brand path, filled with the tool's colour.
+        fill: getComputedStyle(el.querySelector("svg")!).fill,
+      };
     });
-    expect(shape.w).toBe(shape.h);
+
+    expect(shape.width).toBe(shape.height);
     expect(shape.radius).not.toBe("0px");
-    // Big enough to make out the glyph, and painted in Node's green.
-    expect(shape.w).toBeGreaterThanOrEqual(40);
-    expect(
-      await node.locator("span").evaluate((el) => ({
-        color: getComputedStyle(el).color,
-        size: parseFloat(getComputedStyle(el).fontSize),
-      })),
-    ).toEqual({ color: "rgb(95, 160, 78)", size: 24 });
+    expect(shape.fill).toBe("rgb(95, 160, 78)");
+    // The mark fills most of the button rather than floating in it: this was
+    // a 24px glyph in a 44px box, which read as a sticker on a wall.
+    expect(shape.markWidth / shape.width).toBeGreaterThan(0.6);
 
     // It still toggles the tool, which decides whether the module renders.
     await expect(node).toHaveAttribute("aria-pressed", "true");
