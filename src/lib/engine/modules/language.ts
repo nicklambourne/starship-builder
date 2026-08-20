@@ -95,6 +95,17 @@ export function detectsProject(options: ModuleOptions, scenario: Scenario): bool
 }
 
 /**
+ * Every module whose visibility depends on `scenario.toolVersions`.
+ *
+ * The environment panel offers these as the keys a version can be set for, so
+ * the list has to follow the registry rather than be a copy of it: a language
+ * module nobody can install is a switch that does nothing. Modules built by
+ * `defineLanguageModule` record themselves below; the longhand ones do it
+ * where they are defined.
+ */
+export const VERSIONED_MODULE_NAMES = new Set<string>();
+
+/**
  * The version a module should display, or undefined when the tool is absent.
  * `version_format` is applied when the module has that option.
  */
@@ -115,6 +126,7 @@ export function detectsEnvVars(names: string[], scenario: Scenario): boolean {
 }
 
 export function defineLanguageModule(spec: LanguageModuleSpec): ModuleDefinition {
+  VERSIONED_MODULE_NAMES.add(spec.name);
   const defaults: ModuleOptions & { format: string; disabled: boolean } = {
     format: spec.format ?? LANGUAGE_FORMAT,
     symbol: spec.symbol,

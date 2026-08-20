@@ -345,6 +345,14 @@ test.describe("builder", () => {
     await expect(rust).toHaveAttribute("aria-pressed", "false");
     await rust.click();
     await expect(rust).toHaveAttribute("aria-pressed", "true");
+
+    // Anything else is typed in, and the key is a module name rather than a
+    // command name — so the field suggests them.
+    await page.getByRole("button", { name: "+ Add a tool" }).click();
+    const key = page.getByLabel("module 2");
+    const list = await key.getAttribute("list");
+    expect(list).toBeTruthy();
+    await expect(page.locator(`datalist#${list} option[value='zig']`)).toHaveCount(1);
   });
 
   test("the app theme can be switched", async ({ page }) => {

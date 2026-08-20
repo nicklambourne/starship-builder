@@ -19,6 +19,7 @@ import {
 import {
   LANGUAGE_FORMAT,
   LANGUAGE_VERSION_FORMAT,
+  VERSIONED_MODULE_NAMES,
   defineLanguageModule,
   detectsEnvVars,
   detectsProject,
@@ -400,6 +401,12 @@ export function truncateText(text: string, options: ModuleOptions): string {
   if (characters.length <= length) return text;
   const symbol = Array.from(optString(options, "truncation_symbol")).slice(0, 1).join("");
   return characters.slice(0, length).join("") + symbol;
+}
+
+// The longhand modules that still read a version, which the factory would
+// otherwise have recorded for them.
+for (const name of ["nodejs", "package", "pixi", "python", "ruby"]) {
+  VERSIONED_MODULE_NAMES.add(name);
 }
 
 export const BESPOKE_LANGUAGE_MODULES: ModuleDefinition[] = [
