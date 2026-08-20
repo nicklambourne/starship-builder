@@ -107,11 +107,13 @@ binary.
 
 ## Analytics
 
-The deployed site reports anonymous page views to Google Analytics. Two things
-keep that narrow: the measurement ID comes from `NEXT_PUBLIC_GA_MEASUREMENT_ID`
-at build time, so a fork or a local build reports nowhere, and reporting is
-gated on the hostname, so only `starship.ndl.au` counts. Nothing about your
-config is sent — it never leaves the browser.
+Traffic to the deployed site is counted at Cloudflare's edge, from the
+requests themselves; Cloudflare Web Analytics adds per-page detail by injecting
+its own beacon into proxied responses. Either way the counting is the edge's
+work — so **this repository contains no analytics code at all**, and a fork or
+a local build reports nowhere by construction rather than by configuration. It
+is cookieless, and nothing about your config is sent: it never leaves the
+browser.
 
 ## Licence
 

@@ -31,13 +31,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm build
-        env:
-          # The GA4 property the deployed site reports to. A repository
-          # variable rather than a secret: a measurement ID is public by
-          # design — every page that reports to GA carries it in its HTML.
-          # Unset means the build ships no analytics at all, which is what
-          # a fork gets.
-          NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
 
       - uses: actions/upload-pages-artifact@v3
         with:
