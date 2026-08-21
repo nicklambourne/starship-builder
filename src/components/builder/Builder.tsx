@@ -117,6 +117,7 @@ export function Builder() {
   } = useBuilderStore();
 
   // The starship.toml card is a disclosure of its own making; see below.
+  const [previewOpen, setPreviewOpen] = useState(true);
   const [tomlOpen, setTomlOpen] = useState(false);
 
   // Guards the save effect until the restore has run.
@@ -577,26 +578,72 @@ export function Builder() {
           in a half-width column it wrapped for anyone with more than a couple
           of modules turned on.
         */}
-        <details open data-section="preview" className={CARD}>
-          <summary className="section-summary flex items-center gap-3">
-            <span className="text-sm font-semibold text-neutral-100">Preview</span>
-            <ChevronIcon className="section-chevron text-neutral-500" />
-          </summary>
-          <div className="mt-3">
-            <PreviewPane
-              lines={rendered.lines}
-              right={rendered.right}
-              leadingNewline={rendered.leadingNewline}
-              warnings={rendered.warnings}
-              themeId={themeId}
-              onThemeChange={setTheme}
-              fontId={fontId}
-              onFontChange={setFont}
-              theme={theme}
-              fontStack={font.stack}
-            />
+        {/*
+          Hand-built rather than a <details>, for the same reason as the TOML
+          card below: the download button belongs on the header row, and a
+          control inside a <summary> is a control inside a control.
+        */}
+        <section
+          data-section="preview"
+          data-open={previewOpen ? "" : undefined}
+          className={CARD}
+        >
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              aria-expanded={previewOpen}
+              aria-controls="preview-body"
+              onClick={() => setPreviewOpen((open) => !open)}
+              className="flex min-w-0 flex-1 items-center gap-3 text-left"
+            >
+              <span className="text-sm font-semibold text-neutral-100">Preview</span>
+            </button>
+
+            {/*
+              The same download as the TOML card's, at the top of the page
+              where the prompt being downloaded is on screen. Icon only: the
+              header is a title and two controls, and a second "Download
+              config" would say the same thing twice on one screen.
+            */}
+            <button
+              type="button"
+              onClick={downloadConfig}
+              aria-label="Download config"
+              title="Download config"
+              className="inline-flex shrink-0 cursor-pointer items-center rounded bg-emerald-700 p-1.5 text-on-solid transition hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+            >
+              <DownloadIcon />
+            </button>
+
+            {/* Decoration that happens to be clickable — see the TOML card. */}
+            <span
+              aria-hidden="true"
+              onClick={() => setPreviewOpen((open) => !open)}
+              className="shrink-0 cursor-pointer text-neutral-500"
+            >
+              <ChevronIcon
+                className={`transition-transform ${previewOpen ? "rotate-90" : ""}`}
+              />
+            </span>
           </div>
-        </details>
+
+          {previewOpen ? (
+            <div id="preview-body" className="mt-3">
+              <PreviewPane
+                lines={rendered.lines}
+                right={rendered.right}
+                leadingNewline={rendered.leadingNewline}
+                warnings={rendered.warnings}
+                themeId={themeId}
+                onThemeChange={setTheme}
+                fontId={fontId}
+                onFontChange={setFont}
+                theme={theme}
+                fontStack={font.stack}
+              />
+            </div>
+          ) : null}
+        </section>
       </div>
 
       <div className="mx-auto grid max-w-[1600px] gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(460px,1.15fr)] lg:items-start">
