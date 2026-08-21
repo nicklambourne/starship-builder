@@ -28,7 +28,12 @@ export interface TerminalFont {
   licence: string;
   /** Upstream canonical licence URL. Empty for the non-bundled system option. */
   licenceUrl: string;
-  /** Where the bundled file came from. Empty for the non-bundled system option. */
+  /**
+   * Where the bundled file came from — every one of them the Nerd Fonts
+   * release asset that nerdfonts.com/font-downloads itself links to, which
+   * is why the picker offers it as the download for the selected font.
+   * Empty for the non-bundled system option, which has nothing to fetch.
+   */
   source: string;
 }
 

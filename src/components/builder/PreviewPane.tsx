@@ -16,6 +16,7 @@
 
 import { Terminal } from "@/components/terminal/Terminal";
 import { TERMINAL_FONTS } from "@/lib/fonts";
+import { DownloadIcon } from "@/components/ui/icons";
 import { TERMINAL_THEMES, type TerminalTheme } from "@/lib/terminalThemes";
 import type { Segment } from "@/lib/engine/types";
 import type { Scenario } from "@/lib/scenarios/types";
@@ -49,6 +50,7 @@ export function PreviewPane({
   theme,
   fontStack,
 }: PreviewPaneProps) {
+  const selected = TERMINAL_FONTS.find((f) => f.id === fontId);
 
   return (
     <div className="flex flex-col gap-3">
@@ -83,18 +85,38 @@ export function PreviewPane({
           <label htmlFor="font-select" className="text-xs text-neutral-400">
             Terminal font
           </label>
-          <select
-            id="font-select"
-            value={fontId}
-            onChange={(e) => onFontChange(e.target.value)}
-            className={SELECT_CLASS}
-          >
-            {TERMINAL_FONTS.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.label}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-1.5">
+            <select
+              id="font-select"
+              value={fontId}
+              onChange={(e) => onFontChange(e.target.value)}
+              className={SELECT_CLASS}
+            >
+              {TERMINAL_FONTS.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.label}
+                </option>
+              ))}
+            </select>
+            {/*
+              The preview fakes the glyphs with a subsetted webfont; a prompt
+              full of Nerd Font symbols only works in a terminal once the real
+              font is installed, and this is where someone notices that. The
+              system option has nothing to install, so it has no link.
+            */}
+            {selected?.source ? (
+              <a
+                href={selected.source}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Download ${selected.label} from Nerd Fonts`}
+                title={`Download ${selected.label}`}
+                className="inline-flex shrink-0 items-center rounded border border-white/10 p-1.5 text-neutral-300 transition hover:border-accent-400 hover:text-accent-200"
+              >
+                <DownloadIcon />
+              </a>
+            ) : null}
+          </div>
         </div>
       </div>
 

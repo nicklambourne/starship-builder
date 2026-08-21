@@ -54,16 +54,6 @@ export function TomlPane({ config, onConfigChange, defaults }: TomlPaneProps) {
     window.setTimeout(() => setCopied(false), 1500);
   };
 
-  const download = () => {
-    const blob = new Blob([serialised], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "starship.toml";
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div className="flex h-full flex-col gap-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -83,13 +73,6 @@ export function TomlPane({ config, onConfigChange, defaults }: TomlPaneProps) {
             className="rounded border border-white/10 px-2.5 py-1 text-xs text-neutral-300 transition hover:border-accent-400 hover:text-accent-200"
           >
             {copied ? "Copied" : "Copy"}
-          </button>
-          <button
-            type="button"
-            onClick={download}
-            className="rounded border border-white/10 px-2.5 py-1 text-xs text-neutral-300 transition hover:border-accent-400 hover:text-accent-200"
-          >
-            Download
           </button>
         </div>
       </div>
