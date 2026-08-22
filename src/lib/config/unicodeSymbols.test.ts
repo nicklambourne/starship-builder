@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { UNICODE_CATEGORY, UNICODE_SYMBOLS } from "./unicodeSymbols";
+import { UNICODE_CATEGORY, UNICODE_SYMBOLS, spaceName } from "./unicodeSymbols";
 import { loadGlyphs, searchGlyphs } from "./glyphs";
 
 describe("the Unicode section", () => {
@@ -35,15 +35,22 @@ describe("the Unicode section", () => {
     expect(chevrons.results.map((g) => g.char)).toContain("❯");
   });
 
-  it("offers the spaces nobody can type, named apart", async () => {
+  it("offers no spaces, because a terminal has only one width", async () => {
     const catalogue = await loadGlyphs();
-    const thin = catalogue.glyphs.find((g) => g.char === "\u2009");
-    expect(thin?.code).toBe("2009");
-    expect(thin?.name).toBe("thin space");
-    // Each space is its own entry rather than one "space" covering the range:
-    // they differ only in width, which is the reason to choose between them.
-    const spaces = searchGlyphs(catalogue, "space", UNICODE_CATEGORY).results;
-    expect(spaces.length).toBeGreaterThanOrEqual(6);
+    const spaces = catalogue.glyphs.filter(
+      (g) => g.category === UNICODE_CATEGORY && /^\s$/u.test(g.char),
+    );
+    // Measured in the preview's own font: every space character renders at
+    // exactly the width of a space, so offering them promises a narrower gap
+    // that neither the preview nor a terminal can deliver.
+    expect(spaces).toEqual([]);
+  });
+
+  it("still knows what a space is called, for configs that arrive with one", () => {
+    expect(spaceName("\u2009")).toBe("thin space");
+    expect(spaceName("\u00a0")).toBe("no-break space");
+    expect(spaceName(" ")).toBe("space");
+    expect(spaceName("x")).toBeUndefined();
   });
 
   it("carries the codepoint the config would need", async () => {
