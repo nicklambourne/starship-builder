@@ -741,6 +741,32 @@ test.describe("builder", () => {
     await expect(page.getByLabel("starship.toml")).toHaveValue(/λ╭/);
   });
 
+  test("a thin space can be picked, and says which space it is", async ({ page }) => {
+    await page.goto("./");
+    const format = page.locator("[data-format-scope='root-format']");
+    const row = format.locator("[data-format-row]").filter({ hasText: /^Text/ }).first();
+    await activate(row.getByRole("button", { name: /^Expand Text/ }));
+    const field = page.getByLabel(/^Text content of/).first();
+    await field.fill("");
+
+    await activate(row.getByRole("button", { name: /^Insert a symbol into/ }));
+    await activate(
+      page.getByRole("group", { name: "Symbol categories" }).getByRole("button", {
+        name: "Unicode",
+      }),
+    );
+    await activate(page.getByTitle("thin space · U+2009"));
+
+    // The row says which space it holds: invisible, and not interchangeable
+    // with the ordinary one beside it.
+    await expect(field).toHaveValue("\u2009");
+    await expect(format).toContainText("Text (thin space × 1)");
+
+    // And it reaches the config as the character, not as an escape.
+    await openToml(page);
+    await expect(page.getByLabel("starship.toml")).toHaveValue(/\u2009/);
+  });
+
   test("installed tools can be simulated", async ({ page }) => {
     await page.goto("./");
     await openEnvSection(page, "Installed tools");

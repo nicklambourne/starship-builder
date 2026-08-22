@@ -118,18 +118,37 @@ export function SymbolPicker({
       ) : (
         <>
           <div className="grid max-h-64 grid-cols-[repeat(auto-fill,minmax(2.5rem,1fr))] gap-1 overflow-y-auto">
-            {results.map((glyph) => (
-              <button
-                key={`${glyph.category}-${glyph.code}-${glyph.name}`}
-                type="button"
-                title={`${glyph.name} · U+${glyph.code.toUpperCase()}`}
-                onClick={() => onPick(glyph.char)}
-                style={{ fontFamily: fontStack }}
-                className="grid aspect-square place-items-center rounded border border-white/10 text-lg text-neutral-100 transition hover:border-accent-400 hover:bg-accent-400/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-400"
-              >
-                {glyph.char}
-              </button>
-            ))}
+            {results.map((glyph) => {
+              /*
+               * A space renders as an empty button, which in a grid of empty
+               * buttons is unusable — and the spaces are exactly the entries
+               * nobody can type. Drawn as a dashed cell holding the character
+               * itself, so the button shows the one thing that distinguishes
+               * them from each other: how wide they are.
+               */
+              const blank = /^\s$/u.test(glyph.char);
+              return (
+                <button
+                  key={`${glyph.category}-${glyph.code}-${glyph.name}`}
+                  type="button"
+                  title={`${glyph.name} · U+${glyph.code.toUpperCase()}`}
+                  onClick={() => onPick(glyph.char)}
+                  style={{ fontFamily: fontStack }}
+                  className="grid aspect-square place-items-center rounded border border-white/10 text-lg text-neutral-100 transition hover:border-accent-400 hover:bg-accent-400/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-400"
+                >
+                  {blank ? (
+                    <span
+                      aria-hidden="true"
+                      className="rounded-sm border border-dashed border-neutral-500 bg-white/5"
+                    >
+                      {glyph.char}
+                    </span>
+                  ) : (
+                    glyph.char
+                  )}
+                </button>
+              );
+            })}
           </div>
           <p className="text-xs text-neutral-500" aria-live="polite">
             {total === 0

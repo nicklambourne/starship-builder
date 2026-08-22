@@ -301,3 +301,22 @@ describe("a group left with one member", () => {
     expect(fromItems([group])).toBe("[$a](red)");
   });
 });
+
+describe("whitespace in a row's label", () => {
+  it("names the space rather than counting it", () => {
+    expect(itemLabel({ kind: "text", value: "\u2009" })).toBe("Text (thin space × 1)");
+    expect(itemLabel({ kind: "text", value: "  " })).toBe("Text (space × 2)");
+    expect(itemLabel({ kind: "text", value: "\u00a0\u00a0" })).toBe(
+      "Text (no-break space × 2)",
+    );
+  });
+
+  it("falls back when the run is mixed", () => {
+    expect(itemLabel({ kind: "text", value: " \u2009" })).toBe("Text (whitespace × 2)");
+  });
+
+  it("still shows visible text as itself", () => {
+    expect(itemLabel({ kind: "text", value: "on " })).toBe('Text "on "');
+    expect(itemLabel({ kind: "text", value: "" })).toBe('Text ""');
+  });
+});
