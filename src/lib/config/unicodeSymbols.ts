@@ -25,17 +25,19 @@ export interface UnicodeSymbol {
 export const UNICODE_CATEGORY = "Unicode";
 
 /**
- * Spaces, by name and width.
+ * Names for the spaces, which the picker deliberately does not offer.
  *
- * The strongest case in the whole picker: a thin space is impossible to type,
- * impossible to see, and the difference between a prompt that breathes and one
- * that does not. They are also the easiest thing to lose track of, so the
- * editor names them on their rows rather than counting them as "space".
+ * They were in the picker briefly, on the assumption that a thin space is a
+ * narrower gap. It is not, anywhere a prompt runs: a terminal draws in cells,
+ * one character to a cell, and the monospace fonts this app previews with do
+ * the same — measured, every space here renders at exactly the width of an
+ * ordinary space. So they buy nothing a space does not, while being invisible,
+ * untypeable and confusing to whoever edits the config next.
  *
- * No zero-width space. It is a real tool for nudging a powerline separator,
- * and it is also a character that makes a prompt behave differently for no
- * visible reason — offering it from a grid of blank squares is how someone
- * ends up debugging one at midnight.
+ * The names stay because a config can still arrive holding one — pasted from
+ * someone's dotfiles, or from a web page that helpfully "improved" its
+ * spacing — and a row reading "thin space" is how that gets diagnosed instead
+ * of puzzled over.
  */
 export const SPACE_NAMES: Record<string, string> = {
   " ": "space",
@@ -55,15 +57,6 @@ export function spaceName(char: string): string | undefined {
 }
 
 export const UNICODE_SYMBOLS: UnicodeSymbol[] = [
-  // Spaces. Widths differ, which is the point: a thin space between a symbol
-  // and a branch name is the usual fix for a prompt that reads as cramped.
-  { name: "thin space", char: "\u2009" },
-  { name: "hair space narrowest", char: "\u200a" },
-  { name: "narrow no-break space", char: "\u202f" },
-  { name: "en space", char: "\u2002" },
-  { name: "em space", char: "\u2003" },
-  { name: "figure space digit width", char: "\u2007" },
-  { name: "no-break space", char: "\u00a0" },
 
   // Chevrons and quotes — the shapes prompts end with.
   { name: "chevron right", char: "❯" },
