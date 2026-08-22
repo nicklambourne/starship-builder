@@ -13,6 +13,8 @@
 import { useId, useState } from "react";
 
 import { StyleSwatch } from "@/components/ui/StyleSwatch";
+import type { ColorInUse } from "@/lib/config/colorsInUse";
+import { CURATED_PALETTES } from "@/lib/config/curatedPalettes";
 import { TrashIcon } from "@/components/ui/icons";
 import { parseColorString, type Palette } from "@/lib/engine/styleString";
 import type { TerminalTheme } from "@/lib/terminalThemes";
@@ -24,6 +26,8 @@ interface PaletteEditorProps {
   active: string | null;
   onChange(palettes: Record<string, Record<string, string>>): void;
   onActivate(name: string | null): void;
+  /** Colours the prompt asks for right now, whether named here or not. */
+  inUse: ColorInUse[];
   theme: TerminalTheme;
 }
 
@@ -57,9 +61,11 @@ export function PaletteEditor({
   active,
   onChange,
   onActivate,
+  inUse,
   theme,
 }: PaletteEditorProps) {
   const selectId = useId();
+  const curatedId = useId();
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState("");
 
@@ -145,6 +151,75 @@ export function PaletteEditor({
             + New palette
           </button>
         )}
+
+        {/*
+          Copied in rather than referenced: a palette is part of the config, so
+          taking one has to leave you with your own copy to edit, not a link to
+          something the app owns.
+        */}
+        <div className="flex flex-col gap-1">
+          <label htmlFor={curatedId} className="text-xs text-neutral-400">
+            Curated palettes
+          </label>
+          <select
+            id={curatedId}
+            value=""
+            onChange={(event) => {
+              const chosen = CURATED_PALETTES.find((p) => p.name === event.target.value);
+              if (!chosen) return;
+              onChange({ ...palettes, [chosen.name]: { ...chosen.colours } });
+              onActivate(chosen.name);
+            }}
+            className={INPUT}
+          >
+            <option value="">Choose one…</option>
+            {CURATED_PALETTES.map((palette) => (
+              <option key={palette.name} value={palette.name}>
+                {palette.name} — {Object.keys(palette.colours).length} colours, from{" "}
+                {palette.from}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/*
+        Detached from the palette above: these are the colours the prompt is
+        painted with at the moment, named or not. A literal here is a colour
+        that will not follow the palette when it changes — which is the whole
+        argument for naming it, and impossible to see from the config.
+      */}
+      <div className="flex flex-col gap-1.5 rounded border border-white/10 bg-neutral-900/40 p-2.5">
+        <span className="text-xs text-neutral-400">
+          In the prompt now
+          <span className="ml-2 text-neutral-500">
+            {inUse.length === 0
+              ? "nothing is styled yet"
+              : `${inUse.filter((c) => !c.fromPalette).length} of ${inUse.length} written out in full`}
+          </span>
+        </span>
+        {inUse.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {inUse.map((colour) => (
+              <span
+                key={colour.token}
+                title={
+                  colour.fromPalette
+                    ? `${colour.token} — from the active palette`
+                    : `${colour.token} — written out in full`
+                }
+                className={`inline-flex items-center gap-1.5 rounded border px-1.5 py-0.5 text-xs ${
+                  colour.fromPalette
+                    ? "border-white/10 text-neutral-300"
+                    : "border-dashed border-white/20 text-neutral-400"
+                }`}
+              >
+                <StyleSwatch style={colour.token} theme={theme} palette={current} />
+                <span className="nerd-font">{colour.token}</span>
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       {active ? (

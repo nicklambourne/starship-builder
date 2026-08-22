@@ -657,6 +657,60 @@ test.describe("builder", () => {
     await expect(textRows).toHaveCount(0);
   });
 
+  test("the palette card sits between the environment and the output", async ({
+    page,
+  }) => {
+    await page.goto("./");
+    const top = (name: string) =>
+      page
+        .locator(`[data-section='${name}']`)
+        .evaluate((el) => el.getBoundingClientRect().top);
+    expect(await top("palettes")).toBeGreaterThan(await top("environment"));
+    expect(await top("palettes")).toBeLessThan(await top("toml"));
+  });
+
+  test("a curated palette can be taken and then edited", async ({ page }) => {
+    await page.goto("./");
+    const card = page.locator("[data-section='palettes']");
+    await activate(card.locator("summary"));
+
+    await card.getByLabel("Curated palettes").selectOption("gruvbox_dark");
+    // Copied in, not referenced: it is the active palette and its colours are
+    // editable rows.
+    await expect(card.getByLabel("Active palette")).toHaveValue("gruvbox_dark");
+    await expect(card.getByLabel(/^Value of colour /).first()).toBeVisible();
+
+    // And it reaches the pickers, which is the point of naming colours.
+    await activate(
+      page.getByRole("button", { name: /^Change the style of \$/ }).first(),
+    );
+    await expect(
+      page.getByRole("button", { name: "Foreground: palette colour color_orange" }),
+    ).toBeVisible();
+  });
+
+  test("the palette card shows what the prompt is painted with", async ({ page }) => {
+    await page.goto("./");
+    const card = page.locator("[data-section='palettes']");
+    await activate(card.locator("summary"));
+
+    // The default preset paints itself entirely from its own palette.
+    const chips = card.locator("span[title$='from the active palette']");
+    await expect(chips.first()).toBeVisible();
+    const named = await chips.count();
+
+    // A colour written out in full is called out as such: it is the one that
+    // will not follow the palette when it changes.
+    await openToml(page);
+    await page.getByLabel("starship.toml").fill(
+      'format = "[$directory](fg:#ff00ff)$character"\n',
+    );
+    await expect(
+      card.locator("span[title$='written out in full']").filter({ hasText: "#ff00ff" }),
+    ).toBeVisible();
+    expect(named).toBeGreaterThan(0);
+  });
+
   test("installed tools can be simulated", async ({ page }) => {
     await page.goto("./");
     await openEnvSection(page, "Installed tools");
