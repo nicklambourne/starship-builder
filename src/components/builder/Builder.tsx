@@ -41,6 +41,7 @@ import { DEFAULT_FORMAT, renderPrompt } from "@/lib/engine/prompt";
 import { collectVariables, tryParseFormatString } from "@/lib/engine/formatString";
 import { resolvePalette } from "@/lib/engine/styleString";
 import { structuredFormatString } from "@/lib/config/defaultFormat";
+import { colorsInUse } from "@/lib/config/colorsInUse";
 import { inactiveReason } from "@/lib/config/inactiveReason";
 import { describeOption } from "@/lib/config/options";
 import { describeVariable } from "@/lib/config/variables";
@@ -258,6 +259,8 @@ export function Builder() {
   const theme = getTheme(themeId);
   const font = TERMINAL_FONTS.find((f) => f.id === fontId) ?? TERMINAL_FONTS[0];
   const palette = resolvePalette(config.palettes, config.palette);
+  /** What the prompt is painted with, for the palette card's detached row. */
+  const inUse = useMemo(() => colorsInUse(config), [config]);
   const paletteNames = useMemo(
     () => Object.keys(config.palettes?.[config.palette ?? ""] ?? {}),
     [config.palettes, config.palette],
@@ -741,24 +744,6 @@ export function Builder() {
 
             <details className="mt-3">
               <summary className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-300">
-                Palettes
-                <span className="ml-2 text-neutral-500">
-                  name colours once, use them everywhere
-                </span>
-              </summary>
-              <div className="mt-2">
-                <PaletteEditor
-                  palettes={(config.palettes ?? {}) as Record<string, Record<string, string>>}
-                  active={config.palette ?? null}
-                  onChange={(palettes) => setRootOption("palettes", palettes)}
-                  onActivate={(name) => setRootOption("palette", name ?? undefined)}
-                  theme={theme}
-                />
-              </div>
-            </details>
-
-            <details className="mt-3">
-              <summary className="cursor-pointer text-xs text-neutral-500 hover:text-neutral-300">
                 Other prompt-wide options
               </summary>
               <div className="mt-1">
@@ -808,6 +793,32 @@ export function Builder() {
               shows up when its tool and a matching file are both here.
             </p>
             <EnvironmentPanel scenario={scenario} onChange={updateScenario} />
+          </details>
+
+          {/*
+            Between the environment and the output, because it is neither: the
+            environment decides what appears, the palette decides what it looks
+            like, and the TOML is what both produce. Closed by default — a
+            prompt can be built without ever naming a colour.
+          */}
+          <details data-section="palettes" className={CARD}>
+            <summary className="section-summary flex items-center gap-3">
+              <span className="text-sm font-semibold text-neutral-100">Palette</span>
+              <span className="hidden text-xs text-neutral-500 sm:inline">
+                name colours once, use them everywhere
+              </span>
+              <ChevronIcon className="section-chevron text-neutral-500" />
+            </summary>
+            <div className="mt-3">
+              <PaletteEditor
+                palettes={(config.palettes ?? {}) as Record<string, Record<string, string>>}
+                active={config.palette ?? null}
+                onChange={(palettes) => setRootOption("palettes", palettes)}
+                onActivate={(name) => setRootOption("palette", name ?? undefined)}
+                inUse={inUse}
+                theme={theme}
+              />
+            </div>
           </details>
 
           {/*
