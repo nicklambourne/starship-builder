@@ -37,6 +37,22 @@ export interface TerminalFont {
   source: string;
 }
 
+/**
+ * Terminal text size in px: the default, and what the field will accept.
+ *
+ * The floor is where the glyphs stop being legible at all; the ceiling is
+ * where a default prompt stops fitting one line on a laptop. Neither is a
+ * technical limit — they are the range worth offering as a stepper.
+ */
+export const DEFAULT_FONT_SIZE = 14;
+export const MIN_FONT_SIZE = 10;
+export const MAX_FONT_SIZE = 28;
+
+export function clampFontSize(size: number): number {
+  if (!Number.isFinite(size)) return DEFAULT_FONT_SIZE;
+  return Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, Math.round(size)));
+}
+
 /** Appended to every bundled stack so a failed webfont still renders as mono. */
 const FALLBACK = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 

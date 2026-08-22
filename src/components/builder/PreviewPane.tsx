@@ -15,7 +15,12 @@
  */
 
 import { Terminal } from "@/components/terminal/Terminal";
-import { TERMINAL_FONTS } from "@/lib/fonts";
+import {
+  MAX_FONT_SIZE,
+  MIN_FONT_SIZE,
+  TERMINAL_FONTS,
+  clampFontSize,
+} from "@/lib/fonts";
 import { DownloadIcon } from "@/components/ui/icons";
 import { TERMINAL_THEMES, type TerminalTheme } from "@/lib/terminalThemes";
 import type { Segment } from "@/lib/engine/types";
@@ -31,6 +36,8 @@ interface PreviewPaneProps {
   onThemeChange(id: string): void;
   fontId: string;
   onFontChange(id: string): void;
+  fontSize: number;
+  onFontSizeChange(size: number): void;
   theme: TerminalTheme;
   fontStack: string;
 }
@@ -47,6 +54,8 @@ export function PreviewPane({
   onThemeChange,
   fontId,
   onFontChange,
+  fontSize,
+  onFontSizeChange,
   theme,
   fontStack,
 }: PreviewPaneProps) {
@@ -60,9 +69,15 @@ export function PreviewPane({
         leadingNewline={leadingNewline}
         theme={theme}
         fontStack={fontStack}
+        fontSize={fontSize}
       />
 
-      <div className="grid grid-cols-2 gap-2">
+      {/*
+        Two columns on a phone, three once there is room: the size is a stepper
+        a few characters wide, and giving it a third of a narrow screen would
+        squeeze the two controls whose names need the width.
+      */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_auto]">
         <div className="flex flex-col gap-1">
           <label htmlFor="theme-select" className="text-xs text-neutral-400">
             Terminal color scheme
@@ -121,6 +136,25 @@ export function PreviewPane({
                 <DownloadIcon />
               </a>
             ) : null}
+          </div>
+        </div>
+
+        <div className="col-span-2 flex flex-col gap-1 sm:col-span-1">
+          <label htmlFor="font-size" className="text-xs text-neutral-400">
+            Font size
+          </label>
+          <div className="flex items-center gap-1.5">
+            <input
+              id="font-size"
+              type="number"
+              inputMode="numeric"
+              min={MIN_FONT_SIZE}
+              max={MAX_FONT_SIZE}
+              value={fontSize}
+              onChange={(e) => onFontSizeChange(clampFontSize(Number(e.target.value)))}
+              className={`${SELECT_CLASS} w-16 font-mono`}
+            />
+            <span className="text-xs text-neutral-500">px</span>
           </div>
         </div>
       </div>

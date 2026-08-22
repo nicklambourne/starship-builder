@@ -94,6 +94,7 @@ export function Builder() {
     scenario,
     themeId,
     fontId,
+    fontSize,
     selectedModule,
     setConfig,
     updateModuleOption,
@@ -104,6 +105,7 @@ export function Builder() {
     updateScenario,
     setTheme,
     setFont,
+    setFontSize,
     appTheme,
     setAppTheme,
     adoptSystemTheme,
@@ -171,6 +173,7 @@ export function Builder() {
     scenario,
     themeId,
     fontId,
+    fontSize,
     // Only a deliberate choice is worth restoring; otherwise the operating
     // system keeps deciding, which is what someone who never touched the
     // toggle expects.
@@ -181,6 +184,7 @@ export function Builder() {
     scenario,
     themeId,
     fontId,
+    fontSize,
     appTheme: appThemeIsExplicit ? appTheme : undefined,
   };
 
@@ -640,6 +644,8 @@ export function Builder() {
                 onThemeChange={setTheme}
                 fontId={fontId}
                 onFontChange={setFont}
+                fontSize={fontSize}
+                onFontSizeChange={setFontSize}
                 theme={theme}
                 fontStack={font.stack}
               />

@@ -159,7 +159,17 @@ export function Terminal({
             fontFamily: fontStack,
             // Scales with the viewport so a long prompt stays legible on a
             // phone without the user pinching or scrolling.
-            fontSize: `clamp(11px, 3.1vw, ${fontSize}px)`,
+            /*
+              The middle term shrinks the prompt on a narrow screen. It scales
+              with the chosen size rather than sitting at a fixed 3.1vw, which
+              was 14px's worth: fixed, every size above about 12px collapsed to
+              the same thing on a phone, so the field would have looked broken
+              there. The floor never rises above the chosen size, so picking
+              the smallest size still gets it.
+            */
+            fontSize: `clamp(${Math.min(11, fontSize)}px, ${
+              ((fontSize / 14) * 3.1).toFixed(2)
+            }vw, ${fontSize}px)`,
             lineHeight: 1.6,
             color: theme.foreground,
           }}
