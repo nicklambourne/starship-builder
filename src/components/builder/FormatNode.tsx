@@ -25,7 +25,6 @@ import {
   itemLabel,
 } from "@/lib/config/formatItems";
 import { type Path, pathKey } from "@/lib/config/formatTree";
-import { describeModule } from "@/lib/config/descriptions";
 import type { Palette } from "@/lib/engine/styleString";
 import type { TerminalTheme } from "@/lib/terminalThemes";
 
@@ -54,6 +53,13 @@ export interface FormatNodeCallbacks {
   onStyleToggle(path: Path): void;
   onExpandToggle(path: Path): void;
   onTextChange(path: Path, value: string): void;
+  /**
+   * One line about what a `$name` in this tree stands for. The root format
+   * holds modules; a module's own format holds that module's variables, and
+   * both parse to the same kind of node — so the answer comes from whoever
+   * built the tree rather than from the module dictionary.
+   */
+  describe(name: string): string | undefined;
   /** Modules are switched on and off via their own `disabled` option. */
   isModuleEnabled(name: string): boolean;
   /** Enabled, but rendering nothing right now — and why. */
@@ -250,7 +256,7 @@ export function FormatNode({
                   enabled ? "text-neutral-500" : "text-neutral-400"
                 }`}
               >
-                {describeModule((item as Extract<FormatItem, { kind: "module" }>).name)}
+                {cb.describe((item as Extract<FormatItem, { kind: "module" }>).name)}
               </span>
             ) : null}
           </button>

@@ -361,6 +361,26 @@ test.describe("builder", () => {
     await expect(page.getByLabel("Network namespace")).toBeVisible();
   });
 
+  test("a variable's row explains it, not just the picker", async ({ page }) => {
+    await page.goto("./");
+    await activate(page.getByRole("button", { name: "Expand $git_branch" }));
+
+    // The module's format nests its variables inside style groups, which open
+    // one level at a time.
+    for (let depth = 0; depth < 4; depth += 1) {
+      const groups = page.getByRole("button", { name: /^Expand Group/ });
+      const count = await groups.count();
+      if (count === 0) break;
+      for (let i = 0; i < count; i += 1) await activate(groups.nth(i));
+    }
+
+    // The row itself, which is what someone reading the format looks at —
+    // the "+ Add variable" list is a different surface and was the only one
+    // carrying these.
+    const row = page.locator("[data-format-row]").filter({ hasText: "$branch" }).last();
+    await expect(row).toContainText("The current branch name");
+  });
+
   test("a module's format editor explains its variables", async ({ page }) => {
     await page.goto("./");
     await page.getByRole("button", { name: "Expand $git_branch" }).click();
