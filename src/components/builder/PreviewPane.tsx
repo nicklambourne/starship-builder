@@ -90,7 +90,12 @@ export function PreviewPane({
               id="font-select"
               value={fontId}
               onChange={(e) => onFontChange(e.target.value)}
-              className={SELECT_CLASS}
+              // Takes the row: without this the select is only as wide as its
+              // longest option, and the download button floats in the gap
+              // rather than sitting at the edge the colour-scheme select ends
+              // at. `min-w-0` so a long font name shrinks it instead of
+              // pushing the button out of the card.
+              className={`${SELECT_CLASS} min-w-0 flex-1`}
             >
               {TERMINAL_FONTS.map((f) => (
                 <option key={f.id} value={f.id}>
