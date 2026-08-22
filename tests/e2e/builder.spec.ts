@@ -373,9 +373,11 @@ test.describe("builder", () => {
     const row = page.locator("[data-format-row]").filter({ hasText: "$branch" }).last();
     await expect(row).toContainText("The current branch name");
 
-    // Still a disclosure: closing the group puts them away and keeps them
-    // away, which is what distinguishes "open by default" from "cannot close".
-    await activate(page.getByRole("button", { name: /^Collapse Group/ }).last());
+    // Still a disclosure, and closing the module puts the whole tree away.
+    // The group's own toggle is deliberately not used here: several option
+    // rows carry format editors of their own, so "the last Collapse Group on
+    // the page" is not reliably the one holding this row.
+    await activate(page.getByRole("button", { name: "Collapse $git_branch" }));
     await expect(row).toBeHidden();
   });
 
@@ -476,6 +478,17 @@ test.describe("builder", () => {
     await expect
       .poll(() => add.evaluate((el) => getComputedStyle(el).backgroundColor))
       .toBe(shut);
+  });
+
+  test("a module's options explain themselves", async ({ page }) => {
+    await page.goto("./");
+    await activate(page.getByRole("button", { name: "Expand $username" }));
+
+    // Every row under a module used to be a bare key: starship's JSON Schema,
+    // which the rows are built from, describes none of its options.
+    const settings = page.locator("[data-format-row]").filter({ hasText: "$username" }).last();
+    await expect(settings).toContainText("Always shows the username module.");
+    await expect(settings).toContainText("The style used when the user is root/admin.");
   });
 
   test("installed tools can be simulated", async ({ page }) => {

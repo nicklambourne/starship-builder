@@ -42,6 +42,7 @@ import { collectVariables, tryParseFormatString } from "@/lib/engine/formatStrin
 import { resolvePalette } from "@/lib/engine/styleString";
 import { structuredFormatString } from "@/lib/config/defaultFormat";
 import { inactiveReason } from "@/lib/config/inactiveReason";
+import { describeOption } from "@/lib/config/options";
 import { describeVariable } from "@/lib/config/variables";
 import { rowStyleReaches } from "@/lib/config/styleReach";
 import { MODULE_META, optionKind } from "@/lib/config/meta";
@@ -309,6 +310,7 @@ export function Builder() {
         key,
         kind: optionKind(name, key, defaultValue, meta),
         defaultValue,
+        description: describeOption(name, key),
       }));
   }, []);
 
