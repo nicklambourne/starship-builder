@@ -11,6 +11,7 @@
  */
 
 import generated from "../../../data/variables.generated.json";
+import { DEFAULT_SYMBOLS } from "@/lib/engine/modules/os";
 import { MODULE_META } from "./meta";
 
 interface VariableDoc {
@@ -83,13 +84,29 @@ const UNDOCUMENTED_UPSTREAM: Record<string, Record<string, VariableDoc>> = {
   },
 };
 
+/**
+ * Examples worth replacing, where upstream's is accurate but unhelpful.
+ *
+ * The documentation writes `os.symbol` as 🎗️, which is Arch's entry in the
+ * symbols table — in a row that reads "the current operating system symbol"
+ * it looks like no operating system at all. This one is the app's own symbol
+ * for macOS, which is the system the simulated environment starts on, so the
+ * example matches what the preview is rendering a few centimetres away.
+ */
+const BETTER_EXAMPLES: Record<string, Record<string, string>> = {
+  os: { symbol: DEFAULT_SYMBOLS.Macos.trim() },
+};
+
 export function variableDoc(
   moduleName: string,
   variable: string,
 ): VariableDoc | undefined {
   const anchor = anchorFor(moduleName);
   const documented = anchor ? BY_ANCHOR[anchor]?.[variable] : undefined;
-  if (documented) return documented;
+  if (documented) {
+    const better = BETTER_EXAMPLES[moduleName]?.[variable];
+    return better ? { ...documented, example: better } : documented;
+  }
 
   return UNDOCUMENTED_UPSTREAM[moduleName]?.[variable];
 }

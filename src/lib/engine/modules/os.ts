@@ -7,7 +7,7 @@ import { type ModuleDefinition, type ModuleOptions } from "./types";
  * `OsType` is a subset of these keys; the rest stay here so a user's config
  * round-trips and so the symbol picker has the full list.
  */
-const DEFAULT_SYMBOLS: Record<string, string> = {
+export const DEFAULT_SYMBOLS: Record<string, string> = {
   AIX: "➿ ",
   Alpaquita: "🔔 ",
   AlmaLinux: "💠 ",
