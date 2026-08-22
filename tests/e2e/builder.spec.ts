@@ -689,6 +689,60 @@ test.describe("builder", () => {
     ).toBeVisible();
   });
 
+  test("naming a colour from the prompt takes one click", async ({ page }) => {
+    await page.goto("./");
+    const card = page.locator("[data-section='palettes']");
+    await activate(card.locator("summary"));
+
+    // A colour written out in full, arriving the way most do.
+    await openToml(page);
+    await page.getByLabel("starship.toml").fill(
+      // Root keys first: anything after a table header belongs to that table.
+      [
+        'format = "[$directory](fg:#ff00ff)$character"',
+        'palette = "mine"',
+        "",
+        "[palettes.mine]",
+        'peach = "#fab387"',
+        "",
+      ].join("\n"),
+    );
+    const chip = card.getByRole("button", { name: "Add #ff00ff to mine" });
+    await expect(chip).toBeVisible();
+
+    await activate(chip);
+    // Now a palette entry, so it can be renamed and reused.
+    await expect(card.getByLabel("Name of colour #ff00ff")).toHaveValue("#ff00ff");
+    await expect(card.getByRole("button", { name: "Add #ff00ff to mine" })).toHaveCount(0);
+  });
+
+  test("a colour name survives being typed", async ({ page }) => {
+    await page.goto("./");
+    const card = page.locator("[data-section='palettes']");
+    await activate(card.locator("summary"));
+
+    // Keyed by name, the row was rebuilt on every keystroke and the field lost
+    // focus after one character.
+    const name = card.getByLabel(/^Name of colour /).first();
+    await name.click();
+    await name.press("End");
+    await page.keyboard.type("xyz");
+    await expect(name).toHaveValue(/xyz$/);
+  });
+
+  test("the style pickers offer the colours already in the prompt", async ({ page }) => {
+    await page.goto("./");
+    await activate(page.getByRole("button", { name: /^Change the style of \$/ }).first());
+    // The same list as the palette card's row, where someone reaching for a
+    // colour actually is.
+    await expect(
+      page.getByRole("button", { name: "Foreground: in the prompt, peach" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Background: in the prompt, peach" }),
+    ).toBeVisible();
+  });
+
   test("the palette card shows what the prompt is painted with", async ({ page }) => {
     await page.goto("./");
     const card = page.locator("[data-section='palettes']");
@@ -1617,7 +1671,7 @@ test.describe("builder", () => {
     expect(await terminal.innerHTML()).not.toBe(before);
 
     // And a palette can be made from nothing.
-    await page.getByRole("button", { name: "+ New palette" }).click();
+    await page.getByRole("button", { name: "+ Empty palette" }).click();
     await page.getByLabel("New palette name").fill("mine");
     await page.getByRole("button", { name: "Create" }).click();
     await expect(page.getByLabel("Active palette")).toHaveValue("mine");

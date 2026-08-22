@@ -57,3 +57,33 @@ describe("colours in use", () => {
     expect(found.every((c) => c.fromPalette)).toBe(true);
   });
 });
+
+describe("what counts as in use", () => {
+  const config = {
+    format: "$directory$aws",
+    directory: { style: "bold blue" },
+    aws: { style: "yellow" },
+    docker_context: { style: "sapphire" },
+  };
+
+  it("skips a module that is not in the prompt", () => {
+    // docker_context is styled in the config and absent from the format, which
+    // is exactly the default preset's situation.
+    const found = colorsInUse(config, { renders: (m) => m !== "docker_context" });
+    // Ordered by the module registry, not by the format.
+    expect(found.map((c) => c.token)).toEqual(["yellow", "blue"]);
+  });
+
+  it("skips a module that is not rendering", () => {
+    const found = colorsInUse(config, { renders: (m) => m === "directory" });
+    expect(found.map((c) => c.token)).toEqual(["blue"]);
+  });
+
+  it("keeps the root format's own styles either way", () => {
+    const found = colorsInUse(
+      { format: "[$a](fg:peach)$directory", directory: { style: "blue" } },
+      { renders: () => false },
+    );
+    expect(found.map((c) => c.token)).toEqual(["peach"]);
+  });
+});

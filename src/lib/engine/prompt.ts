@@ -48,7 +48,7 @@ function moduleOptions(config: StarshipConfig, name: string): Record<string, unk
     : {};
 }
 
-function isModuleDisabled(
+export function isModuleDisabled(
   config: StarshipConfig,
   definition: ModuleDefinition,
 ): boolean {

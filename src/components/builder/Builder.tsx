@@ -37,10 +37,10 @@ import {
 } from "@/components/ui/icons";
 import { ALL_MODULES, MODULES_BY_NAME } from "@/lib/engine/modules";
 import { PROMPT_ORDER } from "@/lib/engine/promptOrder";
-import { DEFAULT_FORMAT, renderPrompt } from "@/lib/engine/prompt";
+import { DEFAULT_FORMAT, isModuleDisabled, renderPrompt } from "@/lib/engine/prompt";
 import { collectVariables, tryParseFormatString } from "@/lib/engine/formatString";
 import { resolvePalette } from "@/lib/engine/styleString";
-import { structuredFormatString } from "@/lib/config/defaultFormat";
+import { expandAll, structuredFormatString } from "@/lib/config/defaultFormat";
 import { colorsInUse } from "@/lib/config/colorsInUse";
 import { inactiveReason } from "@/lib/config/inactiveReason";
 import { describeOption } from "@/lib/config/options";
@@ -259,8 +259,6 @@ export function Builder() {
   const theme = getTheme(themeId);
   const font = TERMINAL_FONTS.find((f) => f.id === fontId) ?? TERMINAL_FONTS[0];
   const palette = resolvePalette(config.palettes, config.palette);
-  /** What the prompt is painted with, for the palette card's detached row. */
-  const inUse = useMemo(() => colorsInUse(config), [config]);
   const paletteNames = useMemo(
     () => Object.keys(config.palettes?.[config.palette ?? ""] ?? {}),
     [config.palettes, config.palette],
@@ -370,6 +368,29 @@ export function Builder() {
     return notes;
   }, [config, scenario]);
 
+  /**
+   * What the prompt on screen is painted with.
+   *
+   * A module counts only if it is in the format, switched on, and actually
+   * rendering — a config carries styles for modules that meet none of those,
+   * and listing their colours answers a question nobody asked.
+   */
+  const inUse = useMemo(() => {
+    const parsedRoot = tryParseFormatString(expandAll(format, PROMPT_ORDER));
+    const inFormat = new Set(parsedRoot.ok ? collectVariables(parsedRoot.elements) : []);
+    return colorsInUse(config, {
+      renders: (name) => {
+        if (!inFormat.has(name)) return false;
+        const definition = MODULES_BY_NAME.get(name);
+        if (!definition || isModuleDisabled(config, definition)) return false;
+        return !inactiveNotes.has(name);
+      },
+    });
+  }, [config, format, inactiveNotes]);
+
+  /** Just the tokens, for the style pickers' own row. */
+  const inUseTokens = useMemo(() => inUse.map((colour) => colour.token), [inUse]);
+
   const moduleControls = useMemo(
     () => ({
       isEnabled(name: string) {
@@ -417,6 +438,7 @@ export function Builder() {
         describeVariable={(variable) => describeVariable(name, variable)}
         palette={palette}
         paletteNames={paletteNames}
+        inUseColors={inUseTokens}
         theme={theme}
         fontStack={font.stack}
       />
@@ -704,6 +726,7 @@ export function Builder() {
               vocabulary={moduleVocabulary}
               palette={palette}
               paletteNames={paletteNames}
+        inUseColors={inUseTokens}
               allowCategoryGrouping
               scope="root-format"
               theme={theme}
@@ -724,6 +747,7 @@ export function Builder() {
               vocabulary={moduleVocabulary}
               palette={palette}
               paletteNames={paletteNames}
+        inUseColors={inUseTokens}
               scope="right-format"
               theme={theme}
               fontStack={font.stack}
@@ -755,6 +779,7 @@ export function Builder() {
                   formatVariables={moduleVocabulary}
                   palette={palette}
                   paletteNames={paletteNames}
+        inUseColors={inUseTokens}
                   theme={theme}
                   fontStack={font.stack}
                 />

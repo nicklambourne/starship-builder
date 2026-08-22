@@ -40,6 +40,8 @@ interface SettingsFormProps {
   describeVariable?(name: string): string | undefined;
   palette?: Palette;
   paletteNames?: string[];
+  /** Colours the prompt already uses, for the style editors' own row. */
+  inUseColors?: string[];
   /** Nested format editors show style swatches, which are theme-coloured. */
   theme: TerminalTheme;
   /** Terminal font stack: module symbols are Nerd Font glyphs. */
@@ -110,6 +112,7 @@ export function SettingsForm({
   describeVariable,
   palette,
   paletteNames,
+  inUseColors,
   theme,
   fontStack,
 }: SettingsFormProps) {
@@ -147,6 +150,7 @@ export function SettingsForm({
                 describe={describeVariable}
                 palette={palette}
                 paletteNames={paletteNames}
+                inUseColors={inUseColors}
                 noun="variable"
                 theme={theme}
                 fontStack={fontStack}

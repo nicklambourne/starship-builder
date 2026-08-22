@@ -12,11 +12,13 @@
 
 import { useId, useState } from "react";
 
+import { ColorField } from "@/components/ui/ColorField";
 import { StyleSwatch } from "@/components/ui/StyleSwatch";
 import type { ColorInUse } from "@/lib/config/colorsInUse";
 import { CURATED_PALETTES } from "@/lib/config/curatedPalettes";
 import { TrashIcon } from "@/components/ui/icons";
 import { parseColorString, type Palette } from "@/lib/engine/styleString";
+import { resolveSwatchColor } from "@/components/ui/StyleSwatch";
 import type { TerminalTheme } from "@/lib/terminalThemes";
 
 interface PaletteEditorProps {
@@ -73,6 +75,21 @@ export function PaletteEditor({
   const entries = active ? Object.entries(palettes[active] ?? {}) : [];
   const current = active ? palettes[active] : undefined;
 
+  const unnamed = inUse.filter((colour) => !colour.fromPalette).length;
+
+  /**
+   * Names a colour the prompt already uses, in one click.
+   *
+   * The name is the colour itself to begin with — `#fab387` under the key
+   * `#fab387` is odd but honest, and renaming it is the next thing anyone
+   * does. Inventing "peach" for them would be guessing at a scheme they may
+   * not be following.
+   */
+  const onName = (token: string) => {
+    if (!active) return;
+    setEntries({ ...(current ?? {}), [token]: token });
+  };
+
   const setEntries = (next: Record<string, string>) => {
     if (!active) return;
     onChange({ ...palettes, [active]: next });
@@ -101,65 +118,62 @@ export function PaletteEditor({
         it changes at once. Names defined here appear in every style picker.
       </p>
 
-      <div className="flex flex-wrap items-end gap-2">
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
+      <div className="flex flex-col gap-3 rounded border border-white/10 bg-neutral-900/40 p-2.5">
+        <div className="flex flex-col gap-1">
           <label htmlFor={selectId} className="text-xs text-neutral-400">
-            Active palette
+            Active palette — the names every style picker offers
           </label>
-          <select
-            id={selectId}
-            value={active ?? ""}
-            onChange={(event) => onActivate(event.target.value || null)}
-            className={INPUT}
-          >
-            <option value="">None — colours are written out in full</option>
-            {names.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              id={selectId}
+              value={active ?? ""}
+              onChange={(event) => onActivate(event.target.value || null)}
+              className={`${INPUT} min-w-0 flex-1`}
+            >
+              <option value="">None — colours are written out in full</option>
+              {names.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+            {adding ? (
+              <form
+                className="flex items-center gap-2"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  const name = newName.trim();
+                  if (!name) return;
+                  onChange({ ...palettes, [name]: palettes[name] ?? {} });
+                  onActivate(name);
+                  setNewName("");
+                  setAdding(false);
+                }}
+              >
+                <input
+                  autoFocus
+                  aria-label="New palette name"
+                  value={newName}
+                  onChange={(event) => setNewName(event.target.value)}
+                  placeholder="name"
+                  className={`${INPUT} nerd-font w-36`}
+                />
+                <button type="submit" className={BUTTON}>
+                  Create
+                </button>
+              </form>
+            ) : (
+              <button type="button" onClick={() => setAdding(true)} className={BUTTON}>
+                + Empty palette
+              </button>
+            )}
+          </div>
         </div>
 
-        {adding ? (
-          <form
-            className="flex items-end gap-2"
-            onSubmit={(event) => {
-              event.preventDefault();
-              const name = newName.trim();
-              if (!name) return;
-              onChange({ ...palettes, [name]: palettes[name] ?? {} });
-              onActivate(name);
-              setNewName("");
-              setAdding(false);
-            }}
-          >
-            <input
-              autoFocus
-              aria-label="New palette name"
-              value={newName}
-              onChange={(event) => setNewName(event.target.value)}
-              placeholder="name"
-              className={`${INPUT} nerd-font w-36`}
-            />
-            <button type="submit" className={BUTTON}>
-              Create
-            </button>
-          </form>
-        ) : (
-          <button type="button" onClick={() => setAdding(true)} className={BUTTON}>
-            + New palette
-          </button>
-        )}
-
-        {/*
-          Copied in rather than referenced: a palette is part of the config, so
-          taking one has to leave you with your own copy to edit, not a link to
-          something the app owns.
-        */}
         <div className="flex flex-col gap-1">
           <label htmlFor={curatedId} className="text-xs text-neutral-400">
             Curated palettes
+            <span className="ml-2 text-neutral-500">copied in, then yours to edit</span>
           </label>
           <select
             id={curatedId}
@@ -184,10 +198,11 @@ export function PaletteEditor({
       </div>
 
       {/*
-        Detached from the palette above: these are the colours the prompt is
-        painted with at the moment, named or not. A literal here is a colour
-        that will not follow the palette when it changes — which is the whole
-        argument for naming it, and impossible to see from the config.
+        Detached from the palette above: these are the colours the prompt on
+        screen is painted with, named or not. A colour written out in full is
+        one that will not follow the palette when it changes — which is the
+        whole argument for naming it, and the reason each one here can be
+        named in a single click.
       */}
       <div className="flex flex-col gap-1.5 rounded border border-white/10 bg-neutral-900/40 p-2.5">
         <span className="text-xs text-neutral-400">
@@ -195,48 +210,110 @@ export function PaletteEditor({
           <span className="ml-2 text-neutral-500">
             {inUse.length === 0
               ? "nothing is styled yet"
-              : `${inUse.filter((c) => !c.fromPalette).length} of ${inUse.length} written out in full`}
+              : unnamed === 0
+                ? "every colour has a name"
+                : `${unnamed} not named yet${active ? " — click one to add it" : ""}`}
           </span>
         </span>
         {inUse.length > 0 ? (
           <div className="flex flex-wrap items-center gap-1.5">
-            {inUse.map((colour) => (
-              <span
-                key={colour.token}
-                title={
-                  colour.fromPalette
-                    ? `${colour.token} — from the active palette`
-                    : `${colour.token} — written out in full`
-                }
-                className={`inline-flex items-center gap-1.5 rounded border px-1.5 py-0.5 text-xs ${
-                  colour.fromPalette
-                    ? "border-white/10 text-neutral-300"
-                    : "border-dashed border-white/20 text-neutral-400"
-                }`}
-              >
-                <StyleSwatch style={colour.token} theme={theme} palette={current} />
-                <span className="nerd-font">{colour.token}</span>
-              </span>
-            ))}
+            {inUse.map((colour) => {
+              /*
+                A filled square, not the two-tone style chip used on the rows
+                below: a token here is one colour, and showing it as a
+                foreground over an empty background made every chip look
+                blank.
+              */
+              const fill = resolveSwatchColor(
+                parseColorString(colour.token.toLowerCase(), current),
+                theme,
+              );
+              const chip = (
+                <>
+                  <span
+                    aria-hidden="true"
+                    className="size-3.5 shrink-0 rounded-sm border border-white/20"
+                    style={fill ? { backgroundColor: fill } : undefined}
+                  />
+                  <span className="nerd-font">{colour.token}</span>
+                </>
+              );
+              const shape =
+                "inline-flex items-center gap-1.5 rounded border px-1.5 py-0.5 text-xs";
+              // Already named, or nowhere to put it: a label, not a control.
+              if (colour.fromPalette || !active) {
+                return (
+                  <span
+                    key={colour.token}
+                    title={
+                      colour.fromPalette
+                        ? `${colour.token} — from the active palette`
+                        : `${colour.token} — written out in full`
+                    }
+                    className={`${shape} ${
+                      colour.fromPalette
+                        ? "border-white/10 text-neutral-300"
+                        : "border-dashed border-white/20 text-neutral-400"
+                    }`}
+                  >
+                    {chip}
+                  </span>
+                );
+              }
+              return (
+                <button
+                  key={colour.token}
+                  type="button"
+                  // Named explicitly: the visible text is a hex or a bare
+                  // word, which says nothing about what pressing it does.
+                  aria-label={`Add ${colour.token} to ${active}`}
+                  title={`Add ${colour.token} to ${active}`}
+                  onClick={() => onName(colour.token)}
+                  className={`${shape} cursor-pointer border-dashed border-white/20 text-neutral-400 transition hover:border-accent-400 hover:text-accent-200`}
+                >
+                  {chip}
+                  <span aria-hidden="true" className="text-neutral-500">
+                    +
+                  </span>
+                </button>
+              );
+            })}
           </div>
         ) : null}
       </div>
 
       {active ? (
         <div className="flex flex-col gap-1.5">
+          {entries.length > 0 ? (
+            <div className="flex items-center gap-2 text-xs text-neutral-500">
+              <span className="w-6" />
+              <span className="w-36">Name — what a style says</span>
+              <span className="min-w-0 flex-1">Colour — hex, an ANSI name, or 0-255</span>
+              <span className="w-9" />
+              <span className="w-7" />
+            </div>
+          ) : null}
+
           {entries.length === 0 ? (
             <p className="text-xs text-neutral-500">
               Nothing in <code className="text-neutral-400">{active}</code> yet.
             </p>
           ) : null}
 
-          {entries.map(([name, value]) => (
-            <div key={name} className="flex items-center gap-2">
+          {entries.map(([name, value], index) => (
+            /*
+              Keyed by position. Keyed by name, every keystroke in the name
+              field made React throw the row away and build a new one, which
+              took the focus with it — so the field accepted exactly one
+              character at a time.
+            */
+            <div key={index} className="flex items-center gap-2">
               <StyleSwatch style={value} theme={theme} palette={current} />
               <input
                 aria-label={`Name of colour ${name}`}
                 value={name}
                 onChange={(event) => renameEntry(name, event.target.value)}
+                placeholder="name it"
                 className={`${INPUT} nerd-font w-36`}
               />
               <input
@@ -247,12 +324,10 @@ export function PaletteEditor({
                 placeholder="#rrggbb, a colour name, or 0-255"
                 className={`${INPUT} nerd-font min-w-0 flex-1`}
               />
-              <input
-                type="color"
-                aria-label={`Pick a colour for ${name}`}
+              <ColorField
+                label={`Pick a colour for ${name}`}
                 value={asHex(value, current, theme)}
-                onChange={(event) => setEntries({ ...current, [name]: event.target.value })}
-                className="h-8 w-10 shrink-0 cursor-pointer rounded border border-white/10 bg-transparent"
+                onChange={(next) => setEntries({ ...current, [name]: next })}
               />
               <button
                 type="button"

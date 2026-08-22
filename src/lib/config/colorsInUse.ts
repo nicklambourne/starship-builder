@@ -1,11 +1,15 @@
 /**
- * The colours a config actually asks for.
+ * The colours the prompt on screen is painted with.
  *
- * Answers "what is this prompt painted with right now", which is otherwise
- * spread across three places: the styles written inline in a format string,
- * the `style`-ish option on every module, and the root format's own groups.
- * Collected in the order they are first met, so the list reads like the
- * prompt rather than like the config file.
+ * "On screen" is the load-bearing part. A config carries styles for modules
+ * that are switched off, absent from the format, or waiting on something the
+ * environment does not have — the default preset paints `docker_context` a
+ * colour it never shows — and listing those makes the answer to "what is this
+ * prompt using" wrong in the direction that wastes the most time.
+ *
+ * So a module contributes only when it renders. The caller decides that,
+ * because it is the one holding the engine; this stays a function of the
+ * config plus that verdict.
  */
 
 import type { StarshipConfig } from "@/lib/engine/prompt";
@@ -57,7 +61,18 @@ function stylesInFormat(format: string): string[] {
   return out;
 }
 
-export function colorsInUse(config: StarshipConfig): ColorInUse[] {
+export interface ColorsInUseOptions {
+  /**
+   * Whether a module puts anything in the prompt as things stand — enabled,
+   * present in the format, and not held back by the environment.
+   */
+  renders(module: string): boolean;
+}
+
+export function colorsInUse(
+  config: StarshipConfig,
+  options: ColorsInUseOptions = { renders: () => true },
+): ColorInUse[] {
   const palette = (config.palettes as Record<string, Record<string, string>> | undefined)?.[
     (config.palette as string | undefined) ?? ""
   ];
@@ -75,6 +90,7 @@ export function colorsInUse(config: StarshipConfig): ColorInUse[] {
   }
 
   for (const [module, meta] of Object.entries(MODULE_META)) {
+    if (!options.renders(module)) continue;
     const table = config[module];
     if (typeof table !== "object" || table === null) continue;
     const values = table as Record<string, unknown>;

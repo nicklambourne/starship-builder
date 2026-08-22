@@ -56,6 +56,8 @@ interface FormatBuilderProps {
   describe?(name: string): string | undefined;
   palette?: Palette;
   paletteNames?: string[];
+  /** Colours the prompt already uses, for the style editors' own row. */
+  inUseColors?: string[];
   noun?: string;
   allowCategoryGrouping?: boolean;
   scope?: string;
@@ -93,6 +95,7 @@ export function FormatBuilder({
   describe = describeModule,
   palette,
   paletteNames,
+  inUseColors,
   noun = "module",
   allowCategoryGrouping = false,
   scope,
@@ -337,6 +340,7 @@ export function FormatBuilder({
           }
           palette={palette}
           paletteNames={paletteNames}
+          inUseColors={inUseColors}
           theme={theme}
         />
       </>
