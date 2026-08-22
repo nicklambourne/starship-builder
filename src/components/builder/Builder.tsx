@@ -427,8 +427,17 @@ export function Builder() {
     [config, inactiveNotes, setModuleDisabled],
   );
 
+  /**
+   * A module's settings, or null when there are none to show.
+   *
+   * Null is load-bearing: it is what tells a row it has nothing under it, so
+   * the row can disable its own disclosure rather than opening on an empty
+   * box. `$all` and every variable inside a module's format land here.
+   */
   const renderSettings = useCallback(
-    (name: string) => (
+    (name: string) => {
+      if (optionsFor(name).length === 0) return null;
+      return (
       <SettingsForm
         options={optionsFor(name)}
         values={(config[name] as Record<string, unknown>) ?? {}}
@@ -442,7 +451,8 @@ export function Builder() {
         theme={theme}
         fontStack={font.stack}
       />
-    ),
+      );
+    },
     [
       config,
       optionsFor,

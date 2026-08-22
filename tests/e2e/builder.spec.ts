@@ -824,6 +824,29 @@ test.describe("builder", () => {
     await expect(page.getByTitle(/space · U\+/)).toHaveCount(0);
   });
 
+  test("a row with nothing under it cannot be opened", async ({ page }) => {
+    await page.goto("./");
+    const format = page.locator("[data-format-scope='root-format']");
+
+    // A real module has settings, so its disclosure works as before.
+    await expect(format.getByRole("button", { name: "Expand $os" })).toBeEnabled();
+
+    // Its variables do not: `$branch` takes its value from git_branch, and
+    // the row used to open on an empty box.
+    await activate(format.getByRole("button", { name: "Expand $git_branch" }));
+    const variable = page.getByRole("button", {
+      name: /^\$branch — nothing to open/,
+    });
+    await expect(variable).toBeDisabled();
+    // Marked as such, the way an inert style button is.
+    expect(await variable.evaluate((el) => getComputedStyle(el).opacity)).toBe("0.45");
+    expect(
+      await variable.evaluate((el) => getComputedStyle(el).cursor),
+    ).toBe("not-allowed");
+    // And it makes no claim about a state it does not have.
+    await expect(variable).not.toHaveAttribute("aria-expanded");
+  });
+
   test("installed tools can be simulated", async ({ page }) => {
     await page.goto("./");
     await openEnvSection(page, "Installed tools");
