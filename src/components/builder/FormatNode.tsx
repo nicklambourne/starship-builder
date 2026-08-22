@@ -52,6 +52,17 @@ const NEUTRAL_BUTTON = `${ROW_BUTTON} hover:border-accent-400 hover:bg-white/5 h
 const NEUTRAL_BUTTON_OPEN =
   `${ROW_BUTTON_SHAPE} border-accent-400 bg-accent-400/15 text-accent-200`;
 
+/** Why a row has nothing to open. */
+function emptyReason(item: FormatItem): string {
+  if (item.kind === "group") return "This group is empty.";
+  if (item.kind === "module") {
+    return item.name === "all"
+      ? "$all stands for every other module, so its settings are theirs."
+      : "A variable takes its value from the module it belongs to — there is nothing to set here.";
+  }
+  return "Nothing to open.";
+}
+
 /** Why a row's style control is dead for this module. */
 function inertStyleReason(label: string): string {
   return `A style set here cannot reach ${label} — its whole format sits inside its own style group, and starship replaces the surrounding style rather than inheriting it. Open the row and set the module's style option instead.`;
@@ -149,6 +160,19 @@ export function FormatNode({
   };
 
   const isText = item.kind === "text";
+  /*
+   * Rendered once and reused: it is both the answer to "is there anything
+   * under this row" and the thing the row shows when opened. A variable
+   * inside a module's format looks exactly like a module here — same node
+   * kind, same `$name` — and has no settings of its own, so its disclosure
+   * used to open on an empty box.
+   */
+  const settings = isModule
+    ? cb.renderModuleSettings((item as Extract<FormatItem, { kind: "module" }>).name)
+    : null;
+  const hasContent = isText
+    || (isGroup && (item as Extract<FormatItem, { kind: "group" }>).items.length > 0)
+    || (isModule && settings !== null);
   // Text carries a setting of its own — the literal it prints — so it opens
   // like a module rather than editing in the row, where the field crowded the
   // controls and the symbol picker had nowhere to sit.
@@ -238,8 +262,11 @@ export function FormatNode({
           <button
             type="button"
             onClick={() => cb.onExpandToggle(path)}
-            aria-expanded={expanded}
-            className="flex min-w-0 flex-1 flex-col text-left"
+            aria-expanded={hasContent ? expanded : undefined}
+            disabled={!hasContent}
+            className={`flex min-w-0 flex-1 flex-col text-left ${
+              hasContent ? "" : "cursor-default"
+            }`}
           >
             <span className="flex min-w-0 items-center gap-1.5">
               <span
@@ -390,17 +417,28 @@ export function FormatNode({
         {canExpand ? (
           <button
             type="button"
-            aria-label={`${expanded ? "Collapse" : "Expand"} ${label}`}
-            aria-expanded={expanded}
+            aria-label={
+              hasContent
+                ? `${expanded ? "Collapse" : "Expand"} ${label}`
+                : `${label} — nothing to open. ${emptyReason(item)}`
+            }
+            aria-expanded={hasContent ? expanded : undefined}
+            disabled={!hasContent}
             title={
-              isModule
-                ? "Show this module's settings"
-                : isText
-                  ? "Edit the text this prints"
-                  : "Show what is in this group"
+              !hasContent
+                ? emptyReason(item)
+                : isModule
+                  ? "Show this module's settings"
+                  : isText
+                    ? "Edit the text this prints"
+                    : "Show what is in this group"
             }
             onClick={() => cb.onExpandToggle(path)}
-            className={NEUTRAL_BUTTON}
+            className={
+              hasContent
+                ? NEUTRAL_BUTTON
+                : `${NEUTRAL_BUTTON} cursor-not-allowed opacity-45 hover:border-white/10 hover:bg-transparent hover:text-neutral-300`
+            }
           >
             <ChevronIcon
               className={`transition-transform ${expanded ? "rotate-90" : ""}`}
@@ -413,10 +451,8 @@ export function FormatNode({
         <div className="border-t border-white/10 p-2">{cb.renderStyleEditor(path, item)}</div>
       ) : null}
 
-      {expanded && isModule ? (
-        <div className="border-t border-white/10 px-2.5 pb-3 pt-1">
-          {cb.renderModuleSettings((item as Extract<FormatItem, { kind: "module" }>).name)}
-        </div>
+      {expanded && isModule && settings ? (
+        <div className="border-t border-white/10 px-2.5 pb-3 pt-1">{settings}</div>
       ) : null}
 
       {expanded && isText ? (
