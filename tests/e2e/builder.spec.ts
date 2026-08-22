@@ -365,20 +365,18 @@ test.describe("builder", () => {
     await page.goto("./");
     await activate(page.getByRole("button", { name: "Expand $git_branch" }));
 
-    // The module's format nests its variables inside style groups, which open
-    // one level at a time.
-    for (let depth = 0; depth < 4; depth += 1) {
-      const groups = page.getByRole("button", { name: /^Expand Group/ });
-      const count = await groups.count();
-      if (count === 0) break;
-      for (let i = 0; i < count; i += 1) await activate(groups.nth(i));
-    }
-
-    // The row itself, which is what someone reading the format looks at —
-    // the "+ Add variable" list is a different surface and was the only one
-    // carrying these.
+    // No further clicking: a module's format opens with its style groups
+    // already open, so the variables and their explanations are on screen as
+    // soon as the module is. The row itself is what someone reading a format
+    // looks at — the "+ Add variable" list is a different surface, and was
+    // the only one carrying these.
     const row = page.locator("[data-format-row]").filter({ hasText: "$branch" }).last();
     await expect(row).toContainText("The current branch name");
+
+    // Still a disclosure: closing the group puts them away and keeps them
+    // away, which is what distinguishes "open by default" from "cannot close".
+    await activate(page.getByRole("button", { name: /^Collapse Group/ }).last());
+    await expect(row).toBeHidden();
   });
 
   test("a module's format editor explains its variables", async ({ page }) => {

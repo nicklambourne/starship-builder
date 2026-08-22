@@ -95,6 +95,8 @@ export function FormatBuilder({
   const [showRaw, setShowRaw] = useState(false);
   const [styling, setStyling] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  /** Groups the reader has closed, where the default is open. */
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [adding, setAdding] = useState(false);
   const [addSearch, setAddSearch] = useState("");
   const [filter, setFilter] = useState("");
@@ -223,7 +225,25 @@ export function FormatBuilder({
     onRemove: (path) => commit(removeAt(items, path)),
     onStyleToggle: (path) =>
       setStyling(styling === pathKey(path) ? null : pathKey(path)),
-    onExpandToggle: (path) => setExpanded(toggleSet(expanded, pathKey(path))),
+    onExpandToggle: (path) => {
+      const key = pathKey(path);
+      // In a module's format an untouched group is already open, so the first
+      // toggle has to close it rather than record it as opened.
+      if (!modules && !expanded.has(key) && !collapsed.has(key)) {
+        const item = getAt(items, path);
+        if (item?.kind === "group") {
+          setCollapsed(toggleSet(collapsed, key));
+          return;
+        }
+      }
+      setCollapsed((current) => {
+        if (!current.has(key)) return current;
+        const next = new Set(current);
+        next.delete(key);
+        return next;
+      });
+      setExpanded(toggleSet(expanded, key));
+    },
     onTextChange: (path, next) =>
       onChange(
         fromItems(
@@ -282,7 +302,22 @@ export function FormatBuilder({
         const item = getAt(items, path);
         if (item?.kind === "group") return true;
       }
-      return expanded.has(pathKey(path));
+      if (expanded.has(pathKey(path))) return true;
+      /*
+        A module's own format opens with its groups already open, unlike the
+        root, and for the opposite reason: the root holds a hundred modules,
+        where a collapsed group is what makes the list readable, while a
+        module holds a handful of variables and almost always wraps them in
+        one style group. Collapsed, that panel is a single "Group (5)" row —
+        the variables and what each of them means, which is the whole point of
+        opening it, are one more click away with nothing on screen to suggest
+        it. Only ever an initial state: `collapsed` records what the reader
+        has since closed.
+      */
+      if (!modules && !collapsed.has(pathKey(path))) {
+        return getAt(items, path)?.kind === "group";
+      }
+      return false;
     },
     isStyling: (path) => styling === pathKey(path),
     dropPositionFor: (path) =>
