@@ -6,6 +6,8 @@
  * fetches it, every later call reuses the same promise.
  */
 
+import { UNICODE_CATEGORY, UNICODE_SYMBOLS } from "./unicodeSymbols";
+
 export interface Glyph {
   /** Name without its set prefix, e.g. `python` rather than `dev-python`. */
   name: string;
@@ -28,6 +30,21 @@ interface RawGlyph {
   g: string;
 }
 
+/**
+ * The curated Unicode set, in the catalogue's own shape.
+ *
+ * First in the category list because it is the one someone can use without a
+ * patched font — everything after it is Nerd Fonts.
+ */
+function unicodeGlyphs(): Glyph[] {
+  return UNICODE_SYMBOLS.map((symbol) => ({
+    name: symbol.name,
+    char: symbol.char,
+    code: symbol.char.codePointAt(0)!.toString(16),
+    category: UNICODE_CATEGORY,
+  }));
+}
+
 let pending: Promise<GlyphCatalogue> | null = null;
 
 export function loadGlyphs(): Promise<GlyphCatalogue> {
@@ -38,14 +55,14 @@ export function loadGlyphs(): Promise<GlyphCatalogue> {
       nerdFontsVersion: string;
     };
     return {
-      categories: data.categories,
+      categories: [UNICODE_CATEGORY, ...data.categories],
       nerdFontsVersion: data.nerdFontsVersion,
-      glyphs: data.glyphs.map((glyph) => ({
+      glyphs: [...unicodeGlyphs(), ...data.glyphs.map((glyph) => ({
         name: glyph.n,
         code: glyph.c,
         category: glyph.g,
         char: String.fromCodePoint(Number.parseInt(glyph.c, 16)),
-      })),
+      }))],
     };
   });
   return pending;

@@ -711,6 +711,36 @@ test.describe("builder", () => {
     expect(named).toBeGreaterThan(0);
   });
 
+  test("a text piece can take a symbol from the Unicode section", async ({ page }) => {
+    await page.goto("./");
+    const format = page.locator("[data-format-scope='root-format']");
+    const row = format.locator("[data-format-row]").filter({ hasText: /^Text/ }).first();
+    await activate(row.getByRole("button", { name: /^Expand Text/ }));
+
+    // Typed straight in: nothing about the field is ASCII-only.
+    const field = page.getByLabel(/^Text content of/).first();
+    await field.fill("λ");
+    await expect(page.getByLabel("Simulated terminal prompt")).toContainText("λ");
+
+    // And through the picker, which is how a character nobody can type gets
+    // in. The section leads the list because it is the one that works without
+    // a patched font.
+    await activate(row.getByRole("button", { name: /^Insert a symbol into/ }));
+    const categories = page.getByRole("group", { name: "Symbol categories" });
+    await expect(categories.getByRole("button").first()).toHaveText("Unicode");
+    await activate(categories.getByRole("button", { name: "Unicode" }));
+    // Located by title: the button's accessible name is the character it
+    // shows, and one glyph is not a name anyone can search for.
+    await activate(page.getByTitle("corner top left round arc · U+256D"));
+
+    await expect(field).toHaveValue("λ╭");
+    await expect(page.getByLabel("Simulated terminal prompt")).toContainText("λ╭");
+
+    // And it survives the round trip out to the config.
+    await openToml(page);
+    await expect(page.getByLabel("starship.toml")).toHaveValue(/λ╭/);
+  });
+
   test("installed tools can be simulated", async ({ page }) => {
     await page.goto("./");
     await openEnvSection(page, "Installed tools");
