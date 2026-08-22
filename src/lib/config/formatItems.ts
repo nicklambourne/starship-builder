@@ -18,6 +18,7 @@ import {
   parseFormatString,
   printFormat,
 } from "@/lib/engine/formatString";
+import { spaceName } from "./unicodeSymbols";
 
 export type FormatItem =
   | { kind: "module"; name: string; style?: string }
@@ -142,9 +143,19 @@ export function itemLabel(item: FormatItem): string {
       // Named as text so a lone separator glyph or a run of spaces is
       // identifiable as literal content rather than a module that failed to
       // render.
-      return item.value.trim().length === 0
-        ? `Text (space × ${item.value.length})`
-        : `Text "${item.value}"`;
+      if (item.value.trim().length > 0) return `Text "${item.value}"`;
+      if (item.value.length === 0) return 'Text ""';
+      /*
+       * Named, not counted. A thin space and a space are both "whitespace" and
+       * look identical in a row, but they are not interchangeable — the one
+       * that makes a prompt read well is invisible, and being unable to tell
+       * which one is in the format is how it gets lost.
+       */
+      const chars = [...item.value];
+      const first = spaceName(chars[0]);
+      const uniform = chars.every((char) => char === chars[0]);
+      if (uniform && first) return `Text (${first} × ${chars.length})`;
+      return `Text (whitespace × ${chars.length})`;
     case "group": {
       const modules = item.items.filter((i) => i.kind === "module").length;
       return `Group of ${item.items.length} (${modules} module${modules === 1 ? "" : "s"})`;

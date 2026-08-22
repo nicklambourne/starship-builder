@@ -35,6 +35,17 @@ describe("the Unicode section", () => {
     expect(chevrons.results.map((g) => g.char)).toContain("❯");
   });
 
+  it("offers the spaces nobody can type, named apart", async () => {
+    const catalogue = await loadGlyphs();
+    const thin = catalogue.glyphs.find((g) => g.char === "\u2009");
+    expect(thin?.code).toBe("2009");
+    expect(thin?.name).toBe("thin space");
+    // Each space is its own entry rather than one "space" covering the range:
+    // they differ only in width, which is the reason to choose between them.
+    const spaces = searchGlyphs(catalogue, "space", UNICODE_CATEGORY).results;
+    expect(spaces.length).toBeGreaterThanOrEqual(6);
+  });
+
   it("carries the codepoint the config would need", async () => {
     const catalogue = await loadGlyphs();
     const arrow = catalogue.glyphs.find((g) => g.char === "→");

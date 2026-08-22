@@ -24,7 +24,47 @@ export interface UnicodeSymbol {
 
 export const UNICODE_CATEGORY = "Unicode";
 
+/**
+ * Spaces, by name and width.
+ *
+ * The strongest case in the whole picker: a thin space is impossible to type,
+ * impossible to see, and the difference between a prompt that breathes and one
+ * that does not. They are also the easiest thing to lose track of, so the
+ * editor names them on their rows rather than counting them as "space".
+ *
+ * No zero-width space. It is a real tool for nudging a powerline separator,
+ * and it is also a character that makes a prompt behave differently for no
+ * visible reason — offering it from a grid of blank squares is how someone
+ * ends up debugging one at midnight.
+ */
+export const SPACE_NAMES: Record<string, string> = {
+  " ": "space",
+  "\t": "tab",
+  "\u00a0": "no-break space",
+  "\u2002": "en space",
+  "\u2003": "em space",
+  "\u2007": "figure space",
+  "\u2009": "thin space",
+  "\u200a": "hair space",
+  "\u202f": "narrow no-break space",
+};
+
+/** What to call a whitespace character, when it has a name worth using. */
+export function spaceName(char: string): string | undefined {
+  return SPACE_NAMES[char];
+}
+
 export const UNICODE_SYMBOLS: UnicodeSymbol[] = [
+  // Spaces. Widths differ, which is the point: a thin space between a symbol
+  // and a branch name is the usual fix for a prompt that reads as cramped.
+  { name: "thin space", char: "\u2009" },
+  { name: "hair space narrowest", char: "\u200a" },
+  { name: "narrow no-break space", char: "\u202f" },
+  { name: "en space", char: "\u2002" },
+  { name: "em space", char: "\u2003" },
+  { name: "figure space digit width", char: "\u2007" },
+  { name: "no-break space", char: "\u00a0" },
+
   // Chevrons and quotes — the shapes prompts end with.
   { name: "chevron right", char: "❯" },
   { name: "chevron left", char: "❮" },
