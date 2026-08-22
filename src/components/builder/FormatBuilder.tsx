@@ -232,6 +232,7 @@ export function FormatBuilder({
           ),
         ),
       ),
+    describe,
     isModuleEnabled: (name) => modules?.isEnabled(name) ?? true,
     inactiveNote: (name) => modules?.inactiveNote(name) ?? null,
     styleReaches: (name) => modules?.styleReaches(name) ?? true,
