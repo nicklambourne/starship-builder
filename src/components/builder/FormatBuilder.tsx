@@ -135,6 +135,38 @@ export function FormatBuilder({
     ? groupableCategories(items, categoryOf)
     : [];
 
+  /*
+    Everything below runs before the early return for an unparseable format,
+    hooks included — React counts them, and a format that stops parsing
+    mid-edit used to take a shorter path through this component than the
+    render before it. That is React error #300, and it crashed the whole page
+    the moment someone deleted a bracket.
+  */
+  // The list as it stands right now, for handlers that outlive their render.
+  const itemsRef = useRef(items ?? []);
+  itemsRef.current = items ?? [];
+
+  /*
+   * One drag implementation for mouse, pen and touch. The native HTML5 API
+   * this replaced never fired on a phone, which left the handles inert there
+   * and reordering reachable only from a keyboard.
+   */
+  const startPointerDrag = usePointerDrag({
+    onDragStart: (path) => {
+      setDragging(path);
+      setDropTarget(null);
+    },
+    onDragOver: (path, position) => setDropTarget({ path, position }),
+    onDrop: (from, to, position) => {
+      // Read through a ref for the same reason `from` is passed in: this
+      // closure is as old as the drag.
+      commit(moveTo(itemsRef.current, from, to, position));
+      setDragging(null);
+      setDropTarget(null);
+    },
+    onCancel: () => setDropTarget(null),
+  });
+
   if (!items) {
     return (
       <div className="flex flex-col gap-2" data-format-scope={scope}>
@@ -177,31 +209,6 @@ export function FormatBuilder({
     else next.add(key);
     return next;
   };
-
-  // The list as it stands right now, for handlers that outlive their render.
-  const itemsRef = useRef(items);
-  itemsRef.current = items;
-
-  /*
-   * One drag implementation for mouse, pen and touch. The native HTML5 API
-   * this replaced never fired on a phone, which left the handles inert there
-   * and reordering reachable only from a keyboard.
-   */
-  const startPointerDrag = usePointerDrag({
-    onDragStart: (path) => {
-      setDragging(path);
-      setDropTarget(null);
-    },
-    onDragOver: (path, position) => setDropTarget({ path, position }),
-    onDrop: (from, to, position) => {
-      // Read through a ref for the same reason `from` is passed in: this
-      // closure is as old as the drag.
-      commit(moveTo(itemsRef.current, from, to, position));
-      setDragging(null);
-      setDropTarget(null);
-    },
-    onCancel: () => setDropTarget(null),
-  });
 
   const callbacks: FormatNodeCallbacks = {
     theme,

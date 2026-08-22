@@ -550,6 +550,45 @@ test.describe("builder", () => {
     expect(Number.parseFloat(await size())).toBeCloseTo(bigger, 0);
   });
 
+  test("a format that stops parsing mid-edit does not take the page down", async ({
+    page,
+  }, info) => {
+    test.skip(info.project.name === "mobile", "one platform is enough");
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(String(error)));
+
+    await page.goto("./");
+    await activate(page.getByRole("button", { name: "Expand $git_status" }));
+    const panel = page.locator("[data-format-row]").filter({ hasText: "$git_status" }).last();
+    await activate(panel.getByRole("button", { name: "Edit raw format string" }).first());
+
+    // Either the raw editor or, once the string stops parsing, the one the
+    // builder swaps in to show the error — the point is that it swaps rather
+    // than crashing.
+    const field = panel.locator("textarea").first();
+    const original = await field.inputValue();
+
+    /*
+     * Every string someone passes through while deleting the brackets from
+     * git_status's format, one character at a time. Deleting the first one
+     * leaves the rest unbalanced, the format stops parsing, and this
+     * component used to take a shorter path through its own hooks than the
+     * render before it — React error #300, and the page went white.
+     */
+    for (let i = 0; i < original.length; i += 1) {
+      if (original[i] !== "[" && original[i] !== "]") continue;
+      await field.fill(original.slice(0, i) + original.slice(i + 1));
+      await expect(page.getByLabel("Simulated terminal prompt")).toBeVisible();
+    }
+
+    // And back: the hook count changes in that direction too.
+    await field.fill(original);
+    // Parsing again: the tree comes back in place of the error field.
+    await expect(field).toHaveJSProperty("ariaInvalid", "false");
+    await expect(page.getByLabel("Simulated terminal prompt")).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
   test("installed tools can be simulated", async ({ page }) => {
     await page.goto("./");
     await openEnvSection(page, "Installed tools");
