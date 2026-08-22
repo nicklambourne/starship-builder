@@ -1,0 +1,2715 @@
+{
+  "aws": {
+    "disabled": {
+      "description": "Disables the AWS module."
+    },
+    "expiration_symbol": {
+      "description": "The symbol displayed when the temporary credentials have expired."
+    },
+    "force_display": {
+      "description": "If true displays info even if credentials, credential_process or sso_start_url have not been setup."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "profile_aliases": {
+      "description": "Table of profile aliases to display in addition to the AWS name."
+    },
+    "region_aliases": {
+      "description": "Table of region aliases to display in addition to the AWS name."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the current AWS profile."
+    }
+  },
+  "azure": {
+    "disabled": {
+      "description": "Disables the azure module."
+    },
+    "format": {
+      "description": "The format for the Azure module to render."
+    },
+    "style": {
+      "description": "The style used in the format."
+    },
+    "subscription_aliases": {
+      "description": "Table of subscription name aliases to display in addition to Azure subscription name."
+    },
+    "symbol": {
+      "description": "The symbol used in the format."
+    }
+  },
+  "battery": {
+    "charging_symbol": {
+      "description": "The symbol shown when the battery is charging."
+    },
+    "disabled": {
+      "description": "Disables the battery module."
+    },
+    "discharging_symbol": {
+      "description": "The symbol shown when the battery is discharging."
+    },
+    "display": {
+      "description": "Display threshold and style for the module."
+    },
+    "empty_symbol": {
+      "description": "The symbol shown when the battery state is empty."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "full_symbol": {
+      "description": "The symbol shown when the battery is full."
+    },
+    "unknown_symbol": {
+      "description": "The symbol shown when the battery state is unknown."
+    }
+  },
+  "buf": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the elixir module."
+    },
+    "format": {
+      "description": "The format for the buf module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of Buf."
+    },
+    "version_format": {
+      "description": "The version format."
+    }
+  },
+  "bun": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the bun module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Bun."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "c": {
+    "commands": {
+      "description": "How to detect what the compiler is"
+    },
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the c module."
+    },
+    "format": {
+      "description": "The format string for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the compiler details"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "character": {
+    "disabled": {
+      "description": "Disables the character module."
+    },
+    "error_symbol": {
+      "description": "The format string used before the text input if the previous command failed."
+    },
+    "format": {
+      "description": "The format string used before the text input."
+    },
+    "success_symbol": {
+      "description": "The format string used before the text input if the previous command succeeded."
+    },
+    "vimcmd_replace_one_symbol": {
+      "description": "The format string used before the text input if the shell is in vim replace_one mode."
+    },
+    "vimcmd_replace_symbol": {
+      "description": "The format string used before the text input if the shell is in vim replace mode."
+    },
+    "vimcmd_symbol": {
+      "description": "The format string used before the text input if the shell is in vim normal mode."
+    },
+    "vimcmd_visual_symbol": {
+      "description": "The format string used before the text input if the shell is in vim visual mode."
+    }
+  },
+  "cmake": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module"
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module"
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module"
+    },
+    "disabled": {
+      "description": "Disables the cmake module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before the version of cmake."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "cobol-gnucobol": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the cobol module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of COBOL."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "command-duration": {
+    "disabled": {
+      "description": "Disables the cmd_duration module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "min_time": {
+      "description": "Shortest duration to show time for (in milliseconds)."
+    },
+    "min_time_to_notify": {
+      "description": "Shortest duration for notification (in milliseconds)."
+    },
+    "notification_timeout": {
+      "description": "Duration to show notification for (in milliseconds). If unset, notification timeout will be determined by daemon. Not all notification daemons honor this option."
+    },
+    "show_milliseconds": {
+      "description": "Show milliseconds in addition to seconds for the duration."
+    },
+    "show_notifications": {
+      "description": "Show desktop notifications when command completes."
+    },
+    "style": {
+      "description": "The style for the module."
+    }
+  },
+  "conda": {
+    "detect_env_vars": {
+      "description": "Which environment variable(s) should trigger this module. If it's a pixi environment, this module is not being triggered by default."
+    },
+    "disabled": {
+      "description": "Disables the conda module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "ignore_base": {
+      "description": "Ignores base environment when activated."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before the environment name."
+    },
+    "truncation_length": {
+      "description": "The number of directories the environment path should be truncated to, if the environment was created via conda create -p [path]. 0 means no truncation. Also see the directory module."
+    }
+  },
+  "container": {
+    "disabled": {
+      "description": "Disables the container module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol shown, when inside a container"
+    }
+  },
+  "cpp": {
+    "commands": {
+      "description": "How to detect what the compiler is"
+    },
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the cpp module."
+    },
+    "format": {
+      "description": "The format string for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the compiler details"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "crystal": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the crystal module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of crystal."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "custom-commands": {
+    "command": {
+      "description": "The command whose output should be printed. The command will be passed on stdin to the shell."
+    },
+    "description": {
+      "description": "The description of the module that is shown when running starship explain."
+    },
+    "detect_extensions": {
+      "description": "The extensions that will be searched in the working directory for a match."
+    },
+    "detect_files": {
+      "description": "The files that will be searched in the working directory for a match."
+    },
+    "detect_folders": {
+      "description": "The directories that will be searched in the working directory for a match."
+    },
+    "disabled": {
+      "description": "Disables this custom module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "ignore_timeout": {
+      "description": "Ignore global command_timeout setting and keep running external commands, no matter how long they take."
+    },
+    "os": {
+      "description": "Operating System name on which the module will be shown (unix, linux, macos, windows, ... ) See possible values."
+    },
+    "require_repo": {
+      "description": "If true, the module will only be shown in paths containing a (git) repository. This option alone is not sufficient display condition in absence of other options."
+    },
+    "shell": {
+      "description": "See below"
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the command output."
+    },
+    "unsafe_no_escape": {
+      "description": "When set, command output is not escaped of characters that could be interpreted by the shell."
+    },
+    "use_stdin": {
+      "description": "An optional boolean value that overrides whether commands should be forwarded to the shell via the standard input or as an argument. If unset standard input is used by default, unless the shell does not support it (cmd, nushell). Setting this disables shell-specific argument handling."
+    },
+    "when": {
+      "description": "Either a boolean value (true or false, without quotes) or a string shell command used as a condition to show the module. In case of a string, the module will be shown if the shell returns a 0 status code from executing it."
+    }
+  },
+  "daml": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the daml module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Daml"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "dart": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the dart module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Dart"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "deno": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the deno module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Deno"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "directory": {
+    "before_repo_root_style": {
+      "description": "The style for the path segment above the root of the git repo. The default value is equivalent to style."
+    },
+    "disabled": {
+      "description": "Disables the directory module."
+    },
+    "fish_style_pwd_dir_length": {
+      "description": "The number of characters to use when applying fish shell pwd path logic."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "home_symbol": {
+      "description": "The symbol indicating home directory."
+    },
+    "read_only": {
+      "description": "The symbol indicating current directory is read only."
+    },
+    "read_only_style": {
+      "description": "The style for the read only symbol."
+    },
+    "repo_root_format": {
+      "description": "The format of a git repo when before_repo_root_style and repo_root_style is defined."
+    },
+    "repo_root_style": {
+      "description": "The style for the root of the git repo. The default value is equivalent to style."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "substitutions": {
+      "description": "An Array or table of substitutions to be made to the path."
+    },
+    "truncate_to_repo": {
+      "description": "Whether or not to truncate to the root of the git repo that you're currently in."
+    },
+    "truncation_length": {
+      "description": "The number of parent folders that the current directory should be truncated to."
+    },
+    "truncation_symbol": {
+      "description": "The symbol to prefix to truncated paths. eg: '…/'"
+    },
+    "use_logical_path": {
+      "description": "If true render the logical path sourced from the shell via PWD or --logical-path. If false instead render the physical filesystem path with symlinks resolved."
+    },
+    "use_os_path_sep": {
+      "description": "Use the OS specific path separator instead of always using / (e.g. \\ on Windows)"
+    }
+  },
+  "direnv": {
+    "allowed_msg": {
+      "description": "The message displayed when an rc file is allowed."
+    },
+    "denied_msg": {
+      "description": "The message displayed when an rc file is denied."
+    },
+    "detect_env_vars": {
+      "description": "Which environment variables should trigger this module."
+    },
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the direnv module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "loaded_msg": {
+      "description": "The message displayed when an rc file is loaded."
+    },
+    "not_allowed_msg": {
+      "description": "The message displayed when an rc file is not_allowed."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the direnv context."
+    },
+    "unloaded_msg": {
+      "description": "The message displayed when an rc file is not loaded."
+    }
+  },
+  "docker-context": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module (needs only_with_files to be true)."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module (needs only_with_files to be true)."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module (needs only_with_files to be true)."
+    },
+    "disabled": {
+      "description": "Disables the docker_context module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "only_with_files": {
+      "description": "Only show when there's a match"
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the Docker context."
+    }
+  },
+  "dotnet": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the dotnet module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "heuristic": {
+      "description": "Use faster version detection to keep starship snappy."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of dotnet."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "elixir": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the elixir module."
+    },
+    "format": {
+      "description": "The format for the module elixir."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of Elixir/Erlang."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "elm": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the elm module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Elm."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "environment-variable": {
+    "default": {
+      "description": "The default value to be displayed when the selected variable is not defined."
+    },
+    "description": {
+      "description": "The description of the module that is shown when running starship explain."
+    },
+    "disabled": {
+      "description": "Disables the env_var module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the variable value."
+    },
+    "variable": {
+      "description": "The environment variable to be displayed."
+    }
+  },
+  "erlang": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the erlang module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of erlang."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "fennel": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the fennel module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of fennel."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "fill": {
+    "disabled": {
+      "description": "Disables the fill module"
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used to fill the line."
+    }
+  },
+  "fortran": {
+    "commands": {
+      "description": "How to detect what the compiler is"
+    },
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the fortran module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of Fortran."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "fossil-branch": {
+    "disabled": {
+      "description": "Disables the fossil_branch module."
+    },
+    "format": {
+      "description": "The format for the module. Use '$branch' to refer to the current branch name."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before the branch name of the check-out in your current directory."
+    },
+    "truncation_length": {
+      "description": "Truncates a Fossil branch name to N graphemes"
+    },
+    "truncation_symbol": {
+      "description": "The symbol used to indicate a branch name was truncated. You can use '' for no symbol."
+    }
+  },
+  "fossil-metrics": {
+    "added_style": {
+      "description": "The style for the added count."
+    },
+    "deleted_style": {
+      "description": "The style for the deleted count."
+    },
+    "disabled": {
+      "description": "Disables the fossil_metrics module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "only_nonzero_diffs": {
+      "description": "Render status only for changed items."
+    }
+  },
+  "git-branch": {
+    "always_show_remote": {
+      "description": "Shows the remote tracking branch name, even if it is equal to the local branch name."
+    },
+    "disabled": {
+      "description": "Disables the git_branch module."
+    },
+    "format": {
+      "description": "The format for the module. Use '$branch' to refer to the current branch name."
+    },
+    "ignore_bare_repo": {
+      "description": "Do not show when in a bare repo."
+    },
+    "ignore_branches": {
+      "description": "A list of names to avoid displaying. Useful for 'master' or 'main'."
+    },
+    "only_attached": {
+      "description": "Only show the branch name when not in a detached HEAD state."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of git branch."
+    },
+    "truncation_length": {
+      "description": "Truncates a git branch to N graphemes."
+    },
+    "truncation_symbol": {
+      "description": "The symbol used to indicate a branch name was truncated. You can use '' for no symbol."
+    }
+  },
+  "git-commit": {
+    "commit_hash_length": {
+      "description": "The length of the displayed git commit hash."
+    },
+    "disabled": {
+      "description": "Disables the git_commit module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "only_detached": {
+      "description": "Only show git commit hash when in detached HEAD state"
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "tag_disabled": {
+      "description": "Disables showing tag info in git_commit module."
+    },
+    "tag_max_candidates": {
+      "description": "How many commits to consider for tag display. The default only allows exact matches."
+    },
+    "tag_symbol": {
+      "description": "Tag symbol prefixing the info shown"
+    }
+  },
+  "git-metrics": {
+    "added_style": {
+      "description": "The style for the added count."
+    },
+    "deleted_style": {
+      "description": "The style for the deleted count."
+    },
+    "disabled": {
+      "description": "Disables the git_metrics module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "ignore_submodules": {
+      "description": "Ignore changes to submodules"
+    },
+    "only_nonzero_diffs": {
+      "description": "Render status only for changed items."
+    }
+  },
+  "git-state": {
+    "am": {
+      "description": "A format string displayed when an apply-mailbox (git am) is in progress."
+    },
+    "am_or_rebase": {
+      "description": "A format string displayed when an ambiguous apply-mailbox or rebase is in progress."
+    },
+    "bisect": {
+      "description": "A format string displayed when a bisect is in progress."
+    },
+    "cherry_pick": {
+      "description": "A format string displayed when a cherry-pick is in progress."
+    },
+    "disabled": {
+      "description": "Disables the git_state module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "merge": {
+      "description": "A format string displayed when a merge is in progress."
+    },
+    "rebase": {
+      "description": "A format string displayed when a rebase is in progress."
+    },
+    "revert": {
+      "description": "A format string displayed when a revert is in progress."
+    },
+    "style": {
+      "description": "The style for the module."
+    }
+  },
+  "git-status": {
+    "ahead": {
+      "description": "The format shown when this branch is ahead of the branch being tracked."
+    },
+    "behind": {
+      "description": "The format shown when this branch is behind the branch being tracked."
+    },
+    "conflicted": {
+      "description": "The format shown when this branch has merge conflicts."
+    },
+    "deleted": {
+      "description": "The format shown when a file's deletion has been added to the staging area."
+    },
+    "disabled": {
+      "description": "Disables the git_status module."
+    },
+    "diverged": {
+      "description": "The format shown when this branch has diverged from the branch being tracked."
+    },
+    "format": {
+      "description": "The default format for git_status"
+    },
+    "ignore_submodules": {
+      "description": "Ignore changes to submodules."
+    },
+    "index_added": {
+      "description": "The format shown when a new file has been added to the staging area."
+    },
+    "index_deleted": {
+      "description": "The format shown when a file has been deleted from the staging area."
+    },
+    "index_modified": {
+      "description": "The format shown when a file has been modified in the staging area."
+    },
+    "index_typechanged": {
+      "description": "The format shown when a file's type has been changed in the staging area."
+    },
+    "modified": {
+      "description": "The format shown when there are file modifications in the working directory."
+    },
+    "renamed": {
+      "description": "The format shown when a renamed file has been added to the staging area."
+    },
+    "staged": {
+      "description": "The format shown when a new file has been added to the staging area."
+    },
+    "stashed": {
+      "description": "The format shown when a stash exists for the local repository."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "typechanged": {
+      "description": "The format shown when a file's type has been changed in the staging area."
+    },
+    "untracked": {
+      "description": "The format shown when there are untracked files in the working directory."
+    },
+    "up_to_date": {
+      "description": "The format shown when this branch is up to date with the branch being tracked."
+    },
+    "use_git_executable": {
+      "description": "Do not use gitoxide for computing the status, but use the git executable instead."
+    },
+    "windows_starship": {
+      "description": "Use this (Linux) path to a Windows Starship executable to render git_status when on Windows paths in WSL."
+    },
+    "worktree_added": {
+      "description": "The format shown when a new file has been added in the working directory."
+    },
+    "worktree_deleted": {
+      "description": "The format shown when a file has been deleted in the working directory."
+    },
+    "worktree_modified": {
+      "description": "The format shown when a file has been modified in the working directory."
+    },
+    "worktree_typechanged": {
+      "description": "The format shown when a file's type has been changed in the working directory."
+    }
+  },
+  "gleam": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the gleam module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Gleam."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "go": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the golang module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "not_capable_style": {
+      "description": "The style for the module when the go directive in the go.mod file does not match the installed Go version."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Go."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "google-cloud-gcloud": {
+    "detect_env_vars": {
+      "description": "Which environmental variables should trigger this module"
+    },
+    "disabled": {
+      "description": "Disables the gcloud module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "project_aliases": {
+      "description": "Table of project aliases to display in addition to the GCP name."
+    },
+    "region_aliases": {
+      "description": "Table of region aliases to display in addition to the GCP name."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the current GCP profile."
+    }
+  },
+  "gradle": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the gradle module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "recursive": {
+      "description": "Enables recursive finding for the gradle directory."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Gradle."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "guix-shell": {
+    "disabled": {
+      "description": "Disables the guix_shell module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of guix-shell."
+    }
+  },
+  "haskell": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the haskell module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Haskell"
+    }
+  },
+  "haxe": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the haxe module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Haxe."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "helm": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the helm module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Helm."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "hostname": {
+    "aliases": {
+      "description": "Translate system hostnames to something else. If trim_at is specified, only the first part will be matched and replaced."
+    },
+    "detect_env_vars": {
+      "description": "Which environment variable(s) should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the hostname module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "ssh_only": {
+      "description": "Only show hostname when connected to an SSH session."
+    },
+    "ssh_symbol": {
+      "description": "A format string representing the symbol when connected to SSH session."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "trim_at": {
+      "description": "String that the hostname is cut off at, after the first match. '.' will stop after the first dot. '' will disable any truncation."
+    }
+  },
+  "java": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the java module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Java"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "jobs": {
+    "disabled": {
+      "description": "Disables the jobs module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "number_threshold": {
+      "description": "Show the number of jobs if the job count is at least number_threshold."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The string used to represent the symbol variable."
+    },
+    "symbol_threshold": {
+      "description": "Show symbol if the job count is at least symbol_threshold."
+    },
+    "threshold": {
+      "description": "Show number of jobs if exceeded."
+    }
+  },
+  "julia": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the julia module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Julia."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "kotlin": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the kotlin module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "kotlin_binary": {
+      "description": "Configures the kotlin binary that Starship executes when getting the version."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Kotlin."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "kubernetes": {
+    "context_alias": {
+      "description": "Context alias to display instead of the full context name."
+    },
+    "context_aliases": {
+      "description": "Table of context aliases to display."
+    },
+    "context_pattern": {
+      "description": "**Required** Regular expression to match current Kubernetes context name."
+    },
+    "contexts": {
+      "description": "Customized styles and symbols for specific contexts."
+    },
+    "detect_env_vars": {
+      "description": "Which environmental variables should trigger this module"
+    },
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the kubernetes module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol displayed before the Cluster."
+    },
+    "user_alias": {
+      "description": "User alias to display instead of the full user name."
+    },
+    "user_aliases": {
+      "description": "Table of user aliases to display."
+    },
+    "user_pattern": {
+      "description": "Regular expression to match current Kubernetes user name."
+    }
+  },
+  "line-break": {
+    "disabled": {
+      "description": "Disables the line_break module, making the prompt a single line."
+    }
+  },
+  "local-ip": {
+    "disabled": {
+      "description": "Disables the localip module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "ssh_only": {
+      "description": "Only show IP address when connected to an SSH session."
+    },
+    "style": {
+      "description": "The style for the module."
+    }
+  },
+  "lua": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the lua module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "lua_binary": {
+      "description": "Configures the lua binary that Starship executes when getting the version."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Lua."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "maven": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the maven module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "recursive": {
+      "description": "Enables recursive finding for the .mvn directory."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Maven."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "memory-usage": {
+    "disabled": {
+      "description": "Disables the memory_usage module."
+    },
+    "format": {
+      "description": "${swap})]($style) '"
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the memory usage."
+    },
+    "threshold": {
+      "description": "Hide the memory usage unless it exceeds this percentage."
+    }
+  },
+  "mercurial-branch": {
+    "disabled": {
+      "description": "Disables the hg_branch module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before the hg bookmark or branch name of the repo in your current directory."
+    },
+    "truncation_length": {
+      "description": "Truncates the hg branch / topic name to N graphemes"
+    },
+    "truncation_symbol": {
+      "description": "The symbol used to indicate a branch name was truncated."
+    }
+  },
+  "mercurial-state": {
+    "bisect": {
+      "description": "A format string displayed when a bisect is in progress."
+    },
+    "disabled": {
+      "description": "Disables the hg_state module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "graft": {
+      "description": "A format string displayed when a graft is in progress."
+    },
+    "histedit": {
+      "description": "A format string displayed when a histedit is in progress."
+    },
+    "merge": {
+      "description": "A format string displayed when a merge is in progress."
+    },
+    "rebase": {
+      "description": "A format string displayed when a rebase is in progress."
+    },
+    "shelve": {
+      "description": "A format string displayed when a shelve is in progress."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "transplant": {
+      "description": "A format string displayed when a transplant is in progress."
+    },
+    "update": {
+      "description": "A format string displayed when a update is in progress."
+    }
+  },
+  "meson": {
+    "disabled": {
+      "description": "Disables the meson module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the project name."
+    },
+    "truncation_length": {
+      "description": "Truncates a project name to N graphemes."
+    },
+    "truncation_symbol": {
+      "description": "The symbol used to indicate a project name was truncated. You can use '' for no symbol."
+    }
+  },
+  "mise": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the mise module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "healthy_symbol": {
+      "description": "The message displayed when _mise_ is healthy."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying _mise_ health."
+    },
+    "unhealthy_symbol": {
+      "description": "The message displayed when _mise_ is unhealthy."
+    }
+  },
+  "mojo": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the mojo module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of Mojo."
+    }
+  },
+  "nats": {
+    "disabled": {
+      "description": "Disables the nats module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before the NATS context (defaults to empty)."
+    }
+  },
+  "network-namespace": {
+    "disabled": {
+      "description": "Disables the netns module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before the network namespace (defaults to empty)."
+    }
+  },
+  "nim": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the nim module."
+    },
+    "format": {
+      "description": "The format for the module"
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of Nim."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "nix-shell": {
+    "disabled": {
+      "description": "Disables the nix_shell module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "heuristic": {
+      "description": "Attempts to detect new nix shell-style shells with a heuristic."
+    },
+    "impure_msg": {
+      "description": "A format string shown when the shell is impure."
+    },
+    "pure_msg": {
+      "description": "A format string shown when the shell is pure."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of nix-shell."
+    },
+    "unknown_msg": {
+      "description": "A format string shown when it is unknown if the shell is pure/impure."
+    }
+  },
+  "node-js": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the nodejs module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "not_capable_style": {
+      "description": "The style for the module when an engines property in package.json does not match the Node.js version."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Node.js."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "ocaml": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the ocaml module."
+    },
+    "format": {
+      "description": "The format string for the module."
+    },
+    "global_switch_indicator": {
+      "description": "The format string used to represent global OPAM switch."
+    },
+    "local_switch_indicator": {
+      "description": "The format string used to represent local OPAM switch."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of OCaml."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "odin": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the odin module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "show_commit": {
+      "description": "Shows the commit as part of the version."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of Odin."
+    }
+  },
+  "open-policy-agent": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the opa module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of OPA."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "openstack": {
+    "disabled": {
+      "description": "Disables the openstack module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the current OpenStack cloud."
+    }
+  },
+  "os": {
+    "disabled": {
+      "description": "Disables the os module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbols": {
+      "description": "A table that maps each operating system to its symbol."
+    }
+  },
+  "package-version": {
+    "disabled": {
+      "description": "Disables the package module."
+    },
+    "display_private": {
+      "description": "Enable displaying version for packages marked as private."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version the package."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "perl": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the perl module."
+    },
+    "format": {
+      "description": "The format string for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of Perl"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "php": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the php module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of PHP."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "pijul-channel": {
+    "disabled": {
+      "description": "Disables the pijul module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before the pijul channel name of the repo in your current directory."
+    },
+    "truncation_length": {
+      "description": "Truncates the pijul channel name to N graphemes"
+    },
+    "truncation_symbol": {
+      "description": "The symbol used to indicate a branch name was truncated."
+    }
+  },
+  "pixi": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the pixi module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "pixi_binary": {
+      "description": "Configures the pixi binary that Starship should execute when getting the version."
+    },
+    "show_default_environment": {
+      "description": "Whether to indicate that the default environment of your project is activated."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before the environment name."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch."
+    }
+  },
+  "prompt": {
+    "add_newline": {
+      "description": "Inserts blank line between shell prompts."
+    },
+    "command_timeout": {
+      "description": "Timeout for commands executed by starship (in milliseconds)."
+    },
+    "follow_symlinks": {
+      "description": "Follows symlinks to check if they're directories; used in modules such as git."
+    },
+    "format": {
+      "description": "Configure the format of the prompt."
+    },
+    "palette": {
+      "description": "Sets which color palette from palettes to use."
+    },
+    "palettes": {
+      "description": "Collection of color palettes that assign colors to user-defined names. Note that color palettes cannot reference their own color definitions."
+    },
+    "right_format": {
+      "description": "See Enable Right Prompt"
+    },
+    "scan_timeout": {
+      "description": "Timeout for starship to scan files (in milliseconds)."
+    }
+  },
+  "pulumi": {
+    "disabled": {
+      "description": "Disables the pulumi module."
+    },
+    "format": {
+      "description": "The format string for the module."
+    },
+    "search_upwards": {
+      "description": "Enable discovery of pulumi config files in parent directories."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string shown before the Pulumi stack."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "purescript": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the purescript module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of PureScript."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "python": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module"
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module"
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module"
+    },
+    "disabled": {
+      "description": "Disables the python module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "generic_venv_names": {
+      "description": "Which venv names should be replaced with the parent directory name."
+    },
+    "pyenv_prefix": {
+      "description": "Prefix before pyenv version display, only used if pyenv is used"
+    },
+    "pyenv_version_name": {
+      "description": "Use pyenv to get Python version"
+    },
+    "python_binary": {
+      "description": "Configures the python binaries that Starship should execute when getting the version."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Python"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "quarto": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the quarto module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Quarto"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "r": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module"
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module"
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module"
+    },
+    "disabled": {
+      "description": "Disables the r module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of R."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "raku": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the raku module."
+    },
+    "format": {
+      "description": "The format string for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of Raku"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "red": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the red module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Red."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "ruby": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "detect_variables": {
+      "description": "Which environment variables should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the ruby module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Ruby."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "rust": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the rust module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Rust"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "scala": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the scala module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Scala."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "shell": {
+    "bash_indicator": {
+      "description": "A format string used to represent bash."
+    },
+    "cmd_indicator": {
+      "description": "A format string used to represent cmd."
+    },
+    "disabled": {
+      "description": "Disables the shell module."
+    },
+    "elvish_indicator": {
+      "description": "A format string used to represent elvish."
+    },
+    "fish_indicator": {
+      "description": "A format string used to represent fish."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "ion_indicator": {
+      "description": "A format string used to represent ion."
+    },
+    "nu_indicator": {
+      "description": "A format string used to represent nu."
+    },
+    "powershell_indicator": {
+      "description": "A format string used to represent powershell."
+    },
+    "pwsh_indicator": {
+      "description": "A format string used to represent pwsh. The default value mirrors the value of powershell_indicator."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "tcsh_indicator": {
+      "description": "A format string used to represent tcsh."
+    },
+    "unknown_indicator": {
+      "description": "The default value to be displayed when the shell is unknown."
+    },
+    "xonsh_indicator": {
+      "description": "A format string used to represent xonsh."
+    },
+    "zsh_indicator": {
+      "description": "A format string used to represent zsh."
+    }
+  },
+  "shlvl": {
+    "disabled": {
+      "description": "Disables the shlvl module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "repeat": {
+      "description": "Causes symbol to be repeated by the current SHLVL amount."
+    },
+    "repeat_offset": {
+      "description": "Decrements number of times symbol is repeated by the offset value"
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used to represent the SHLVL."
+    },
+    "threshold": {
+      "description": "Display threshold."
+    }
+  },
+  "singularity": {
+    "disabled": {
+      "description": "Disables the singularity module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string displayed before the image name."
+    }
+  },
+  "solidity": {
+    "compiler": {
+      "description": "The default compiler for Solidity."
+    },
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables this module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Solidity"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "spack": {
+    "disabled": {
+      "description": "Disables the spack module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before the environment name."
+    },
+    "truncation_length": {
+      "description": "The number of directories the environment path should be truncated to. 0 means no truncation. Also see the directory module."
+    }
+  },
+  "status": {
+    "disabled": {
+      "description": "Disables the status module."
+    },
+    "failure_style": {
+      "description": "The style used on program failure (defaults to style if unset)."
+    },
+    "format": {
+      "description": "The format of the module"
+    },
+    "map_symbol": {
+      "description": "Enable symbols mapping from exit code"
+    },
+    "not_executable_symbol": {
+      "description": "The symbol displayed when file isn't executable"
+    },
+    "not_found_symbol": {
+      "description": "The symbol displayed when the command can't be found"
+    },
+    "pipestatus": {
+      "description": "Enable pipestatus reporting"
+    },
+    "pipestatus_format": {
+      "description": "The format of the module when the command is a pipeline"
+    },
+    "pipestatus_segment_format": {
+      "description": "When specified, replaces format when formatting pipestatus segments"
+    },
+    "pipestatus_separator": {
+      "description": "The symbol used to separate pipestatus segments (supports formatting)"
+    },
+    "recognize_signal_code": {
+      "description": "Enable signal mapping from exit code"
+    },
+    "sigint_symbol": {
+      "description": "The symbol displayed on SIGINT (Ctrl + c)"
+    },
+    "signal_symbol": {
+      "description": "The symbol displayed on any signal"
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "success_style": {
+      "description": "The style used on program success (defaults to style if unset)."
+    },
+    "success_symbol": {
+      "description": "The symbol displayed on program success"
+    },
+    "symbol": {
+      "description": "The symbol displayed on program error"
+    }
+  },
+  "sudo": {
+    "allow_windows": {
+      "description": "Since windows has no default sudo, default is disabled."
+    },
+    "disabled": {
+      "description": "Disables the sudo module."
+    },
+    "format": {
+      "description": "The format of the module"
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol displayed when credentials are cached"
+    },
+    "use_legacy_check": {
+      "description": "Uses the legacy sudo check for compatibility with older versions of sudo."
+    }
+  },
+  "swift": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the swift module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Swift"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "terraform": {
+    "commands": {
+      "description": "How to detect what the Terraform version is."
+    },
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the terraform module."
+    },
+    "format": {
+      "description": "The format string for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string shown before the terraform workspace."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "time": {
+    "disabled": {
+      "description": "Disables the time module."
+    },
+    "format": {
+      "description": "The format string for the module."
+    },
+    "style": {
+      "description": "The style for the module time"
+    },
+    "time_format": {
+      "description": "The jiff format string used to format the time."
+    },
+    "time_range": {
+      "description": "Sets the time range during which the module will be shown. Times must be specified in 24-hours format"
+    },
+    "use_12hr": {
+      "description": "Enables 12 hour formatting"
+    },
+    "utc_time_offset": {
+      "description": "Sets the UTC offset to use. Either an IANA time zone name or a range from -24 &lt; x &lt; 24. Allows floats to accommodate 30/45 minute timezone offsets."
+    }
+  },
+  "typst": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the typst module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Typst"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "username": {
+    "aliases": {
+      "description": "Translate system usernames to something else."
+    },
+    "detect_env_vars": {
+      "description": "Which environment variable(s) should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the username module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "show_always": {
+      "description": "Always shows the username module."
+    },
+    "style_root": {
+      "description": "The style used when the user is root/admin."
+    },
+    "style_user": {
+      "description": "The style used for non-root users."
+    }
+  },
+  "v": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the vlang module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of V"
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "vagrant": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the vagrant module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "A format string representing the symbol of Vagrant."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "vcs": {
+    "disabled": {
+      "description": "Disables the vcs module."
+    },
+    "fossil_modules": {
+      "description": "Modules to show when a Fossil repository is found."
+    },
+    "git_modules": {
+      "description": "Modules to show when a Git repository is found."
+    },
+    "hg_modules": {
+      "description": "Modules to show when a Mercurial repository is found."
+    },
+    "order": {
+      "description": "The order in which to search VCSes."
+    },
+    "pijul_modules": {
+      "description": "Modules to show when a Pijul repository is found."
+    }
+  },
+  "vcsh": {
+    "disabled": {
+      "description": "Disables the vcsh module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the repository name."
+    }
+  },
+  "xmake": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module"
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module"
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module"
+    },
+    "disabled": {
+      "description": "Disables the xmake module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before the version of cmake."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  },
+  "zig": {
+    "detect_extensions": {
+      "description": "Which extensions should trigger this module."
+    },
+    "detect_files": {
+      "description": "Which filenames should trigger this module."
+    },
+    "detect_folders": {
+      "description": "Which folders should trigger this module."
+    },
+    "disabled": {
+      "description": "Disables the zig module."
+    },
+    "format": {
+      "description": "The format for the module."
+    },
+    "style": {
+      "description": "The style for the module."
+    },
+    "symbol": {
+      "description": "The symbol used before displaying the version of Zig."
+    },
+    "version_format": {
+      "description": "The version format. Available vars are raw, major, minor, & patch"
+    }
+  }
+}

@@ -54,6 +54,15 @@ export const MODULE_GROUPS: readonly ModuleGroup[] = [
   "System",
 ];
 
+/**
+ * The fragment of a module's documentation URL, which is also the key the
+ * docs-derived option and variable tables are stored under — parsing them
+ * cannot know module names, only headings, and this map already pairs the two.
+ */
+export function docsAnchor(moduleName: string): string | undefined {
+  return MODULE_META[moduleName]?.docs.split("#")[1];
+}
+
 export const MODULE_META: Record<string, ModuleMeta> = {
   aws: {
     group: "Cloud & Tools",

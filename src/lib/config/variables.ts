@@ -1,7 +1,7 @@
 /**
  * What each `$variable` in a module's format string stands for.
  *
- * Parsed from starship's own documentation by `scripts/build-variables.mjs`
+ * Parsed from starship's own documentation by `scripts/build-module-docs.mjs`
  * rather than written here, so the wording is upstream's and a release that
  * renames or adds a variable is one `pnpm build:data` away.
  *
@@ -12,7 +12,7 @@
 
 import generated from "../../../data/variables.generated.json";
 import { DEFAULT_SYMBOLS } from "@/lib/engine/modules/os";
-import { MODULE_META } from "./meta";
+import { docsAnchor } from "./meta";
 
 interface VariableDoc {
   description: string;
@@ -20,11 +20,6 @@ interface VariableDoc {
 }
 
 const BY_ANCHOR = generated as Record<string, Record<string, VariableDoc>>;
-
-/** The documentation anchor a module's reference link points at. */
-function anchorFor(moduleName: string): string | undefined {
-  return MODULE_META[moduleName]?.docs.split("#")[1];
-}
 
 /**
  * The variables starship's documentation never lists in a Variables table.
@@ -101,7 +96,7 @@ export function variableDoc(
   moduleName: string,
   variable: string,
 ): VariableDoc | undefined {
-  const anchor = anchorFor(moduleName);
+  const anchor = docsAnchor(moduleName);
   const documented = anchor ? BY_ANCHOR[anchor]?.[variable] : undefined;
   if (documented) {
     const better = BETTER_EXAMPLES[moduleName]?.[variable];
