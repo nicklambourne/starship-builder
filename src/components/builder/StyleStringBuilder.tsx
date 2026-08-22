@@ -25,6 +25,8 @@ import { resolveSwatchColor } from "@/components/ui/StyleSwatch";
 import type { TerminalTheme } from "@/lib/terminalThemes";
 
 interface StyleStringBuilderProps {
+  /** Colours the prompt already uses, offered as a row of their own. */
+  inUseColors?: string[];
   value: string;
   onChange(next: string): void;
   palette?: Palette;
@@ -97,6 +99,7 @@ function ColorPicker({
   value,
   onChange,
   paletteNames = [],
+  inUseColors = [],
   palette,
   theme,
 }: {
@@ -104,6 +107,8 @@ function ColorPicker({
   value: string;
   onChange(next: string): void;
   paletteNames?: string[];
+  /** Colours the prompt is already painted with, named or not. */
+  inUseColors?: string[];
   palette?: Palette;
   theme: TerminalTheme;
 }) {
@@ -174,6 +179,36 @@ function ColorPicker({
           );
         })}
       </div>
+      {/*
+        The colours this prompt already uses, which are the ones most likely
+        to be wanted again — a second module matching the first is the whole
+        reason someone opens this. Names the palette defines are above; these
+        are whatever is in the prompt, including the ones written out in full.
+      */}
+      {inUseColors.length > 0 ? (
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-neutral-500">In the prompt now</span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {inUseColors.map((token) => (
+              <button
+                key={token}
+                type="button"
+                aria-label={`${label}: in the prompt, ${token}`}
+                aria-pressed={value === token}
+                title={token}
+                onClick={() => onChange(token)}
+                className={`${SWATCH_BASE} ${value === token ? "ring-2 ring-accent-400" : ""}`}
+                style={{
+                  backgroundColor:
+                    resolveSwatchColor(parseColorString(token.toLowerCase(), palette), theme) ??
+                    undefined,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       <div className="flex items-center gap-2">
         <label htmlFor={id} className="text-xs text-neutral-500">
           Custom
@@ -195,6 +230,7 @@ export function StyleStringBuilder({
   onChange,
   palette,
   paletteNames,
+  inUseColors,
   theme,
 }: StyleStringBuilderProps) {
   const [showRaw, setShowRaw] = useState(false);
@@ -242,6 +278,7 @@ export function StyleStringBuilder({
           value={parts.fg}
           onChange={(fg) => update({ fg })}
           paletteNames={paletteNames}
+          inUseColors={inUseColors}
           palette={palette}
           theme={theme}
         />
@@ -250,6 +287,7 @@ export function StyleStringBuilder({
           value={parts.bg}
           onChange={(bg) => update({ bg })}
           paletteNames={paletteNames}
+          inUseColors={inUseColors}
           palette={palette}
           theme={theme}
         />
