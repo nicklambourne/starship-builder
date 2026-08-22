@@ -491,6 +491,35 @@ test.describe("builder", () => {
     await expect(settings).toContainText("The style used when the user is root/admin.");
   });
 
+  test("collapsing a row closes the style editor it opened", async ({ page }) => {
+    await page.goto("./");
+    // A row whose style is not inert — the ones that are say so instead.
+    const styleButton = page
+      .getByRole("button", { name: /^Change the style of \$/ })
+      .first();
+    const name = (await styleButton.getAttribute("aria-label"))!
+      .replace("Change the style of ", "");
+    // Style editors are counted rather than located: the module's settings
+    // contain one of their own for its `style` option, so the row's editor is
+    // the difference between one and two.
+    const editors = page.getByRole("button", { name: "Foreground: none" });
+
+    await activate(page.getByRole("button", { name: `Expand ${name}` }));
+    await expect(editors).toHaveCount(1); // the style option's, inside settings
+    await activate(styleButton);
+    await expect(editors).toHaveCount(2); // and now the row's own
+
+    // The row's editor sits outside the part that collapses, so it used to
+    // stay open on a row showing nothing else.
+    await activate(page.getByRole("button", { name: `Collapse ${name}` }));
+    await expect(editors).toHaveCount(0);
+
+    // Closed, not merely hidden: reopening the row brings back the settings
+    // and their editor, not the row's.
+    await activate(page.getByRole("button", { name: `Expand ${name}` }));
+    await expect(editors).toHaveCount(1);
+  });
+
   test("installed tools can be simulated", async ({ page }) => {
     await page.goto("./");
     await openEnvSection(page, "Installed tools");
