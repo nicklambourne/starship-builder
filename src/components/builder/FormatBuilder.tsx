@@ -236,15 +236,29 @@ export function FormatBuilder({
       setStyling(styling === pathKey(path) ? null : pathKey(path)),
     onExpandToggle: (path) => {
       const key = pathKey(path);
+      /*
+        The style editor is a panel of its own, opened from the same row but
+        rendered outside the part that collapses — so closing a row used to
+        leave its style editor standing there, attached to a row that was no
+        longer showing anything else. Closing a row now closes the editor it
+        opened, and any belonging to something inside it.
+      */
+      const closeStyleEditorUnder = () => {
+        if (styling === null) return;
+        if (styling === key || styling.startsWith(`${key}.`)) setStyling(null);
+      };
+
       // In a module's format an untouched group is already open, so the first
       // toggle has to close it rather than record it as opened.
       if (!modules && !expanded.has(key) && !collapsed.has(key)) {
         const item = getAt(items, path);
         if (item?.kind === "group") {
           setCollapsed(toggleSet(collapsed, key));
+          closeStyleEditorUnder();
           return;
         }
       }
+      if (expanded.has(key)) closeStyleEditorUnder();
       setCollapsed((current) => {
         if (!current.has(key)) return current;
         const next = new Set(current);
