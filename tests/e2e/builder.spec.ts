@@ -453,6 +453,31 @@ test.describe("builder", () => {
     await expect(link).toHaveCount(0);
   });
 
+  test("the add button looks open while its list is open", async ({ page }) => {
+    await page.goto("./");
+    // Both the left and right prompt editors carry one; this is the left.
+    const format = page.locator("[data-format-scope='root-format']");
+    const add = format.getByRole("button", { name: /^\+ Add module$/ });
+    const shut = await add.evaluate((el) => getComputedStyle(el).backgroundColor);
+
+    await activate(add);
+    // Renamed, because the label is what says a second press closes it.
+    const open = format.getByRole("button", { name: /^− Add module$/ });
+    await expect(open).toHaveAttribute("aria-expanded", "true");
+    const lit = await open.evaluate((el) => getComputedStyle(el).backgroundColor);
+    // Announced *and* visible: aria-expanded alone left it looking untouched.
+    expect(lit).not.toBe(shut);
+    await expect(page.getByPlaceholder("Search modules…").last()).toBeVisible();
+
+    await activate(open);
+    await expect(add).toHaveAttribute("aria-expanded", "false");
+    // Polled: the button transitions its background, so the frame right after
+    // the click is still mid-fade.
+    await expect
+      .poll(() => add.evaluate((el) => getComputedStyle(el).backgroundColor))
+      .toBe(shut);
+  });
+
   test("installed tools can be simulated", async ({ page }) => {
     await page.goto("./");
     await openEnvSection(page, "Installed tools");

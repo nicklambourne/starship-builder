@@ -74,8 +74,17 @@ interface FormatBuilderProps {
   searchable?: boolean;
 }
 
+const SMALL_BUTTON_SHAPE = "rounded border px-2 py-1 text-xs transition";
 const SMALL_BUTTON =
-  "rounded border border-white/15 px-2 py-1 text-xs text-neutral-200 transition hover:border-accent-400 hover:text-accent-200";
+  `${SMALL_BUTTON_SHAPE} border-white/15 text-neutral-200 hover:border-accent-400 hover:text-accent-200`;
+/*
+  A toggle that is currently open. Separate string rather than extra classes
+  appended to SMALL_BUTTON: two utilities setting the same property resolve by
+  their order in the stylesheet, not in the attribute, so "override by
+  appending" is a coin toss.
+*/
+const SMALL_BUTTON_OPEN =
+  `${SMALL_BUTTON_SHAPE} border-accent-400 bg-accent-400/15 text-accent-200`;
 
 export function FormatBuilder({
   value,
@@ -374,13 +383,20 @@ export function FormatBuilder({
       </ul>
 
       <div className="flex flex-wrap items-center gap-2">
+        {/*
+          The list this opens appears below the row of buttons, and on a long
+          format it can open off-screen — so the button itself has to say it
+          is the thing holding the list open. `aria-expanded` said so already;
+          this is the same fact for people who are looking rather than
+          listening, in the accent the rest of the app uses for "on".
+        */}
         <button
           type="button"
           onClick={() => setAdding((v) => !v)}
           aria-expanded={adding}
-          className={SMALL_BUTTON}
+          className={adding ? SMALL_BUTTON_OPEN : SMALL_BUTTON}
         >
-          + Add {noun}
+          {adding ? "−" : "+"} Add {noun}
         </button>
         <button
           type="button"

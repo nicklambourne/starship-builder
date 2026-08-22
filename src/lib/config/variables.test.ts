@@ -57,6 +57,17 @@ describe("variable documentation", () => {
     );
   });
 
+  it("shows an operating system for the operating system's symbol", () => {
+    // Upstream's example is Arch's entry, 🎗️, which reads as nothing in a row
+    // about operating systems. The replacement is this app's own macOS symbol,
+    // which is what the preview shows beside it.
+    expect(describeVariable("os", "symbol")).toBe(
+      "The current operating system symbol from advanced option symbols (e.g. 🍎)",
+    );
+    // Only the example is replaced; the rest of the entry stays upstream's.
+    expect(variableDoc("os", "name")?.example).toBe("Arch Linux");
+  });
+
   it("has nothing to say about a variable that is not one", () => {
     expect(variableDoc("git_branch", "nonsense")).toBeUndefined();
     expect(variableDoc("not_a_module", "branch")).toBeUndefined();
