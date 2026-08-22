@@ -114,11 +114,25 @@ export function FormatBuilder({
     { path: Path; position: DropPosition } | null
   >(null);
 
-  const items = useMemo(() => toItems(value), [value]);
+  const derived = useMemo(() => toItems(value), [value]);
+  /*
+   * The arrangement the reader is working on, which the format string cannot
+   * always express. "a" then "b" is the same string as "ab", and a text piece
+   * emptied of its last character is the same string as no text piece at all
+   * — so a tree re-derived from the string on every keystroke silently joins
+   * adjacent text and deletes a row the moment it goes empty, mid-typing.
+   *
+   * Kept only while it still describes exactly this string. Anything that
+   * changes the string from elsewhere — a preset, a paste into the TOML pane,
+   * undo — no longer matches, and the string wins.
+   */
+  const [arrangement, setArrangement] = useState<FormatItem[] | null>(null);
+  const items = arrangement && fromItems(arrangement) === value ? arrangement : derived;
   const parse = useMemo(() => tryParseFormatString(value), [value]);
 
   const commit = (next: FormatItem[]) => {
     setStyling(null);
+    setArrangement(next);
     onChange(fromItems(next));
   };
 
@@ -274,12 +288,13 @@ export function FormatBuilder({
       });
       setExpanded(toggleSet(expanded, key));
     },
+    // Through `commit` like every other edit, so the row survives being
+    // emptied: "" and "no text piece here" are the same format string, and
+    // only the arrangement remembers which one this is.
     onTextChange: (path, next) =>
-      onChange(
-        fromItems(
-          updateAt(items, path, (item) =>
-            item.kind === "text" ? { ...item, value: next } : item,
-          ),
+      commit(
+        updateAt(items, path, (item) =>
+          item.kind === "text" ? { ...item, value: next } : item,
         ),
       ),
     describe,

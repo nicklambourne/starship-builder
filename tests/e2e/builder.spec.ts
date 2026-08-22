@@ -626,6 +626,37 @@ test.describe("builder", () => {
     await expect.poll(background).toBe("rgba(0, 0, 0, 0)");
   });
 
+  test("text pieces stay separate, and stay when emptied", async ({ page }) => {
+    await page.goto("./");
+    const format = page.locator("[data-format-scope='root-format']");
+    const textRows = format.locator("[data-format-row]").filter({ hasText: /^Text/ });
+    const before = await textRows.count();
+
+    // "a" then "b" is the same format string as "ab", so a tree re-derived
+    // from the string joined them the moment the second one appeared.
+    await activate(format.getByRole("button", { name: "+ Add text" }));
+    await activate(format.getByRole("button", { name: "+ Add text" }));
+    await expect(textRows).toHaveCount(before + 2);
+
+    // And an emptied piece is the same string as no piece at all, so the row
+    // used to vanish under the cursor mid-edit.
+    await activate(textRows.last().getByRole("button", { name: /^Expand Text/ }));
+    const field = page.getByLabel(/^Text content of/).last();
+    await field.fill("");
+    await expect(textRows).toHaveCount(before + 2);
+    await expect(field).toBeVisible();
+
+    // Still a live row: typing into it reaches the prompt.
+    await field.fill("»");
+    await expect(page.getByLabel("Simulated terminal prompt")).toContainText("»");
+
+    // The string still wins when it changes from somewhere else: the config
+    // is the document, and this is only a way of holding one reading of it.
+    await openToml(page);
+    await page.getByLabel("starship.toml").fill('format = "$directory$character"\n');
+    await expect(textRows).toHaveCount(0);
+  });
+
   test("installed tools can be simulated", async ({ page }) => {
     await page.goto("./");
     await openEnvSection(page, "Installed tools");
