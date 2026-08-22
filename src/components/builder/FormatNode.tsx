@@ -32,10 +32,25 @@ import type { TerminalTheme } from "@/lib/terminalThemes";
  * Every control on a row is the same size. They sit in a line, so one of them
  * being smaller than the rest read as an accident rather than a hierarchy.
  */
-const ROW_BUTTON =
-  "grid size-7 shrink-0 place-items-center rounded border border-white/15 text-neutral-400 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-400";
+const ROW_BUTTON_SHAPE =
+  "grid size-7 shrink-0 place-items-center rounded border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-400";
+const ROW_BUTTON = `${ROW_BUTTON_SHAPE} border-white/15 text-neutral-400`;
 const GROUP_BUTTON = `${ROW_BUTTON} hover:border-emerald-400 hover:bg-emerald-400/10 hover:text-emerald-200`;
 const NEUTRAL_BUTTON = `${ROW_BUTTON} hover:border-accent-400 hover:bg-white/5 hover:text-neutral-100`;
+/*
+  A row control holding a panel open. Built from the shape rather than by
+  adding classes to NEUTRAL_BUTTON: two utilities setting the same property
+  resolve by their order in the stylesheet, not in the attribute, so
+  overriding a border colour by appending one is a coin toss.
+*/
+/*
+  A row control holding a panel open. Built from the shape rather than by
+  adding classes to NEUTRAL_BUTTON: two utilities setting the same property
+  resolve by their order in the stylesheet, not in the attribute, so
+  overriding a border colour by appending one is a coin toss.
+*/
+const NEUTRAL_BUTTON_OPEN =
+  `${ROW_BUTTON_SHAPE} border-accent-400 bg-accent-400/15 text-accent-200`;
 
 /** Why a row's style control is dead for this module. */
 function inertStyleReason(label: string): string {
@@ -315,13 +330,33 @@ export function FormatNode({
                   : `Change the style of ${label}`
               }
               aria-expanded={styleIsInert ? undefined : styling}
+              // The accent below is the visible half of this; the attribute is
+              // the same fact in a form a test can read without measuring
+              // colours a hovering mouse also changes.
+              data-open={styling ? "" : undefined}
               disabled={styleIsInert}
               onClick={() => cb.onStyleToggle(path)}
-              className={`${NEUTRAL_BUTTON} ${
+              /*
+                The editor it opens is a panel further down the row, and on a
+                long format it can be the only thing on screen — so the button
+                says whether it is the one holding it open, in the accent the
+                rest of the app uses for "on". `aria-expanded` above says the
+                same to a screen reader.
+              */
+              /*
+                The editor it opens is a panel further down the row, and on a
+                long format it can be the only thing on screen — so the button
+                says whether it is the one holding it open, in the accent the
+                rest of the app uses for "on". `aria-expanded` above says the
+                same to a screen reader.
+              */
+              className={
                 styleIsInert
-                  ? "cursor-not-allowed opacity-45 hover:border-white/10 hover:bg-transparent hover:text-neutral-300"
-                  : ""
-              }`}
+                  ? `${NEUTRAL_BUTTON} cursor-not-allowed opacity-45 hover:border-white/10 hover:bg-transparent hover:text-neutral-300`
+                  : styling
+                    ? NEUTRAL_BUTTON_OPEN
+                    : NEUTRAL_BUTTON
+              }
             >
               <span className="relative inline-grid place-items-center">
                 <StyleSwatch style={item.style} theme={cb.theme} palette={cb.palette} />

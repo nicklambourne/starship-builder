@@ -589,6 +589,43 @@ test.describe("builder", () => {
     expect(errors).toEqual([]);
   });
 
+  test("the style button says when its editor is open", async ({ page }) => {
+    await page.goto("./");
+    const button = page
+      .getByRole("button", { name: /^Change the style of \$/ })
+      .first();
+    const editor = page.getByRole("button", { name: "Foreground: none" });
+    const background = () =>
+      button.evaluate((el) => getComputedStyle(el).backgroundColor);
+
+    /*
+     * Driven by keyboard on both platforms, which is not the usual `activate`
+     * split: a click leaves the pointer on the button, and hover fills it in
+     * the same accent as the open state — so a painted assertion taken after
+     * a click passes whether or not the open state exists at all.
+     */
+    const press = async () => {
+      await button.focus();
+      await button.press("Enter");
+    };
+
+    await expect(editor).toHaveCount(0);
+    expect(await background()).toBe("rgba(0, 0, 0, 0)");
+
+    await press();
+    await expect(button).toHaveAttribute("aria-expanded", "true");
+    await expect(editor).toHaveCount(1);
+    await expect(button).toHaveAttribute("data-open", "");
+    // Filled, and in the accent: aria-expanded alone left it looking untouched.
+    expect(await background()).not.toBe("rgba(0, 0, 0, 0)");
+
+    await press();
+    await expect(button).toHaveAttribute("aria-expanded", "false");
+    await expect(editor).toHaveCount(0);
+    await expect(button).not.toHaveAttribute("data-open");
+    await expect.poll(background).toBe("rgba(0, 0, 0, 0)");
+  });
+
   test("installed tools can be simulated", async ({ page }) => {
     await page.goto("./");
     await openEnvSection(page, "Installed tools");
