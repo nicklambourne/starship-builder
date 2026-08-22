@@ -28,6 +28,8 @@ export interface PersistedSession {
   scenario: Scenario;
   themeId: string;
   fontId: string;
+  /** Absent in sessions stored before the size was settable. */
+  fontSize?: number;
   /** Only present once the toggle has been used; otherwise the OS decides. */
   appTheme?: "dark" | "light";
 }

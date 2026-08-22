@@ -16,7 +16,7 @@ import type { Scenario } from "@/lib/scenarios/types";
 import { DEFAULT_SCENARIO_ID, getScenario } from "@/lib/scenarios";
 import { DEFAULT_PRESET_ID, getPreset } from "@/lib/config/presets";
 import { parseConfig } from "@/lib/config/toml";
-import { TERMINAL_FONTS } from "@/lib/fonts";
+import { DEFAULT_FONT_SIZE, TERMINAL_FONTS, clampFontSize } from "@/lib/fonts";
 import { DEFAULT_THEME_ID } from "@/lib/terminalThemes";
 
 const HISTORY_LIMIT = 100;
@@ -44,6 +44,8 @@ export interface BuilderState {
   scenario: Scenario;
   themeId: string;
   fontId: string;
+  /** Terminal text size in px, as the reader set it. */
+  fontSize: number;
   /** Light or dark chrome for the app itself, distinct from the terminal's. */
   appTheme: "dark" | "light";
   /**
@@ -74,6 +76,7 @@ export interface BuilderState {
       scenario: Scenario;
       themeId: string;
       fontId: string;
+      fontSize?: number;
       appTheme?: "dark" | "light";
     },
     options: { config: boolean },
@@ -86,6 +89,7 @@ export interface BuilderState {
   updateScenario(patch: Partial<Scenario>): void;
   setTheme(id: string): void;
   setFont(id: string): void;
+  setFontSize(size: number): void;
   setAppTheme(theme: "dark" | "light"): void;
   /** Follows the OS preference, unless the toggle has been used. */
   adoptSystemTheme(theme: "dark" | "light"): void;
@@ -145,6 +149,7 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
   // The first bundled font is the default, so the list stays the one
   // place that decides which font people see first.
   fontId: TERMINAL_FONTS[0].id,
+  fontSize: DEFAULT_FONT_SIZE,
   appTheme: "dark",
   appThemeIsExplicit: false,
   selectedModule: null,
@@ -174,6 +179,8 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
       scenario: session.scenario,
       themeId: session.themeId,
       fontId: session.fontId,
+      // Sessions stored before the size was settable have none.
+      fontSize: session.fontSize ?? DEFAULT_FONT_SIZE,
       // A restored session is where this visitor was, not an edit they can
       // undo their way out of.
       past: [],
@@ -218,6 +225,10 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
 
   setFont(id) {
     set({ fontId: id });
+  },
+
+  setFontSize(size) {
+    set({ fontSize: clampFontSize(size) });
   },
 
   setAppTheme(theme) {

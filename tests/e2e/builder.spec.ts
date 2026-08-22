@@ -520,6 +520,36 @@ test.describe("builder", () => {
     await expect(editors).toHaveCount(1);
   });
 
+  test("the font size field resizes the prompt, and survives a reload", async ({
+    page,
+  }, info) => {
+    await page.goto("./");
+    const terminal = page.getByLabel("Simulated terminal prompt");
+    const size = () => terminal.evaluate((el) => getComputedStyle(el).fontSize);
+
+    const before = await size();
+    await page.getByLabel("Font size").fill("22");
+    await expect.poll(size).not.toBe(before);
+    const bigger = Number.parseFloat(await size());
+    expect(bigger).toBeGreaterThan(Number.parseFloat(before));
+
+    // Where it sits: beside the other two where there is room, wrapped below
+    // them on a phone rather than squeezing the names that need the width.
+    const rows = await page.evaluate(() => {
+      const top = (id: string) =>
+        Math.round(document.getElementById(id)!.getBoundingClientRect().top);
+      return { theme: top("theme-select"), font: top("font-select"), size: top("font-size") };
+    });
+    expect(rows.theme).toBe(rows.font);
+    if (info.project.name === "mobile") expect(rows.size).toBeGreaterThan(rows.font);
+    else expect(rows.size).toBe(rows.font);
+
+    // It is a preview setting like the theme and the font, so it is kept.
+    await page.reload();
+    await expect(page.getByLabel("Font size")).toHaveValue("22");
+    expect(Number.parseFloat(await size())).toBeCloseTo(bigger, 0);
+  });
+
   test("installed tools can be simulated", async ({ page }) => {
     await page.goto("./");
     await openEnvSection(page, "Installed tools");
